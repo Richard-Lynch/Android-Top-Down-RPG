@@ -12,7 +12,7 @@ public class MainActivity extends AppCompatActivity {
         //just seeing if this commit is working
         //ste test 3
         //Richies test commit
-        // woooooooo
         // finally working
+        //mines better
     }
 }
