@@ -10,6 +10,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //just seeing if this commit is working
-        // Ste seen to
+        //ste test 3
+        //Richies test commit
     }
 }
