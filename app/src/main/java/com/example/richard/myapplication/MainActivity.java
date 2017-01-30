@@ -16,5 +16,18 @@ public class MainActivity extends AppCompatActivity {
         // finally working
         //
         //mines better
+
+        /*
+
+          _..__.          .__.._
+               .^"-.._ '-(\__/)-' _..-"^.
+                      '-.' oo '.-'
+                         `-..-'
+
+
+
+
+         */
+
     }
 }
