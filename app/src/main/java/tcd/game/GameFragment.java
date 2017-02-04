@@ -29,8 +29,8 @@ public class GameFragment extends Fragment {
     private GameRenderer gameRenderer;
     private int numCalls;
     private Paint paint;
-    private Monster monster, monster2;
-    private ArrayList<Monster> monsters;
+//    public Context context;
+    private GameMode gameMode;
 
     // FPS test
     private long time;
@@ -42,9 +42,12 @@ public class GameFragment extends Fragment {
      ***********************************************************************************/
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG,"derp");
+
         gameRenderer = new GameRenderer(getActivity(), TARGET_FPS);
-        monsters = new ArrayList<>();
+        Log.d(TAG,"Depr");
         time = 0;
+
         return gameRenderer;
     }
 
@@ -70,10 +73,11 @@ public class GameFragment extends Fragment {
     /**
      * Called once on second thread prior to starting game loop.
      */
-    private void setup() {
+    private void setup(Context context) {
         numCalls = 0;
         paint = new Paint(Color.RED);
         time = System.nanoTime();
+        gameMode = new GameMode(context,400,400);
     }
 
 
@@ -89,14 +93,8 @@ public class GameFragment extends Fragment {
             fps = numCalls;
             numCalls = 0;
             time = currentTime;
-            Random random = new Random();
-            monsters.add(new Monster(getActivity().getApplicationContext(),random.nextInt(400),random.nextInt(500)));
         }
-       // monster.update();
-       for(int i=0;i<monsters.size();i++){
-           monsters.get(i).update();
-       }
-
+        gameMode.update();
     }
 
     /**
@@ -108,15 +106,8 @@ public class GameFragment extends Fragment {
      * @param canvas: A reference to a canvas present on GUI thread.
      */
     private void drawFrame(Canvas canvas) {
-
+        gameMode.drawFrame(canvas);
         numCalls++;
-        paint.setColor(Color.RED);
-        // Other drawing option
-       // canvas.drawBitmap(monster.getBitmap(), null, monster.getRect(), null);
-        for(int i=0;i<monsters.size();i++){
-            monsters.get(i).drawFrame(canvas);
-        };
-
         paint.setTextSize(36.0f);
         paint.setTextAlign(Paint.Align.LEFT);
         canvas.drawText("FPS = " + fps, 50f, 50f, paint);
@@ -161,14 +152,17 @@ public class GameFragment extends Fragment {
          */
         public GameRenderer(Context context, int targetFPS) {
             super(context);
+//            this.context = context;
             this.targetFPS = targetFPS;
             this.targetStepPeriod =  1000000000 / this.targetFPS;
-            setup();
+            setup(context.getApplicationContext());
+
         }
 
 
         @Override
         public void run() {
+
             while (running) {
                 long starTime = System.nanoTime();
 
@@ -207,7 +201,8 @@ public class GameFragment extends Fragment {
                     //       We should correct for undersleeping as well as oversleeping
                     //       If we reset this, updates continue ahead of time
                     //       I guess it makes no difference as we wont be drawing the frames anyway
-                    // overSleepTime = 0L;
+                    
+                     overSleepTime = 0L;
                 }
             }
         }
