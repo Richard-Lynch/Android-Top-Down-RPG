@@ -13,6 +13,6 @@ public class NPC extends GameObject {
 
 
     NPC(Context context, String s,int canvasWidth, int canvasHeight){
-        super(context,s, canvasWidth, canvasHeight);
+        super(context,s, GameObjectTypes.NPC, canvasWidth, canvasHeight);
     }
 }

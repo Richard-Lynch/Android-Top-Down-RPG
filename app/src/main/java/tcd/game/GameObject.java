@@ -5,78 +5,191 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.util.Log;
 
+// TODO: Discuss with team
+// GameObject.Context and Canvas width and heights could be static and set somewhere in game mode
+// to avoid having to pass it in to all of our constructors?
 
-/**
- * Created by stefano on 04/02/17.
+/** Fair bit of redundancy in this class but its all commented out in case we want to use it
+ * TODO: Discuss with team
  */
-
 public class GameObject {
     private String TAG = "GameObject";
+
+    // Used for generating GameObjects IDS
     private static int totalGameObjs = 0;
+
+    /** Unique ID for each GameObject */
     private int id;
-    private String name;
-    private int posX,posY,velX,velY;
-    private Rect collisionBox;
-    private Rect cropBox;
-    private Rect drawBox;
-    private boolean collisionOn;
-    private boolean movable;
-    private Bitmap spriteMap;
+
+
+    /** Application Context to access Drawable Resources */
     private Context context;
 
-    private int colWidth, colHeight, cropWidth, cropHeight, drawWidth,drawHeight;
-    private int animationModeIndex, animationLoopIndex;
-    // loop = width multiple for crop
-    // mode = height ""
-    private int canvasWidth, canvasHeight;
+    // GameObject properties
+    private String name;
+    private Bitmap spriteMap;
+//    private int posX,posY;
+
+    private int velX,velY;
+
+    /** Box used for updating positions and collision checking */
+    private Rect collisionBox;
+
+    /** Width of Screen */
+//    private int canvasWidth;
+
+    /** Height of Screen */
+//    private int canvasHeight;
+
+    /** Equivalant rectangle to screen size */
+    private Rect canvasRect;
+
+    /** Rectangle the size of the map */
+    private Rect mapRect;
+
+    /** Flag indicating whether object can be passed through */
+    private boolean collisionOn;
+
+    /** Flag indicating whether this GameObject can move (May be redundant) */
+    private boolean movable;
+
+
+    /** SpriteMap row index */
+    private int animationRowIndex;
+
+    /** SpriteMap Col index */
+    private int animationColIndex;
+
+    /** Width of SpriteMap column (width each individual sprite) */
+    private int cropWidth;
+
+    /** Height of SpriteMap row (height of each individual sprite) */
+    private int cropHeight;
+
+    /** Used if we want to make collision (and thus draw) boxes smaller than crop boxes */
+    private float scaleFactor;
+
+    /** Calculated by cropWidth and scallFactor */
+    private int drawWidth;
+
+    /** Calculated by cropHeight and scallFactor */
+    private int drawHeight;
+
 
 
     GameObject(){
-        id = totalGameObjs;
-        totalGameObjs ++;
-        name = "un-named";
+        name = "Null-Man";
 
     }
 
-
-    GameObject(Context context, String s, int canvasWidth, int canvasHeight){
-        Log.d(TAG,"Gameobj constructor");
+    /**
+     * Creates a Game Object which contains methods for updating and drawing frames
+     * @param context Application context
+     * @param name Name of Object
+     * @param type The type of GameObject child
+     * @param canvasWidth The width of the screen
+     * @param canvasHeight
+     */
+    GameObject(Context context, String name, GameObjectTypes type,int canvasWidth, int canvasHeight){
         this.id = totalGameObjs;
         totalGameObjs++;
-        name = s;
+        canvasRect = new Rect(0,0,canvasWidth,canvasHeight);
+        mapRect = canvasRect; //for now
+        this.name = name;
         this.context = context;
-        Log.d(TAG,"used context");
 
-        spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.truck);
-        collisionBox = new Rect(0,0,60,60);
-        drawBox = collisionBox;
-        cropBox = null;
-        animationLoopIndex = 0;
-        animationModeIndex = 0;
-        posX = 0;
-        posY = 0;
+        // Loading default Sprites for each GameObject if not passed in
+        if(type == GameObjectTypes.PLAYER){
+            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default);
+        } else if (type == GameObjectTypes.INANOBJECT){
+            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.inan_default);
+        } else if(type == GameObjectTypes.NPC){
+            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_default);
+        }
+
+        setCrop(spriteMap.getWidth(),spriteMap.getHeight(),0.5f);
+
+
+        animationColIndex = 0;
+        animationRowIndex = 0;
+
+        collisionBox = new Rect(0,0,drawWidth,drawHeight);
+
         velX = 0;
         velY = 0;
-        drawWidth = 60;
-        drawHeight = 60;
-        cropWidth = 60;
-        cropHeight = 60;
-        colWidth = 60;
-        colHeight = 60;
 
-        this.canvasHeight = canvasHeight;
-        this.canvasWidth = canvasWidth;
-        Log.d(TAG,"fin Gameobj constructor");
+//
+//        posX = 0;
+//        posY = 0;
+
+
+//        drawBox = collisionBox;
+//        cropBox = null;
+
+
+//        drawWidth = 60;
+//        drawHeight = 60;
+
+//        colWidth = 60;
+//        colHeight = 60;
+
     }
 
+
+
+
+
+
+
+
+
+
+    public void setSprite(Bitmap bitmap){
+        this.spriteMap = bitmap;
+    }
+
+
+    public void setCrop(int width, int height, float scaleFactor){
+        this.cropWidth = width;
+        this.cropHeight = height;
+        setDrawDimensions(width,height,scaleFactor);
+    }
+
+
+    private void setDrawDimensions(int width, int height, float scaleFactor){
+        this.scaleFactor = scaleFactor;
+        this.drawWidth = Math.round(width * scaleFactor);
+        this.drawHeight = Math.round(height * scaleFactor);;
+    }
+
+
+
+
+//    public void setPosX(int posX) {
+//        this.posX = posX;
+//    }
+//
+//    public void setPosY(int posY) {
+//        this.posY = posY;
+//    }
+//
+//    public void setVelX(int velX) {
+//        this.velX = velX;
+//    }
+//
+//    public void setVelY(int velY) {
+//        this.velY = velY;
+//    }
+
     public void setPosX(int posX) {
-        this.posX = posX;
+        this.collisionBox.left = posX;
+        this.collisionBox.right = posX + drawWidth;
     }
 
     public void setPosY(int posY) {
-        this.posY = posY;
+        this.collisionBox.top = posY;
+        this.collisionBox.bottom = posY + drawHeight;
     }
 
     public void setVelX(int velX) {
@@ -88,24 +201,32 @@ public class GameObject {
     }
 
     private void move(){
-        this.posX += this.velX;
-        this.posY += this.velY;
+//        this.posX += this.velX;
+//        this.posY += this.velY;
+        collisionBox.left += velX;
+        collisionBox.right += velX;
+        collisionBox.top += velY;
+        collisionBox.bottom += velY;
     }
 
     private void unmove(){
-        this.posX -= this.velX;
-        this.posY -= this.velY;
+//        this.posX -= this.velX;
+//        this.posY -= this.velY;
+        collisionBox.left -= velX;
+        collisionBox.right -= velX;
+        collisionBox.top -= velY;
+        collisionBox.bottom -= velY;
+
     }
 
 
     public void update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type){
 
         //TODO: Update animation draw frame if required
+        
 
         move();
-        if(posX  >= canvasWidth){
-            posX = 0;
-        }else{return;}
+
 
         for(int i=0;i<players.length;i++){
             if(this.collision(players[i])){
@@ -137,24 +258,35 @@ public class GameObject {
     }
 
     private boolean collision(GameObject gameObject){
-        return false;
+
+        //Rectangle intersection
+        if(canvasRect.contains(this.collisionBox)) {
+            if(this.collisionBox.intersects(gameObject.collisionBox.left,gameObject.collisionBox.top, gameObject.collisionBox.right,gameObject.collisionBox.bottom)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return true;
+
     }
 
     public void drawFrame(Canvas canvas){
-        canvasHeight = canvas.getHeight();
-        canvasWidth = canvas.getWidth();
-//        canvas.drawBitmap(spriteMap,
-//                null,
-//                new Rect(posX,posY,posX + drawWidth,posY + drawWidth),
-//                null);
-        canvas.drawBitmap(spriteMap,
-                new Rect(animationLoopIndex * cropWidth,animationModeIndex * cropHeight,animationLoopIndex * cropWidth + cropWidth,animationModeIndex * cropHeight + cropHeight),
-                new Rect(posX,posY,posX + drawWidth,posY + drawWidth),
-                null);
-//        Rect src = new Rect(animationLoopIndex * cropWidth,animationModeIndex * cropHeight,animationLoopIndex * cropWidth + cropWidth,animationModeIndex * cropHeight + cropHeight)
-//        Rect src = new Rect(0,0,60,60);
-//
-//        canvas.drawBitmap(spriteMap,null, src, null);
+
+//        Paint paint = new Paint(Color.RED);
+//        canvas.drawRect(collisionBox, paint);
+
+        canvas.drawBitmap(
+                spriteMap,
+                new Rect(
+                        animationColIndex * cropWidth,
+                        animationRowIndex * cropHeight,
+                        animationColIndex * cropWidth + cropWidth,
+                        animationRowIndex * cropHeight + cropHeight
+                ),
+                collisionBox,
+                null
+        );
     }
 
     public int getID(){
