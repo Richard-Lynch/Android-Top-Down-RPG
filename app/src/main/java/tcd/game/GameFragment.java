@@ -64,34 +64,24 @@ public class GameFragment extends Fragment {
             public void onGlobalLayout() {
                 int width = getView().getWidth();
                 int height = getView().getHeight();
-                initializeGameMode(width,height);
+                initializeGameMode(width, height);
             }
         });
     }
 
     @Override
     public void onPause() {
-        Log.d(TAG,"Pausing");
+        Log.d(TAG, "Pausing");
         super.onPause();
         gameRenderer.pause();
     }
 
     @Override
     public void onResume() {
-        Log.d(TAG,"Resuming");
+        Log.d(TAG, "Resuming");
         super.onResume();
         gameRenderer.resume();
     }
-
-
-
-
-
-
-
-
-
-
 
 
     /***********************************************************************************
@@ -100,6 +90,7 @@ public class GameFragment extends Fragment {
 
     /**
      * Called once on second thread prior to starting game loop.
+     *
      * @param context passed from GameRenderer's constructor
      */
     private void setup(Context context) {
@@ -111,9 +102,9 @@ public class GameFragment extends Fragment {
     }
 
 
-    private void initializeGameMode(int width, int height){
+    private void initializeGameMode(int width, int height) {
 //        Log.d(TAG,"Initializing GameMode " + width + height);
-        gameMode.initialize(width,height);
+        gameMode.initialize(width, height);
         gameInitialized = true;
     }
 
@@ -123,8 +114,8 @@ public class GameFragment extends Fragment {
      */
     private void update() {
         // Calculate FPS
-       long currentTime = System.nanoTime();
-        if(currentTime - time >= 1000000000){
+        long currentTime = System.nanoTime();
+        if (currentTime - time >= 1000000000) {
             fps = numCalls;
             numCalls = 0;
             time = currentTime;
@@ -139,6 +130,7 @@ public class GameFragment extends Fragment {
      * This will depend on whether the GUI thread finishes drawing the current frame to the
      * canvas and resets the volatile drawNeeded boolean prior to second thread starting the
      * update of the next frame.
+     *
      * @param canvas: A reference to a canvas present on GUI thread.
      */
     private void drawFrame(Canvas canvas) {
@@ -150,19 +142,8 @@ public class GameFragment extends Fragment {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
     /***********************************************************************************
-     ******************************** GameRenderer *************************************
+     * ******************************* GameRenderer *************************************
      **********************************************************************************/
 
     /*
@@ -195,15 +176,16 @@ public class GameFragment extends Fragment {
 
         /**
          * Creates a GameRenderer, runs setup routine and starts the game loop.
-         * @param context Activity context
+         *
+         * @param context   Activity context
          * @param targetFPS The ideal frame rate
          */
         public GameRenderer(Context context, int targetFPS) {
             super(context);
             // Note run method starts on seperate thread once constructor finishes i think
-            Log.d(TAG,"GameRenderer Constructor");
+            Log.d(TAG, "GameRenderer Constructor");
             this.targetFPS = targetFPS;
-            this.targetStepPeriod =  1000000000 / this.targetFPS;
+            this.targetStepPeriod = 1000000000 / this.targetFPS;
             setup(context.getApplicationContext());
 
         }
@@ -211,67 +193,68 @@ public class GameFragment extends Fragment {
 
         @Override
         public void run() {
-            Log.d(TAG,"Run Method starting");
+            Log.d(TAG, "Run Method starting");
+            while (!gameInitialized) {
+
+            }
             while (running) {
-                if(gameInitialized) {
 //                    Log.d(TAG,"GameLoop Starting");
-                    long starTime = System.nanoTime();
+                long starTime = System.nanoTime();
 
-                    // Update frame
+                // Update frame
+                try {
+                    update();
+
+                    // Check if still drawing on GUI thread
+                    if (!drawing) {
+                        drawing = true;
+                        // Methods: invalidate(), postInvalidate()
+                        // If we update ANY view (TextView, View, SurfaceView, CanvasView.. etc)
+                        // The GUI thread needs to redraw it
+                        // By calling invalidate(), we trigger a redraw of the view on the GUI thread
+                        // By calling postInvalidate(), sends message to GUI thread FROM ANOTHER THREAD (which we are on)
+                        postInvalidate();
+                    }
+                } catch (NullPointerException npe) {
+                    Log.d(TAG, "NPE while updating " + npe.getMessage());
+                }
+
+
+                long endTime = System.nanoTime();
+                long intendedSleepTime = targetStepPeriod - (endTime - starTime);
+
+                // Correct for an oversleeping on previous tick
+                intendedSleepTime = intendedSleepTime - overSleepTime;
+
+                if (intendedSleepTime > 0) {
                     try {
-                        update();
-
-                        // Check if still drawing on GUI thread
-                        if (!drawing) {
-                            drawing = true;
-                            // Methods: invalidate(), postInvalidate()
-                            // If we update ANY view (TextView, View, SurfaceView, CanvasView.. etc)
-                            // The GUI thread needs to redraw it
-                            // By calling invalidate(), we trigger a redraw of the view on the GUI thread
-                            // By calling postInvalidate(), sends message to GUI thread FROM ANOTHER THREAD (which we are on)
-                            postInvalidate();
-                        }
-                    } catch (NullPointerException npe){
-                        Log.d(TAG,"NPE while updating " +npe.getMessage());
+                        // Convert intendedSleepTime from ns to ms
+                        Thread.sleep(intendedSleepTime / 1000000L);
+                        long actualSleepTime = System.nanoTime() - endTime;
+                        overSleepTime = actualSleepTime - intendedSleepTime;
+                    } catch (InterruptedException e) {
+                        Log.d(TAG, "Thread interrupted: " + e.getMessage());
                     }
+                } else {
+                    // TODO: May be sub optimal to just reset this to 0
+                    overSleepTime = 0L;
+                }
 
-
-                    long endTime = System.nanoTime();
-                    long intendedSleepTime = targetStepPeriod - (endTime - starTime);
-
-                    // Correct for an oversleeping on previous tick
-                    intendedSleepTime = intendedSleepTime - overSleepTime;
-
-                    if (intendedSleepTime > 0) {
-                        try {
-                            // Convert intendedSleepTime from ns to ms
-                            Thread.sleep(intendedSleepTime / 1000000L);
-                            long actualSleepTime = System.nanoTime() - endTime;
-                            overSleepTime = actualSleepTime - intendedSleepTime;
-                        } catch (InterruptedException e) {
-                            Log.d(TAG, "Thread interrupted: " + e.getMessage());
-                        }
-                    } else {
-                        // TODO: May be sub optimal to just reset this to 0
-                        overSleepTime = 0L;
-                    }
-                } else{
-//                    Log.d(TAG, "skipping game Loope");
-              }
             }
         }
 
         /**
          * THIS RUNS ON GUI THREAD
          * Overwriting onDraw() GUI onDraw() for our fragment
-           onDraw() is called whenever a view is updated (which we have triggered with postInvalidate())
-           We are overloading the onDraw() when its passed a reference to our canvas
+         * onDraw() is called whenever a view is updated (which we have triggered with postInvalidate())
+         * We are overloading the onDraw() when its passed a reference to our canvas
+         *
          * @param canvas Reference to canvas we are drawing on
          */
         @Override
         protected void onDraw(Canvas canvas) {
 //            try{
-                drawFrame(canvas);
+            drawFrame(canvas);
 
             drawing = false;
         }
@@ -287,7 +270,7 @@ public class GameFragment extends Fragment {
                     updateThread.join();
                     return;
                 } catch (InterruptedException e) {
-                    Log.d(TAG,"Thread interupted onPause(): " + e.getMessage());
+                    Log.d(TAG, "Thread interupted onPause(): " + e.getMessage());
                 }
             }
         }

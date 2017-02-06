@@ -223,7 +223,7 @@ public class GameObject {
     public void update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type){
 
         //TODO: Update animation draw frame if required
-        
+
 
         move();
 
