@@ -82,7 +82,7 @@ public class GameMode {
 
     private void init(double levelID){
 
-        map = BitmapFactory.decodeResource(context.getResources(),R.drawable.background);
+        map = BitmapFactory.decodeResource(context.getResources(),R.drawable.sean);
         players = new Player[1];
         npcs = new NPC[1];
         inanObjs = new InanObject[1];

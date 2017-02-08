@@ -224,7 +224,6 @@ public class GameObject {
 
         //TODO: Update animation draw frame if required
 
-
         move();
 
 
