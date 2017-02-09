@@ -1,8 +1,7 @@
 package tcd.game;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.util.Log;
 
 /**
  * Created by stefano on 04/02/17.
@@ -10,12 +9,21 @@ import android.graphics.BitmapFactory;
 
 public class Player extends GameObject {
 
-
+    private static final String TAG = "Player";
     Player(Context context, String s,int canvasWidth, int canvasHeight){
         super(context,s, GameObjectTypes.PLAYER ,canvasWidth, canvasHeight);
         health = 100;
         skill = 1;
         strength = 10;
+        //TODO: Adjust player velocities properly (aspect ratio of device?)
+
+    }
+
+    @Override
+    public void update(Player[] players, NPC[] npcs, InanObject[] inanObjects, int id, GameObjectTypes type) {
+
+        change_velocity();
+        super.update(players, npcs, inanObjects, id, type);
     }
 
     //Flags
@@ -32,6 +40,13 @@ public class Player extends GameObject {
     private int health;
     private int skill;
     private int strength;
+
+    public void setAllVelFalse(){
+        down_pressed = false;
+        left_pressed = false;
+        right_pressed = false;
+        up_pressed = false;
+    }
 
     private int press_check(){
         int counter = 0;
@@ -53,21 +68,26 @@ public class Player extends GameObject {
         if(number_of_presses > 1 || number_of_presses == 0)  {
             this.setVelY(0);
             this.setVelX(0);
+            setAllVelFalse();
         }
         else {
             if (isRight_pressed()) {
+                Log.d(TAG,"Right");
                 this.setVelX(1);
                 this.setVelY(0);
             }
             if (isLeft_pressed()) {
+                Log.d(TAG,"Left");
                 this.setVelX(-1);
                 this.setVelY(0);
             }
             if (isDown_pressed()) {
+                Log.d(TAG,"Down");
                 this.setVelY(1);
                 this.setVelX(0);
             }
             if (isUp_pressed()) {
+                Log.d(TAG,"Up");
                 this.setVelY(-1);
                 this.setVelX(0);
             }

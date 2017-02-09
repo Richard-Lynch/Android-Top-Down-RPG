@@ -29,7 +29,7 @@ public class GameMode {
 
     //TODO: Get Number of NPCS/Inans/Players from map class and initialize arrays accordingly or create data-structure
 
-
+    //TODO: Set a default velocity and multiply this by 1, 0 or -1 etc to move more than one pixel at a time?
 
     /***********************************************************************************
      * Constructors
@@ -82,7 +82,7 @@ public class GameMode {
 
     private void init(double levelID){
 
-        map = BitmapFactory.decodeResource(context.getResources(),R.drawable.sean);
+        map = BitmapFactory.decodeResource(context.getResources(),R.drawable.background);
         players = new Player[1];
         npcs = new NPC[1];
         inanObjs = new InanObject[1];
@@ -91,9 +91,9 @@ public class GameMode {
         players[0] = new Player(context,"Donal", canvasWidth, canvasHeight);
         npcs[0] = new NPC(context,"Frank",canvasWidth, canvasHeight);
         inanObjs[0] = new InanObject(context,"House",canvasWidth,canvasHeight);
-        players[0].setPosX(0);
+        players[0].setPosX(40);
         players[0].setPosY(50);
-        players[0].setVelX(5);
+        players[0].setVelX(0);
         players[0].setVelY(0);
         players[0].setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default));
 
@@ -103,8 +103,8 @@ public class GameMode {
         npcs[0].setVelY(0);
 
         inanObjs[0].setPosX(400);
-        inanObjs[0].setPosY(150);
-        inanObjs[0].setVelX(0);
+        inanObjs[0].setPosY(250);
+        inanObjs[0].setVelX(-5);
         inanObjs[0].setVelY(0);
 
     }
@@ -154,5 +154,9 @@ public class GameMode {
         for(int i=0;i<players.length;i++) {
             players[i].drawFrame(canvas);
         }
+    }
+
+    public Player getPlayer(){
+        return players[0];
     }
 }

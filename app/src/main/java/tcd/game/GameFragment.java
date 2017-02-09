@@ -1,14 +1,18 @@
 package tcd.game;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -19,12 +23,16 @@ import android.view.ViewTreeObserver;
  * while drawing the n-1th frame using the hardware accelerated GUI thread.
  */
 
-public class GameFragment extends Fragment {
+public class GameFragment extends Fragment{
     private static final String TAG = "GameFragment";
     private final int TARGET_FPS = 60;
 
     private GameRenderer gameRenderer;
     private GameMode gameMode;
+
+    // Controls
+    private Rect upRect, downRect,leftRect,rightRect;
+    private Bitmap controlIcon;
 
     // As the game loop runs on separate thread, it starts before objects get fully initialized
     // We can let it loop but block the updating and drawing until it is ready
@@ -45,6 +53,7 @@ public class GameFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         gameInitialized = false;
         gameRenderer = new GameRenderer(getActivity(), TARGET_FPS);
+        createControls();
 
         //Fps Monitor
         time = 0;
@@ -52,6 +61,35 @@ public class GameFragment extends Fragment {
         paint.setTextSize(36.0f);
         paint.setTextAlign(Paint.Align.LEFT);
 
+        gameRenderer.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                int x = Math.round(event.getX());
+                int y = Math.round(event.getY());
+                int tolerance = 5;
+                Rect touchLoc = new Rect(x,y,x+tolerance,y+tolerance);
+
+                if(event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE) {
+                    Log.d(TAG,"Moving true");
+                    if (touchLoc.intersect(upRect)) {
+                        gameMode.getPlayer().setUp_pressed(true);
+                    } else if (touchLoc.intersect(downRect)) {
+                        gameMode.getPlayer().setDown_pressed(true);
+                    } else if(touchLoc.intersect(rightRect)){
+                        gameMode.getPlayer().setRight_pressed(true);
+                    } else if(touchLoc.intersect(leftRect)){
+                        gameMode.getPlayer().setLeft_pressed(true);
+                    }
+
+                } else if(event.getAction() == MotionEvent.ACTION_UP){
+                    Log.d(TAG,"Moving false");
+                    gameMode.getPlayer().setAllVelFalse();
+                }
+
+                return true;
+            }
+        });
         return gameRenderer;
     }
 
@@ -81,6 +119,25 @@ public class GameFragment extends Fragment {
         Log.d(TAG, "Resuming");
         super.onResume();
         gameRenderer.resume();
+    }
+
+    /***********************************************************************************
+     * Controls
+     **********************************************************************************/
+    private void createControls(){
+        controlIcon = BitmapFactory.decodeResource(getResources(),R.drawable.truck);
+        upRect = new Rect(80,300,140,360);
+        downRect = new Rect(80,440,140,500);
+        leftRect = new Rect(20,370,80,430);
+        rightRect = new Rect(140,370,200,430);
+
+    }
+
+    private void drawControls(Canvas canvas){
+        canvas.drawBitmap(controlIcon,null,upRect,null);
+        canvas.drawBitmap(controlIcon,null,downRect,null);
+        canvas.drawBitmap(controlIcon,null,rightRect,null);
+        canvas.drawBitmap(controlIcon,null,leftRect,null);
     }
 
 
@@ -135,6 +192,7 @@ public class GameFragment extends Fragment {
      */
     private void drawFrame(Canvas canvas) {
         gameMode.drawFrame(canvas);
+        drawControls(canvas);
 
         // FPS
         numCalls++;
@@ -253,7 +311,6 @@ public class GameFragment extends Fragment {
          */
         @Override
         protected void onDraw(Canvas canvas) {
-//            try{
             drawFrame(canvas);
 
             drawing = false;
