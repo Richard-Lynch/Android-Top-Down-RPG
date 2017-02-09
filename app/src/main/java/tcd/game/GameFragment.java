@@ -126,10 +126,10 @@ public class GameFragment extends Fragment{
      **********************************************************************************/
     private void createControls(){
         controlIcon = BitmapFactory.decodeResource(getResources(),R.drawable.truck);
-        upRect = new Rect(80,300,140,360);
-        downRect = new Rect(80,440,140,500);
-        leftRect = new Rect(20,370,80,430);
-        rightRect = new Rect(140,370,200,430);
+        upRect = new Rect(80,360,140,420);
+        downRect = new Rect(80,500,140,560);
+        leftRect = new Rect(20,430,80,490);
+        rightRect = new Rect(140,430,200,490);
 
     }
 

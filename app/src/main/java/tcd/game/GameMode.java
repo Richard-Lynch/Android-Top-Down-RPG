@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.util.Log;
 
 
 public class GameMode {
@@ -82,7 +81,7 @@ public class GameMode {
 
     private void init(double levelID){
 
-        map = BitmapFactory.decodeResource(context.getResources(),R.drawable.background);
+        map = BitmapFactory.decodeResource(context.getResources(),R.drawable.map_default);
         players = new Player[1];
         npcs = new NPC[1];
         inanObjs = new InanObject[1];
@@ -97,14 +96,14 @@ public class GameMode {
         players[0].setVelY(0);
         players[0].setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default));
 
-        npcs[0].setPosX(100);
-        npcs[0].setPosY(150);
-        npcs[0].setVelX(6);
+        npcs[0].setPosX(700);
+        npcs[0].setPosY(300);
+        npcs[0].setVelX(1);
         npcs[0].setVelY(0);
 
-        inanObjs[0].setPosX(400);
-        inanObjs[0].setPosY(250);
-        inanObjs[0].setVelX(-5);
+        inanObjs[0].setPosX(600);
+        inanObjs[0].setPosY(20);
+        inanObjs[0].setVelX(0);
         inanObjs[0].setVelY(0);
 
     }

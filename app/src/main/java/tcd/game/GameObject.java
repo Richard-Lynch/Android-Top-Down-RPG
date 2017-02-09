@@ -153,7 +153,7 @@ public class GameObject {
     public void setCrop(int width, int height, float scaleFactor){
         this.cropWidth = width;
         this.cropHeight = height;
-        setDrawDimensions(width,height,scaleFactor);
+        setDrawDimensions(width,height,0.5f);
     }
 
 
