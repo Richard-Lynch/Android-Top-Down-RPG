@@ -251,9 +251,10 @@ public class GameObject {
     }
 
     public void update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type){
-
+        //move object by velocity
         move();
 
+        //check for collision
         for(int i=0;i<players.length;i++){
             if(this.collision(players[i])){
                 if(players[i].getID() != this.getID()){
@@ -283,7 +284,6 @@ public class GameObject {
 
     }
 
-
     private boolean collision(GameObject gameObject){
 
         //Rectangle intersection
@@ -295,16 +295,9 @@ public class GameObject {
             }
         }
         return true;
-
     }
 
     public void drawFrame(Canvas canvas){
-//        Rect temp = new Rect(
-//                (animationColIndex * cropWidth) ,
-//                (animationRowIndex * cropHeight) ,
-//                (animationColIndex * cropWidth) + cropWidth ,
-//                (animationRowIndex * cropHeight) + cropHeight
-//        );
         canvas.drawBitmap(
                 spriteMap,
                 new Rect(
