@@ -15,4 +15,9 @@ public class InanObject extends GameObject {
         setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.inan_default));
     }
 
+    @Override
+    public void update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type){
+
+    }
+
 }
