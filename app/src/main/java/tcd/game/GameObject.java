@@ -1,0 +1,352 @@
+package tcd.game;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.Paint;
+import android.graphics.Rect;
+
+// TODO: Discuss with team
+// GameObject.Context and Canvas width and heights could be static and set somewhere in game mode
+// to avoid having to pass it in to all of our constructors?
+
+/** Fair bit of redundancy in this class but its all commented out in case we want to use it
+ * TODO: Discuss with team
+ */
+public class GameObject {
+    protected String TAG = "GameObject";
+
+    // Used for generating GameObjects IDS
+    private static int totalGameObjs = 0;
+
+    /** Unique ID for each GameObject */
+    protected int id;
+
+
+    /** Application Context to access Drawable Resources */
+    protected Context context;
+
+    // GameObject properties
+    protected String name;
+    protected Bitmap spriteMap;
+
+    protected int velX,velY;
+    protected int speed;
+
+    /** Box used for updating positions and collision checking */
+    protected Rect collisionBox;
+    protected Rect drawBox;
+
+    /** Width of Screen */
+//    protected int canvasWidth;
+
+    /** Height of Screen */
+//    protected int canvasHeight;
+
+    /** Equivalant rectangle to screen size */
+    protected Rect canvasRect;
+
+    /** Rectangle the size of the map */
+    protected Rect mapRect;
+
+    /** Flag indicating whether object can be passed through */
+    protected boolean collisionOn;
+
+    /** Flag indicating whether this GameObject can move (May be redundant) */
+    protected boolean movable;
+
+    protected boolean moving;
+
+
+    /** SpriteMap row index */
+    protected int animationRowIndex;
+    protected int maxAnimationRowIndex;
+
+    /** SpriteMap Col index */
+    protected int animationColIndex;
+    protected int maxAnimationColIndex;
+
+    protected int loops;
+    protected int animationSpeed;
+
+    protected int spritesWide;
+    protected int spritesTall;
+
+    protected int blink;
+    protected int blink_speed;
+
+//    protected Paint colour;
+
+    protected GameObjectAnimationDirection facing;
+
+    /** Width of SpriteMap column (width each individual sprite) */
+    protected int cropWidth;
+
+    /** Height of SpriteMap row (height of each individual sprite) */
+    protected int cropHeight;
+
+    /** Used if we want to make collision (and thus draw) boxes smaller than crop boxes */
+    protected float drawScaleFactor;
+    protected float colScaleFactor;
+
+
+    /** Calculated by cropHeight and scallFactor */
+    protected int drawWidth;
+    protected int drawHeight;
+
+    /** Fixed  */
+    protected int colWidth;
+    protected int colHeight;
+    protected int colWidthBuffer;
+    protected int colHeightBuffer;
+
+
+    GameObject(){
+        name = "Null-Man";
+
+    }
+
+    /**
+     * Creates a Game Object which contains methods for updating and drawing frames
+     * @param context Application context
+     * @param name Name of Object
+     * @param type The type of GameObject child
+     * @param canvasWidth The width of the screen
+     * @param canvasHeight
+     */
+    GameObject(Context context, String name, GameObjectTypes type,int canvasWidth, int canvasHeight){
+        this.id = totalGameObjs;
+        totalGameObjs++;
+        canvasRect = new Rect(0,0,canvasWidth,canvasHeight);
+        mapRect = canvasRect; //for now
+        this.name = name;
+        this.context = context;
+
+        // Loading default Sprites for each GameObject if not passed in
+        if(type == GameObjectTypes.PLAYER){
+            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default);
+            spritesWide = 10;
+            spritesTall = 8;
+            drawScaleFactor = 0.25f;
+            colScaleFactor = 0.8f;
+            facing = GameObjectAnimationDirection.FACING_RIGHT;
+        } else if (type == GameObjectTypes.INANOBJECT){
+            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.inan_default);
+            spritesWide = 1;
+            spritesTall = 1;
+            drawScaleFactor = 0.5f;
+            colScaleFactor = 0.8f;
+            facing = GameObjectAnimationDirection.FACING_DOWN;
+        } else if(type == GameObjectTypes.NPC){
+            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_default);
+            spritesWide = 10;
+            spritesTall = 8;
+            drawScaleFactor = 0.25f;
+            colScaleFactor = 0.8f;
+            facing = GameObjectAnimationDirection.FACING_DOWN;
+        }
+
+        setCrop(spriteMap.getWidth()/spritesWide,spriteMap.getHeight()/spritesTall);
+        setDraw(cropWidth, cropHeight, drawScaleFactor);
+        setCol(drawWidth, drawHeight, colScaleFactor);
+
+
+        animationColIndex = 0;
+        maxAnimationColIndex = 0;
+        animationRowIndex = 0;
+        animationRowIndex = 0;
+        loops = 0;
+        animationSpeed = 25;
+        blink_speed = 25;
+
+        collisionBox = new Rect(0,0,colWidth,colHeight);
+        drawBox = new Rect (0,0, drawWidth, drawHeight);
+
+        velX = 0;
+        velY = 0;
+        moving = false;
+        speed = 6;
+
+    }
+
+    public void setSprite(Bitmap bitmap){
+        this.spriteMap = bitmap;
+    }
+
+    public void setCrop(int width, int height){
+        this.cropWidth = width;
+        this.cropHeight = height;
+    }
+
+    public void setDraw(int width, int height, float scaleFactor){
+//        this.drawWidth = width;
+//        this.drawHeight = height;
+        this.drawWidth = Math.round(width * scaleFactor);
+        this.drawHeight = Math.round(height * scaleFactor);
+    }
+
+    public void setCol(int width, int height, float scaleFactor){
+        this.colWidth = Math.round(width * scaleFactor);
+        this.colHeight = Math.round(height * scaleFactor);
+        this.colWidthBuffer = Math.round( ( this.drawWidth - this.colWidth ) / 2);
+        this.colHeightBuffer = Math.round( ( this.drawHeight - this.colHeight ) / 2);
+
+    }
+
+    public void setPosX(int posX) {
+        this.drawBox.left = posX;
+        this.drawBox.right = posX + drawWidth;
+
+        this.collisionBox.left = posX + colWidthBuffer;
+        this.collisionBox.right = posX + colWidth + colWidthBuffer;
+    }
+
+    public void setPosY(int posY) {
+        this.drawBox.top = posY;
+        this.drawBox.bottom = posY + drawHeight;
+
+        this.collisionBox.top = posY + colHeightBuffer;
+        this.collisionBox.bottom = posY + colHeight + colHeightBuffer;
+    }
+
+    public void setVelX(int velX) {
+        if(this.velX != velX){
+            loops = 0;
+        }
+        this.velX = velX;
+    }
+
+    public void setVelY(int velY) {
+        if(this.velY != velY){
+            loops = 0;
+        }
+        this.velY = velY;
+    }
+
+    private void move(){
+        drawBox.left += velX*speed;
+        drawBox.right += velX*speed;
+        drawBox.top += velY*speed;
+        drawBox.bottom += velY*speed;
+
+        collisionBox.left += velX*speed;
+        collisionBox.right += velX*speed;
+        collisionBox.top += velY*speed;
+        collisionBox.bottom += velY*speed;
+    }
+
+    private void unmove(){
+        drawBox.left -= velX*speed;
+        drawBox.right -= velX*speed;
+        drawBox.top -= velY*speed;
+        drawBox.bottom -= velY*speed;
+
+        collisionBox.left -= velX*speed;
+        collisionBox.right -= velX*speed;
+        collisionBox.top -= velY*speed;
+        collisionBox.bottom -= velY*speed;
+    }
+
+    public void update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type){
+        //move object by velocity
+        move();
+
+        //check for collision
+        for(int i=0;i<players.length;i++){
+            if(this.collision(players[i])){
+                if(players[i].getID() != this.getID()){
+                    unmove();
+                    return;
+                }
+            }
+        }
+
+        for(int i=0;i<npcs.length;i++){
+            if(this.collision(npcs[i])){
+                if(npcs[i].getID() != this.getID()){
+                    unmove();
+                    return;
+                }
+            }
+        }
+
+        for(int i=0;i<inanObjects.length;i++){
+            if(this.collision(inanObjects[i])){
+                if(inanObjects[i].getID() != this.getID()){
+                    unmove();
+                    return;
+                }
+            }
+        }
+
+    }
+
+    private boolean collision(GameObject gameObject){
+
+        //Rectangle intersection
+        if(canvasRect.contains(this.collisionBox)) {
+            if(this.collisionBox.intersects(gameObject.collisionBox.left,gameObject.collisionBox.top, gameObject.collisionBox.right,gameObject.collisionBox.bottom)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void drawFrame(Canvas canvas){
+        canvas.drawBitmap(
+                spriteMap,
+                new Rect(
+                        (animationColIndex * cropWidth) ,
+                        (animationRowIndex * cropHeight) ,
+                        (animationColIndex * cropWidth) + cropWidth ,
+                        (animationRowIndex * cropHeight) + cropHeight
+                ),
+                drawBox,
+                null
+        );
+    }
+
+    public int getID(){
+        return this.id;
+    }
+
+    public enum GameObjectTypes {
+        PLAYER,
+        NPC,
+        INANOBJECT,
+        TOTAL
+    }
+    public enum GameObjectAnimationDirection {
+        FACING_DOWN,
+        FACING_LEFT,
+        FACING_UP,
+        FACING_RIGHT,
+        MOVING_DOWN,
+        MOVING_LEFT,
+        MOVING_UP,
+        MOVING_RIGHT,
+        TOTAL
+    }
+    public enum GameObjectAnimationMaxIndex {
+        FACING_DOWN(3),
+        FACING_LEFT(3),
+        FACING_UP(1),
+        FACING_RIGHT(3),
+        MOVING_DOWN(10),
+        MOVING_LEFT(10),
+        MOVING_UP(10),
+        MOVING_RIGHT(10),
+        TOTAL(0);
+
+        private int value;
+
+        GameObjectAnimationMaxIndex(int value) {
+            this.value = value;
+        }
+    }
+}
