@@ -17,6 +17,8 @@ public class GameMode {
     // Map should probably have its own class for Reading from file etc
     private Bitmap map;
 
+    private WorldMap worldMap;
+
     // Declare Arrays of our GameObjects
     private InanObject inanObjs[];
     private NPC npcs[];
@@ -81,6 +83,8 @@ public class GameMode {
 
     private void init(double levelID){
 
+        worldMap = new WorldMap(context);
+
         map = BitmapFactory.decodeResource(context.getResources(),R.drawable.map_default);
         players = new Player[1];
         npcs = new NPC[1];
@@ -139,6 +143,9 @@ public class GameMode {
         // Drawing Map -- should be else where possibly
         canvas.drawBitmap(map,null, new Rect(0,0,canvas.getWidth(),canvas.getHeight()), null);
 
+        worldMap.drawFrame(canvas);
+
+       /*
         // Draw InanimateObjects
         for(int i=0;i<inanObjs.length;i++){
             inanObjs[i].drawFrame(canvas);
@@ -153,6 +160,8 @@ public class GameMode {
         for(int i=0;i<players.length;i++) {
             players[i].drawFrame(canvas);
         }
+
+        */
     }
 
     public Player getPlayer(){
