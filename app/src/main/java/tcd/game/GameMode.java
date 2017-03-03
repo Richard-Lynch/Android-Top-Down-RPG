@@ -150,18 +150,18 @@ public class GameMode {
         for(int i=0;i<inanObjs.length;i++){
             inanObjs[i].drawFrame(canvas);
         }
-
+*/
         // Draw Npcs
-        for(int i=0;i<npcs.length;i++){
+/*        for(int i=0;i<npcs.length;i++){
             npcs[i].drawFrame(canvas);
-        }
+        }*/
 
         // Draw Players
         for(int i=0;i<players.length;i++) {
             players[i].drawFrame(canvas);
         }
 
-        */
+
     }
 
     public Player getPlayer(){
