@@ -9,11 +9,6 @@ import android.util.Log;
  * Created by Richard on 09/02/2017.
  */
 
-// Edited by Rowan 5th March
-// changed drawFrame method and edited spritesheet so that we don't have to shuffle that one frame back + forth
-
-
-
 public class AnimateObject extends GameObject{
 
     private static final String TAG = "Player";
@@ -37,35 +32,35 @@ public class AnimateObject extends GameObject{
             if(velX == 1){
                 animationRowIndex = GameObjectAnimationDirection.MOVING_RIGHT.ordinal();//move to the correct row ( animation )
                 facing = GameObjectAnimationDirection.FACING_RIGHT; //set facing direction
-                maxAnimationColIndex = GameObjectAnimationDirection.MOVING_RIGHT.getVal();  //set the number of sprites in the animation
+                maxAnimationColIndex = GameObjectAnimationMaxIndex.MOVING_RIGHT.ordinal();  //set the number of sprites in the animation
             } else if(velX == -1){
                 animationSpeed = 10;
                 animationRowIndex = GameObjectAnimationDirection.MOVING_LEFT.ordinal();
                 facing = GameObjectAnimationDirection.FACING_LEFT;
-                maxAnimationColIndex = GameObjectAnimationDirection.MOVING_LEFT.getVal();
+                maxAnimationColIndex = GameObjectAnimationMaxIndex.MOVING_LEFT.ordinal();
             }else if(velY == 1){
                 animationSpeed = 10;
                 animationRowIndex = GameObjectAnimationDirection.MOVING_DOWN.ordinal();
                 facing = GameObjectAnimationDirection.FACING_DOWN;
-                maxAnimationColIndex = GameObjectAnimationDirection.MOVING_DOWN.getVal();
+                maxAnimationColIndex = GameObjectAnimationMaxIndex.MOVING_DOWN.ordinal();
             } else if(velY == -1){
                 animationRowIndex = GameObjectAnimationDirection.MOVING_UP.ordinal();
                 facing = GameObjectAnimationDirection.FACING_UP;
-                maxAnimationColIndex = GameObjectAnimationDirection.MOVING_UP.getVal();
+                maxAnimationColIndex = GameObjectAnimationMaxIndex.MOVING_UP.ordinal();
             }
             //if we're not moving we're just chillin and blinking and stuff
             else if(facing == GameObjectAnimationDirection.FACING_RIGHT){
                 animationRowIndex = facing.ordinal();//use the facing direction to set the animation row
-                maxAnimationColIndex = GameObjectAnimationDirection.FACING_RIGHT.getVal();  //get the number of sprites in that row
+                maxAnimationColIndex = GameObjectAnimationMaxIndex.FACING_RIGHT.ordinal();  //get the number of sprites in that row
             } else if(facing == GameObjectAnimationDirection.FACING_LEFT){
                 animationRowIndex = facing.ordinal();
-                maxAnimationColIndex = GameObjectAnimationDirection.FACING_LEFT.getVal();
+                maxAnimationColIndex = GameObjectAnimationMaxIndex.FACING_LEFT.ordinal();
             } else if(facing == GameObjectAnimationDirection.FACING_DOWN){
                 animationRowIndex = facing.ordinal();
-                maxAnimationColIndex = GameObjectAnimationDirection.FACING_DOWN.getVal();
+                maxAnimationColIndex = GameObjectAnimationMaxIndex.FACING_DOWN.ordinal();
             } else if(facing == GameObjectAnimationDirection.FACING_UP){
                 animationRowIndex = facing.ordinal();
-                maxAnimationColIndex = GameObjectAnimationDirection.FACING_UP.getVal();
+                maxAnimationColIndex = GameObjectAnimationMaxIndex.FACING_UP.ordinal();
             }
 
             //below we increment the animationColIndex which is the current sprite
@@ -109,11 +104,27 @@ public class AnimateObject extends GameObject{
 
     @Override
     public void drawFrame(Canvas canvas){
-        canvas.drawBitmap( //Draw the sprite to the canvas
-                dividedSpriteMap[animationRowIndex][animationColIndex], null,
+        if(animationRowIndex == 3 && animationColIndex == 1) {
+            drawBox.left += 4;
+            drawBox.right += 4;
+        }
+
+        canvas.drawBitmap(
+                spriteMap,
+                new Rect(
+                        (animationColIndex * cropWidth) + 25,
+                        (animationRowIndex * cropHeight) + 25,
+                        (animationColIndex * cropWidth) + cropWidth -25,
+                        (animationRowIndex * cropHeight) + cropHeight - 15
+                ),
                 drawBox,
                 null
         );
+
+        if(animationRowIndex == 3 && animationColIndex == 1) {
+            drawBox.left -= 4;
+            drawBox.right -= 4;
+        }
     }
 
     //Setters

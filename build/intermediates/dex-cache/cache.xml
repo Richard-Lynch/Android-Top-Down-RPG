@@ -2,112 +2,130 @@
 <items version="2" >
 
     <item
-        is-multidex="false"
-        jar="C:\Users\University\AppData\Local\Android\sdk\extras\m2repository\com\android\support\constraint\constraint-layout-solver\1.0.0-beta4\constraint-layout-solver-1.0.0-beta4.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.0"
-        sha1="0a9cb567dc008f570c28531720168f19148da965">
-        <dex dex="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\pre-dexed\debug\constraint-layout-solver-1.0.0-beta4_4306d0439bf14762d87e5a2111c28ab3a5d119fb.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\exploded-aar\com.android.support\support-v4\25.1.0\jars\classes.jar"
-        jumboMode="false"
+        is-multidex="true"
+        jar="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/exploded-aar/com.android.support/support-v4/25.1.0/jars/classes.jar"
+        jumboMode="true"
         optimize="true"
         revision="25.0.0"
         sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
-        <dex dex="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\pre-dexed\debug\com.android.support-support-v4-25.1.0_478204d1087eaaefb1b65eac1a56084369b7cd47.jar" />
+        <dex dex="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-v4-25.1.0_43cf376e12eb63a2487b1d56917999173e0abc8e/classes.dex" />
     </item>
     <item
-        is-multidex="false"
-        jar="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\exploded-aar\com.android.support\support-fragment\25.1.0\jars\classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.0"
-        sha1="2a53c4f3518116b8c6aee0e477233f0f7da8616f">
-        <dex dex="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\pre-dexed\debug\com.android.support-support-fragment-25.1.0_97a536921522eb84e483b6fd3cdf84999de6af38.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\exploded-aar\com.android.support\support-core-utils\25.1.0\jars\classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.0"
-        sha1="0a0ef86b7fa568a52bf6214a0326ca1f1d618da7">
-        <dex dex="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\pre-dexed\debug\com.android.support-support-core-utils-25.1.0_04b3f2e9675673ee3d9fc511747ea02e54f360a8.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\exploded-aar\com.android.support\support-media-compat\25.1.0\jars\classes.jar"
-        jumboMode="false"
+        is-multidex="true"
+        jar="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/exploded-aar/com.android.support/support-media-compat/25.1.0/jars/classes.jar"
+        jumboMode="true"
         optimize="true"
         revision="25.0.0"
         sha1="f02263e35e52668dd17b73bf961437e3d562b35f">
-        <dex dex="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\pre-dexed\debug\com.android.support-support-media-compat-25.1.0_fc312e694c0e4e053c79956dd9f5670df61187f3.jar" />
+        <dex dex="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-media-compat-25.1.0_88a3a3325797f9cf4861c03e4bda8329166965aa/classes.dex" />
     </item>
     <item
-        is-multidex="false"
-        jar="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\exploded-aar\com.android.support\support-core-ui\25.1.0\jars\classes.jar"
-        jumboMode="false"
+        is-multidex="true"
+        jar="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
         optimize="true"
         revision="25.0.0"
-        sha1="aee64634871d88a419d59eb743c1258a60f19700">
-        <dex dex="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\pre-dexed\debug\com.android.support-support-core-ui-25.1.0_54cb865320def3e9d92f699763b49e00c5a71804.jar" />
+        sha1="a26836ed48e8e037576341b81d6f17c675858269">
+        <dex dex="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_a7fb52ee4857fddfb25ff25733ac7adffdf14fe8/classes.dex" />
     </item>
     <item
-        is-multidex="false"
-        jar="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\exploded-aar\com.android.support\support-vector-drawable\25.1.0\jars\classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.0"
-        sha1="e79aa3d9a16f8c9f16377c0608de70a8f31e5d80">
-        <dex dex="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\pre-dexed\debug\com.android.support-support-vector-drawable-25.1.0_657d61502e52238e8f7784abeb7a609e8d0bf0f9.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\exploded-aar\com.android.support.constraint\constraint-layout\1.0.0-beta4\jars\classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.0"
-        sha1="662d7533b25a666c649c10a16b42edfb95f25a4f">
-        <dex dex="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\pre-dexed\debug\com.android.support.constraint-constraint-layout-1.0.0-beta4_8c1d11f906f30f2aac588e0e40685f36759cb57e.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\exploded-aar\com.android.support\support-compat\25.1.0\jars\classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.0"
-        sha1="ca3c7aa31e2726a400a6e552b93cb9f63c9a1e6d">
-        <dex dex="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\pre-dexed\debug\com.android.support-support-compat-25.1.0_6ac13257b2b76afb42f4572e6dc6d519826e755d.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\25.1.0\jars\classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.0"
-        sha1="1630658fbc2d222b988603c27b4a4249586fbfe7">
-        <dex dex="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\pre-dexed\debug\com.android.support-appcompat-v7-25.1.0_1be86ac4e7627679561e5300d35a637a81527f7c.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="C:\Users\University\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\25.1.0\support-annotations-25.1.0.jar"
-        jumboMode="false"
+        is-multidex="true"
+        jar="/Users/Richard/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/25.1.0/support-annotations-25.1.0.jar"
+        jumboMode="true"
         optimize="true"
         revision="25.0.0"
         sha1="64cb6b229a8bdfd907bc8dd46839a0053e4c018d">
-        <dex dex="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\pre-dexed\debug\support-annotations-25.1.0_d034a9a608b87e3c4d592fd6d11d60cc22eb45f2.jar" />
+        <dex dex="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10/support-annotations-25.1.0_9b7c837137ab951570d3b6db1f589606e949577a/classes.dex" />
     </item>
     <item
-        is-multidex="false"
-        jar="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\25.1.0\jars\classes.jar"
-        jumboMode="false"
+        is-multidex="true"
+        jar="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="175152aec00691052e2ddebbe9aa317d385dae89">
+        <dex dex="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_09ec71bd40bcf78a3b1c263c163a09e6c506b932/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/exploded-aar/com.android.support/support-core-ui/25.1.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="aee64634871d88a419d59eb743c1258a60f19700">
+        <dex dex="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-core-ui-25.1.0_df67dcfdad946cde8943a3f7ef0d2403fb67b042/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/exploded-aar/com.android.support/support-core-utils/25.1.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="0a0ef86b7fa568a52bf6214a0326ca1f1d618da7">
+        <dex dex="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-core-utils-25.1.0_30101e9c2450e4dfa470fd23c5405ea5df972fe5/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/25.1.0/jars/classes.jar"
+        jumboMode="true"
         optimize="true"
         revision="25.0.0"
         sha1="6fb6ac3e8d3b9013819920d9ea11f3803c4c0033">
-        <dex dex="C:\Users\University\AndroidStudioProjects\MasterAnimationFPSFix\app\build\intermediates\pre-dexed\debug\com.android.support-animated-vector-drawable-25.1.0_da09ebe45ee29f88d0cc3c97e620ae9cdd4791dd.jar" />
+        <dex dex="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-animated-vector-drawable-25.1.0_9a7ba374c73a38ad4c24b829832d0d32e7d1d9c5/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/25.1.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="1630658fbc2d222b988603c27b4a4249586fbfe7">
+        <dex dex="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-appcompat-v7-25.1.0_e3014865c4c6baca22f2450656c5bde06b8a6f70/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Richard/Library/Android/sdk/extras/m2repository/com/android/support/constraint/constraint-layout-solver/1.0.0-beta4/constraint-layout-solver-1.0.0-beta4.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="0a9cb567dc008f570c28531720168f19148da965">
+        <dex dex="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10/constraint-layout-solver-1.0.0-beta4_afac588a0d9be489fa8ac8d2d418fce81d2a5d0b/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/exploded-aar/com.android.support/support-fragment/25.1.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="2a53c4f3518116b8c6aee0e477233f0f7da8616f">
+        <dex dex="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-fragment-25.1.0_340cfd7b2a42200d5fcc4e347fbd0197f5fc5991/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/exploded-aar/com.android.support/support-compat/25.1.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="ca3c7aa31e2726a400a6e552b93cb9f63c9a1e6d">
+        <dex dex="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-compat-25.1.0_b9d51ef3db4050ff8df384b5eb0ea089b6abe118/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/exploded-aar/com.android.support.constraint/constraint-layout/1.0.0-beta4/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="662d7533b25a666c649c10a16b42edfb95f25a4f">
+        <dex dex="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support.constraint-constraint-layout-1.0.0-beta4_0686d1e2ae82d67af1c63ea8fa9500ea6f5c4be7/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/25.1.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="e79aa3d9a16f8c9f16377c0608de70a8f31e5d80">
+        <dex dex="/Users/Richard/AndroidStudioProjects/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-vector-drawable-25.1.0_594a66ae26835722383124c8492997ad35d2dc60/classes.dex" />
     </item>
 
 </items>
