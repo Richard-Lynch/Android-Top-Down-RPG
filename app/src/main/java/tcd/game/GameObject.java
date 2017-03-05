@@ -16,6 +16,12 @@ import android.graphics.Rect;
 /** Fair bit of redundancy in this class but its all commented out in case we want to use it
  * TODO: Discuss with team
  */
+
+// added by Rowan 5th March
+// Changes to GameObjectAnimationMaxIndex and addition of dividedSpriteMap
+// GameObjectAnimationMaxIndex removed since can just get ordinal of GameObjectAnimationDirection
+
+
 public class GameObject {
     protected String TAG = "GameObject";
 
@@ -32,6 +38,7 @@ public class GameObject {
     // GameObject properties
     protected String name;
     protected Bitmap spriteMap;
+    protected Bitmap [][]dividedSpriteMap; // 2-d array containing a bitmap for each frame of animation
 
     protected int velX,velY;
     protected int speed;
@@ -149,7 +156,7 @@ public class GameObject {
             facing = GameObjectAnimationDirection.FACING_DOWN;
         }
 
-        setCrop(spriteMap.getWidth()/spritesWide,spriteMap.getHeight()/spritesTall);
+        setCrop(spriteMap.getWidth()/spritesWide,spriteMap.getHeight()/spritesTall); //sets the sprite width and height variables
         setDraw(cropWidth, cropHeight, drawScaleFactor);
         setCol(drawWidth, drawHeight, colScaleFactor);
 
@@ -157,10 +164,18 @@ public class GameObject {
         animationColIndex = 0;
         maxAnimationColIndex = 0;
         animationRowIndex = 0;
-        animationRowIndex = 0;
         loops = 0;
         animationSpeed = 25;
         blink_speed = 25;
+
+        dividedSpriteMap = new Bitmap[spritesTall][spritesWide]; //This 2-d array will store the split up frames from the sprite sheet
+
+        // Divide up sprite sheet into 2d array of Bitmap objects for each individual sprite
+        for (int i = 0; i < spritesTall; i++){
+            for (int j = 0; j < spritesWide; j++){
+                dividedSpriteMap[i][j] = Bitmap.createBitmap(spriteMap, j*spriteMap.getWidth()/spritesWide, i*spriteMap.getHeight()/spritesTall, spriteMap.getWidth()/spritesWide, spriteMap.getHeight()/spritesTall);
+            }
+        }
 
         collisionBox = new Rect(0,0,colWidth,colHeight);
         drawBox = new Rect (0,0, drawWidth, drawHeight);
@@ -299,13 +314,7 @@ public class GameObject {
 
     public void drawFrame(Canvas canvas){
         canvas.drawBitmap(
-                spriteMap,
-                new Rect(
-                        (animationColIndex * cropWidth) ,
-                        (animationRowIndex * cropHeight) ,
-                        (animationColIndex * cropWidth) + cropWidth ,
-                        (animationRowIndex * cropHeight) + cropHeight
-                ),
+                dividedSpriteMap[animationRowIndex][animationColIndex], null,
                 drawBox,
                 null
         );
@@ -321,18 +330,8 @@ public class GameObject {
         INANOBJECT,
         TOTAL
     }
-    public enum GameObjectAnimationDirection {
-        FACING_DOWN,
-        FACING_LEFT,
-        FACING_UP,
-        FACING_RIGHT,
-        MOVING_DOWN,
-        MOVING_LEFT,
-        MOVING_UP,
-        MOVING_RIGHT,
-        TOTAL
-    }
-    public enum GameObjectAnimationMaxIndex {
+
+    public enum GameObjectAnimationDirection { //NB This only applies to NPC and Player Spritesheets
         FACING_DOWN(3),
         FACING_LEFT(3),
         FACING_UP(1),
@@ -345,8 +344,10 @@ public class GameObject {
 
         private int value;
 
-        GameObjectAnimationMaxIndex(int value) {
+        GameObjectAnimationDirection(int value) {
             this.value = value;
         }
+
+        public int getVal(){return value;} // to return the values in the brackets
     }
 }
