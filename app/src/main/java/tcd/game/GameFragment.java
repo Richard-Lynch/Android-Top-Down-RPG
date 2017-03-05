@@ -53,6 +53,7 @@ public class GameFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         gameInitialized = false;
         gameRenderer = new GameRenderer(getActivity(), TARGET_FPS);
+
         createControls();
 
         //Fps Monitor
@@ -102,7 +103,12 @@ public class GameFragment extends Fragment{
             public void onGlobalLayout() {
                 int width = getView().getWidth();
                 int height = getView().getHeight();
-                initializeGameMode(width, height);
+                Log.d(TAG,"GameFram calling initialize game Mode()");
+                //TODO: Fix bug where this is called twice
+                if(!gameInitialized) {
+                    // Note gameInitialized is set to true in initializeGameMode()
+                    initializeGameMode(width, height);
+                }
             }
         });
     }
@@ -274,7 +280,7 @@ public class GameFragment extends Fragment{
                         postInvalidate();
                     }
                 } catch (NullPointerException npe) {
-                    Log.d(TAG, "NPE while updating " + npe.getMessage());
+                    //Log.d(TAG, "NPE while updating " + npe.getMessage());
                 }
 
 
@@ -321,10 +327,12 @@ public class GameFragment extends Fragment{
          * Called from GameFragment lifecycle hook overrides
          */
         public void pause() {
+            Log.d(TAG,"Pausing");
             running = false;
             while (true) {
                 try {
                     updateThread.join();
+                    Log.d(TAG,"thread sucessfully joined");
                     return;
                 } catch (InterruptedException e) {
                     Log.d(TAG, "Thread interupted onPause(): " + e.getMessage());
@@ -337,6 +345,7 @@ public class GameFragment extends Fragment{
          */
         public void resume() {
             running = true;
+            Log.d(TAG,"Starting Update thread");
             updateThread = new Thread(this);
             updateThread.start();
         }

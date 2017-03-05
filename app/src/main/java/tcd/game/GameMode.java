@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.util.Log;
 
 
 public class GameMode {
@@ -42,24 +43,9 @@ public class GameMode {
      * @param context application context
      */
     GameMode(Context context){
+        Log.d(TAG,"GamemodeConstructor");
         this.context = context;
     }
-
-
-    /**
-     * Creates and Initializes a Game Mode
-     * @param context application context
-     * @param canvasWidth screen width
-     * @param canvasHeight screen height
-     */
-    GameMode(Context context, int canvasWidth, int canvasHeight){
-        this.context = context;
-        this.canvasHeight = canvasHeight;
-        this.canvasWidth = canvasWidth;
-        init(0);
-    }
-
-
 
 
 
@@ -77,13 +63,14 @@ public class GameMode {
         this.canvasWidth = screenWidth;
         this.canvasHeight = screenHeight;
         init(0);
+        Log.d(TAG,"gamemode.initialize()");
     }
 
 
 
     private void init(double levelID){
-
-        worldMap = new WorldMap(context);
+        Log.d(TAG,"gamemode.init()");
+        worldMap = new WorldMap(context,canvasWidth,canvasHeight);
 
         map = BitmapFactory.decodeResource(context.getResources(),R.drawable.map_default);
         players = new Player[1];
@@ -157,9 +144,9 @@ public class GameMode {
         }*/
 
         // Draw Npcs
-        for(int i=0;i<npcs.length;i++){
+/*        for(int i=0;i<npcs.length;i++){
             npcs[i].drawFrame(canvas);
-        }
+        }*/
 
         // Draw Players
         for(int i=0;i<players.length;i++) {
