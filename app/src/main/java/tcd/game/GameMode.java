@@ -141,20 +141,25 @@ public class GameMode {
     public void drawFrame(Canvas canvas){
 
         // Drawing Map -- should be else where possibly
-        canvas.drawBitmap(map,null, new Rect(0,0,canvas.getWidth(),canvas.getHeight()), null);
+        //canvas.drawBitmap(map,null, new Rect(0,0,canvas.getWidth(),canvas.getHeight()), null);
 
-        worldMap.drawFrame(canvas);
+        // The source rectangle would come from camera class which should contain instance of worldMap?
+        int x = 0;
+        int y = 0;
+        Rect src = new Rect(x,y,x+canvasWidth,y+canvasHeight);
+//        canvas.drawBitmap(worldMap.map,src,new Rect(0,0,canvasWidth,canvasHeight),null);
+        worldMap.drawFrame(canvas,src);
 
-       /*
-        // Draw InanimateObjects
-        for(int i=0;i<inanObjs.length;i++){
+
+       // Draw InanimateObjects
+/*        for(int i=0;i<inanObjs.length;i++){
             inanObjs[i].drawFrame(canvas);
-        }
-*/
-        // Draw Npcs
-/*        for(int i=0;i<npcs.length;i++){
-            npcs[i].drawFrame(canvas);
         }*/
+
+        // Draw Npcs
+        for(int i=0;i<npcs.length;i++){
+            npcs[i].drawFrame(canvas);
+        }
 
         // Draw Players
         for(int i=0;i<players.length;i++) {
