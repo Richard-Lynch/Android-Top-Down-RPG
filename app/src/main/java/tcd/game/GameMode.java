@@ -5,6 +5,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.util.Log;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class GameMode {
@@ -21,6 +26,9 @@ public class GameMode {
     private InanObject inanObjs[];
     private NPC npcs[];
     private Player players[];
+    private Map<Integer, Player> ObjMap = new HashMap<Integer, Player>(200);
+    private Map<Integer[2], Integer> PosMap = new HashMap<Integer[2], Integer>(200);
+
 
     // Probably should have OpenWorld and Battle Classes  which extend this so dont need flag
     // private boolean battle;
@@ -86,25 +94,34 @@ public class GameMode {
         npcs = new NPC[1];
         inanObjs = new InanObject[1];
 
-
         players[0] = new Player(context,"Donal", canvasWidth, canvasHeight);
         npcs[0] = new NPC(context,"Frank",canvasWidth, canvasHeight);
         inanObjs[0] = new InanObject(context,"House",canvasWidth,canvasHeight);
-        players[0].setPosX(40);
-        players[0].setPosY(50);
-        players[0].setVelX(0);
-        players[0].setVelY(0);
+//        players[0].setPosX(40);
+//        players[0].setPosY(50);
+//        players[0].setVelX(0);
+//        players[0].setVelY(0);
+        players[0].setGridPos(3,2);
         players[0].setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default));
+        ObjMap.put(players[0].getID(), players[0]);
+        Player test = ObjMap.get(players[0].getID());
+        int testint = ObjMap.get(players[0].getID()).getID();
+        Log.d(TAG,"Real Player ID:" + players[0].getID());
+        Log.d(TAG,"Test Player ID:" + test.getID());
+        Log.d(TAG,"Ref Player ID:" + testint);
 
-        npcs[0].setPosX(700);
-        npcs[0].setPosY(300);
+//        npcs[0].setPosX(700);
+//        npcs[0].setPosY(300);
+        npcs[0].setGridPos(4,4);
         npcs[0].setVelX(1);
         npcs[0].setVelY(0);
+        ObjMap.put(npcs[0].getID(), players[0]);
 
         inanObjs[0].setPosX(600);
         inanObjs[0].setPosY(20);
         inanObjs[0].setVelX(0);
         inanObjs[0].setVelY(0);
+        ObjMap.put(inanObjs[0].getID(), players[0]);
 
     }
 
