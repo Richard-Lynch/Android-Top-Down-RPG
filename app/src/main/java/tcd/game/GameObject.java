@@ -4,9 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
 
@@ -140,7 +137,7 @@ public class GameObject {
         this.id = totalGameObjs;
         totalGameObjs++;
         canvasRect = new Rect(0,0,canvasWidth,canvasHeight);
-        mapRect = canvasRect; //for now
+        mapRect = new Rect(0,0,canvasWidth*3,canvasHeight*3);
         this.name = name;
         this.context = context;
         // Loading default Sprites for each GameObject if not passed in
@@ -292,7 +289,7 @@ public class GameObject {
         //move object by velocity
         if(this.moving){
             if(gridUnset){
-                if((goalX < 0 || goalX+drawWidth > canvasRect.right) || (goalY < 0 || goalY+drawHeight > canvasRect.bottom)){
+                if((goalX < 0 || goalX+drawWidth > mapRect.right) || (goalY < 0 || goalY+drawHeight > mapRect.bottom)){
                     this.moving = false;
                     deltaX = deltaY = 0;
                     velX = velY = 0;
