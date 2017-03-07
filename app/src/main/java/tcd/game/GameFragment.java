@@ -97,13 +97,17 @@ public class GameFragment extends Fragment{
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Log.d(TAG, "Initializing: in onActCreate");
+
         getView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
+                Log.d(TAG, "Initializing: in onGlobalLayout");
                 int width = getView().getWidth();
                 int height = getView().getHeight();
                 createControls(width, height);
                 initializeGameMode(width, height);
+                getView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
     }
@@ -155,7 +159,8 @@ public class GameFragment extends Fragment{
     }
 
 
-    /***********************************************************************************
+    /*
+     **********************************************************************************
      * Main Game Methods
      ***********************************************************************************/
 
@@ -267,7 +272,7 @@ public class GameFragment extends Fragment{
         public void run() {
             Log.d(TAG, "Run Method starting");
             while (!gameInitialized) {
-
+                Log.d(TAG, "Waiting for game to Initialise");
             }
             while (running) {
 //                    Log.d(TAG,"GameLoop Starting");

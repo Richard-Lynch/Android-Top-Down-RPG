@@ -8,6 +8,11 @@ import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.Log;
+
+import java.util.Map;
+
+import static java.lang.Math.abs;
 
 // TODO: Discuss with team
 // GameObject.Context and Canvas width and heights could be static and set somewhere in game mode
@@ -66,6 +71,13 @@ public class GameObject {
     protected boolean movable;
 
     protected boolean moving;
+    protected int goalX, goalY;
+    protected int deltaX, deltaY;
+    protected int gridSize, gridWide,gridHeight;
+    protected int gridX, gridY;
+    protected boolean gridUnset;
+    protected boolean collided;
+
 
 
     /** SpriteMap row index */
@@ -105,10 +117,10 @@ public class GameObject {
     protected int drawHeight;
 
     /** Fixed  */
-    protected int colWidth;
-    protected int colHeight;
-    protected int colWidthBuffer;
-    protected int colHeightBuffer;
+//    protected int colWidth;
+//    protected int colHeight;
+//    protected int colWidthBuffer;
+//    protected int colHeightBuffer;
 
 
     GameObject(){
@@ -131,43 +143,65 @@ public class GameObject {
         mapRect = canvasRect; //for now
         this.name = name;
         this.context = context;
-
         // Loading default Sprites for each GameObject if not passed in
         if(type == GameObjectTypes.PLAYER){
-            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default);
+//            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default);
             spritesWide = 10;
             spritesTall = 8;
             drawScaleFactor = 0.25f;
-            colScaleFactor = 0.8f;
+            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default));
             facing = GameObjectAnimationDirection.FACING_RIGHT;
         } else if (type == GameObjectTypes.INANOBJECT){
-            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.inan_default);
+//            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.inan_default);
             spritesWide = 1;
             spritesTall = 1;
             drawScaleFactor = 0.5f;
-            colScaleFactor = 0.8f;
+            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.inan_default));
             facing = GameObjectAnimationDirection.FACING_DOWN;
         } else if(type == GameObjectTypes.NPC){
-            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_default);
+//            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_default);
             spritesWide = 10;
             spritesTall = 8;
             drawScaleFactor = 0.25f;
-            colScaleFactor = 0.8f;
+            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_default));
             facing = GameObjectAnimationDirection.FACING_DOWN;
         }
 
-        setCrop(spriteMap.getWidth()/spritesWide,spriteMap.getHeight()/spritesTall); //sets the sprite width and height variables
-        setDraw(cropWidth, cropHeight, drawScaleFactor);
-        setCol(drawWidth, drawHeight, colScaleFactor);
-
-
+//hard coded constants ( may be passed from map read, but probably the same for all sprites ( maybe not for Inan? )
         animationColIndex = 0;
         maxAnimationColIndex = 0;
         animationRowIndex = 0;
         loops = 0;
-        animationSpeed = 25;
-        blink_speed = 25;
+        animationSpeed = 8;
+        blink_speed = 16;
 
+
+        //grid
+// should really call a draw width here
+        //TODO should call a setDraw method here
+        //TODO idealy we want to do something with aspect ratio here
+        int cells_wide = 32;
+        int cells_tall = 18;
+        drawWidth = canvasWidth/cells_wide;
+        drawHeight = canvasHeight/cells_tall;
+        gridSize = drawWidth;
+
+        collided  = false;
+
+        setCrop(spriteMap.getWidth()/spritesWide,spriteMap.getHeight()/spritesTall); //sets the sprite width and height variables
+
+        drawBox = new Rect (0,0, drawWidth, drawHeight);
+
+        velX = 0;
+        velY = 0;
+        this.moving = false;
+        speed = 6;
+
+    }
+
+
+    public void setSprite(Bitmap bitmap){
+        this.spriteMap = bitmap;
         dividedSpriteMap = new Bitmap[spritesTall][spritesWide]; //This 2-d array will store the split up frames from the sprite sheet
 
         // Divide up sprite sheet into 2d array of Bitmap objects for each individual sprite
@@ -176,19 +210,6 @@ public class GameObject {
                 dividedSpriteMap[i][j] = Bitmap.createBitmap(spriteMap, j*spriteMap.getWidth()/spritesWide, i*spriteMap.getHeight()/spritesTall, spriteMap.getWidth()/spritesWide, spriteMap.getHeight()/spritesTall);
             }
         }
-
-        collisionBox = new Rect(0,0,colWidth,colHeight);
-        drawBox = new Rect (0,0, drawWidth, drawHeight);
-
-        velX = 0;
-        velY = 0;
-        moving = false;
-        speed = 6;
-
-    }
-
-    public void setSprite(Bitmap bitmap){
-        this.spriteMap = bitmap;
     }
 
     public void setCrop(int width, int height){
@@ -196,120 +217,111 @@ public class GameObject {
         this.cropHeight = height;
     }
 
-    public void setDraw(int width, int height, float scaleFactor){
-//        this.drawWidth = width;
-//        this.drawHeight = height;
-        this.drawWidth = Math.round(width * scaleFactor);
-        this.drawHeight = Math.round(height * scaleFactor);
+    public void setGridPos(int posX, int posY) {
+        this.setGridX(posX);
+        this.setGridY(posY);
     }
 
-    public void setCol(int width, int height, float scaleFactor){
-        this.colWidth = Math.round(width * scaleFactor);
-        this.colHeight = Math.round(height * scaleFactor);
-        this.colWidthBuffer = Math.round( ( this.drawWidth - this.colWidth ) / 2);
-        this.colHeightBuffer = Math.round( ( this.drawHeight - this.colHeight ) / 2);
-
+    public void setGridX(int posX) {
+        this.gridX = posX;
+        this.drawBox.left = posX*drawWidth;
+        this.drawBox.right = this.drawBox.left + drawWidth;
     }
 
-    public void setPosX(int posX) {
-        this.drawBox.left = posX;
-        this.drawBox.right = posX + drawWidth;
-
-        this.collisionBox.left = posX + colWidthBuffer;
-        this.collisionBox.right = posX + colWidth + colWidthBuffer;
-    }
-
-    public void setPosY(int posY) {
-        this.drawBox.top = posY;
-        this.drawBox.bottom = posY + drawHeight;
-
-        this.collisionBox.top = posY + colHeightBuffer;
-        this.collisionBox.bottom = posY + colHeight + colHeightBuffer;
+    public void setGridY(int posY) {
+        this.gridY = posY;
+        this.drawBox.top = posY*drawHeight;
+        this.drawBox.bottom = this.drawBox.top + drawHeight;
     }
 
     public void setVelX(int velX) {
-        if(this.velX != velX){
-            loops = 0;
+        if(this.velX != velX && !this.moving){
+            if(!this.collided){
+                this.loops = 0;
+            }
+            this.moving = true;
+            this.gridUnset = true;
+            this.velX = velX;
+
+            this.deltaX = drawWidth*velX;
+            this.deltaY = drawHeight*velY;
+
+            this.goalX = this.drawBox.left + drawWidth*velX;
+            this.goalY = this.drawBox.top + drawHeight*velY;
         }
-        this.velX = velX;
     }
 
     public void setVelY(int velY) {
-        if(this.velY != velY){
-            loops = 0;
+        if(this.velY != velY && !this.moving){
+            if(!this.collided){
+                this.loops = 0;
+            }
+            this.moving = true;
+            this.gridUnset = true;
+            this.velY = velY;
+
+            this.deltaX = drawWidth*velX;
+            this.deltaY = drawHeight*velY;
+
+            this.goalX = this.drawBox.left + drawWidth*velX;
+            this.goalY = this.drawBox.top + drawHeight*velY;
         }
-        this.velY = velY;
+    }
+
+    public Coordinates getCoordinates(){
+        return new Coordinates(this.gridX, this.gridY);
     }
 
     private void move(){
-        drawBox.left += velX*speed;
-        drawBox.right += velX*speed;
-        drawBox.top += velY*speed;
-        drawBox.bottom += velY*speed;
+        if(moving){
+            if((abs(deltaX) <= abs(velX*speed) && abs(deltaY) <= abs(velY*speed))) {    //prevents overshoot
+                drawBox.offset(deltaX, deltaY);
+                deltaX = deltaY = 0;
+                velX = velY = 0;
+                this.moving = false;
 
-        collisionBox.left += velX*speed;
-        collisionBox.right += velX*speed;
-        collisionBox.top += velY*speed;
-        collisionBox.bottom += velY*speed;
+            }else{
+                drawBox.offset(velX*speed, velY*speed);
+                deltaX -= velX*speed;
+                deltaY -= velY*speed;
+            }
+        }
     }
 
-    private void unmove(){
-        drawBox.left -= velX*speed;
-        drawBox.right -= velX*speed;
-        drawBox.top -= velY*speed;
-        drawBox.bottom -= velY*speed;
-
-        collisionBox.left -= velX*speed;
-        collisionBox.right -= velX*speed;
-        collisionBox.top -= velY*speed;
-        collisionBox.bottom -= velY*speed;
-    }
-
-    public void update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type){
+    public void update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type, Map<Integer, Integer> colMap, Map<Integer, GameObject> objMap){
         //move object by velocity
-        move();
+        if(this.moving){
+            if(gridUnset){
+                if((goalX < 0 || goalX+drawWidth > canvasRect.right) || (goalY < 0 || goalY+drawHeight > canvasRect.bottom)){
+                    this.moving = false;
+                    deltaX = deltaY = 0;
+                    velX = velY = 0;
+                    this.collided = true;
 
-        //check for collision
-        for(int i=0;i<players.length;i++){
-            if(this.collision(players[i])){
-                if(players[i].getID() != this.getID()){
-                    unmove();
-                    return;
                 }
-            }
-        }
+                else if(colMap.get(new Coordinates(this.gridX+this.velX, this.gridY+this.velY).hashCode()) == (null)){
+                    this.collided = false;
+                    Log.d(TAG, "no item in front of me! setting new grid Pos");
+                    colMap.put(new Coordinates(this.gridX,this.gridY).hashCode(), null);
+                    this.gridX += velX;
+                    this.gridY += velY;
+                    Log.d(TAG, "now im at "+ gridX + " " + gridY);
+                    colMap.put(new Coordinates(this.gridX,this.gridY).hashCode(), this.getID());
+                    Log.d(TAG, "I stored my grid pos");
+                    move();
+                }else if(colMap.get(new Coordinates(this.gridX+velX, this.gridY+velY).hashCode()) != this.getID()){
+                    this.collided = true;
+                    Log.d(TAG, "oh DAMN item in front of me! not moving");
+                    velX = velY = 0;
+                    moving = false;
 
-        for(int i=0;i<npcs.length;i++){
-            if(this.collision(npcs[i])){
-                if(npcs[i].getID() != this.getID()){
-                    unmove();
-                    return;
                 }
+                gridUnset = false;
+            }
+            else{
+                move();
             }
         }
-
-        for(int i=0;i<inanObjects.length;i++){
-            if(this.collision(inanObjects[i])){
-                if(inanObjects[i].getID() != this.getID()){
-                    unmove();
-                    return;
-                }
-            }
-        }
-
-    }
-
-    private boolean collision(GameObject gameObject){
-
-        //Rectangle intersection
-        if(canvasRect.contains(this.collisionBox)) {
-            if(this.collisionBox.intersects(gameObject.collisionBox.left,gameObject.collisionBox.top, gameObject.collisionBox.right,gameObject.collisionBox.bottom)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return true;
     }
 
     public void drawFrame(Canvas canvas){
