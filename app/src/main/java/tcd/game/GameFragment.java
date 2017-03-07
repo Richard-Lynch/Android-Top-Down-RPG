@@ -32,7 +32,7 @@ public class GameFragment extends Fragment{
 
     // Controls
     private Rect upRect, downRect,leftRect,rightRect;
-    private Bitmap controlIcon;
+    private Bitmap controlIconUp, controlIconDown, controlIconLeft, controlIconRight;
 
     // As the game loop runs on separate thread, it starts before objects get fully initialized
     // We can let it loop but block the updating and drawing until it is ready
@@ -53,7 +53,7 @@ public class GameFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         gameInitialized = false;
         gameRenderer = new GameRenderer(getActivity(), TARGET_FPS);
-        createControls();
+
 
         //Fps Monitor
         time = 0;
@@ -105,6 +105,7 @@ public class GameFragment extends Fragment{
                 Log.d(TAG, "Initializing: in onGlobalLayout");
                 int width = getView().getWidth();
                 int height = getView().getHeight();
+                createControls(width, height);
                 initializeGameMode(width, height);
                 getView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
@@ -128,20 +129,33 @@ public class GameFragment extends Fragment{
     /***********************************************************************************
      * Controls
      **********************************************************************************/
-    private void createControls(){
-        controlIcon = BitmapFactory.decodeResource(getResources(),R.drawable.truck);
-        upRect = new Rect(80,360,140,420);
-        downRect = new Rect(80,500,140,560);
-        leftRect = new Rect(20,430,80,490);
-        rightRect = new Rect(140,430,200,490);
+    private void createControls(int width, int height){
+        controlIconUp = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_up);
+        controlIconDown = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_down);
+        controlIconLeft = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_left);
+        controlIconRight = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_right);
 
+        // Size of a single direction button is 1/18th of max screen size,
+        // since that device is forced in landscape mode
+        int eleSize = (int) (width / 18.0);
+
+        // Elements are drawn a half element away from the screen,
+        // in the bottom left corner.
+        int eleScreenOffset = (int) (eleSize / 2.0);
+        height -= eleScreenOffset;
+
+        // left top right bottom
+        downRect = new Rect(eleScreenOffset + eleSize * 1, height - (eleSize * 1), eleScreenOffset + eleSize * 2, height - (eleSize * 0));
+        upRect = new Rect(eleScreenOffset + eleSize * 1, height - (eleSize * 3), eleScreenOffset + eleSize * 2, height - (eleSize * 2));
+        leftRect = new Rect(eleScreenOffset + eleSize * 0, height - (eleSize * 2), eleScreenOffset + eleSize * 1, height - (eleSize * 1));
+        rightRect = new Rect(eleScreenOffset + eleSize * 2, height - (eleSize * 2), eleScreenOffset + eleSize * 3, height - (eleSize * 1));
     }
 
-    private void drawControls(Canvas canvas){
-        canvas.drawBitmap(controlIcon,null,upRect,null);
-        canvas.drawBitmap(controlIcon,null,downRect,null);
-        canvas.drawBitmap(controlIcon,null,rightRect,null);
-        canvas.drawBitmap(controlIcon,null,leftRect,null);
+    private void drawControls(Canvas canvas) {
+        canvas.drawBitmap(controlIconUp, null, upRect, null);
+        canvas.drawBitmap(controlIconDown, null, downRect, null);
+        canvas.drawBitmap(controlIconRight, null, rightRect, null);
+        canvas.drawBitmap(controlIconLeft, null, leftRect, null);
     }
 
 
