@@ -137,7 +137,7 @@ public class GameMode {
 
 //        inanObjs[0].setPosX(600);
 //        inanObjs[0].setPosY(20);
-        inanObjs[0].setGridPos(5,4);
+        inanObjs[0].setGridPos(5,5);
         inanObjs[0].setVelX(0);
         inanObjs[0].setVelY(0);
         ObjMap.put(inanObjs[0].getID(), inanObjs[0]);

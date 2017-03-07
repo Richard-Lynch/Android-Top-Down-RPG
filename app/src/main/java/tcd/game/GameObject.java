@@ -297,7 +297,6 @@ public class GameObject {
                     deltaX = deltaY = 0;
                     velX = velY = 0;
                     this.collided = true;
-
                 }
                 else if(colMap.get(new Coordinates(this.gridX+this.velX, this.gridY+this.velY).hashCode()) == (null)){
                     this.collided = false;
@@ -314,7 +313,6 @@ public class GameObject {
                     Log.d(TAG, "oh DAMN item in front of me! not moving");
                     velX = velY = 0;
                     moving = false;
-
                 }
                 gridUnset = false;
             }

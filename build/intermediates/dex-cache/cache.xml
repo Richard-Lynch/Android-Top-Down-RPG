@@ -3,21 +3,21 @@
 
     <item
         is-multidex="true"
-        jar="/home/richie/AndroidStudioProjects/3D5B/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="ae628ef3ab00b29ca4be3d230ac07be6569aab19">
-        <dex dex="/home/richie/AndroidStudioProjects/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_4995cc7d3672ef2a70421c26e8ed9d5be93b738d/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
         jar="/home/richie/AndroidStudioProjects/3D5B/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.0"
         sha1="c82741bc129dd5f99f11a4ab8666ae24262053b6">
         <dex dex="/home/richie/AndroidStudioProjects/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run_3ecfb5eb04864c9c7e6d82e3be115453c600e0b3/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/richie/AndroidStudioProjects/3D5B/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="acdd7a0fd3306dcaa0d7a2be0823a60db00253a8">
+        <dex dex="/home/richie/AndroidStudioProjects/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_4995cc7d3672ef2a70421c26e8ed9d5be93b738d/classes.dex" />
     </item>
 
 </items>
