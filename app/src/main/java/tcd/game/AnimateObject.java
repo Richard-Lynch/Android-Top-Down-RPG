@@ -35,7 +35,7 @@ public class AnimateObject extends GameObject{
         //if we've waited long enough for an update
         loops--;
         if(loops <= 0){
-            animationSpeed = 10;//reset the animation speed to default ( we may need a different speed for walking/blinking
+//            animationSpeed = 10;//reset the animation speed to default ( we may need a different speed for walking/blinking
             //if we're moving set the corresponding row and also set the "facing" value, which is used when we become stationary
             if(velX == 1){
                 animationRowIndex = GameObjectAnimationDirection.MOVING_RIGHT.ordinal();//move to the correct row ( animation )
