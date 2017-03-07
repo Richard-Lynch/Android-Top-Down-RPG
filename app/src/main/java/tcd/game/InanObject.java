@@ -3,6 +3,8 @@ package tcd.game;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 
+import java.util.Map;
+
 /**
  * Created by stefano on 04/02/17.
  */
@@ -16,7 +18,7 @@ public class InanObject extends GameObject {
     }
 
     @Override
-    public void update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type){
+    public void update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type, Map<Integer, Integer> colMap, Map<Integer, GameObject> objMap){
 
     }
 

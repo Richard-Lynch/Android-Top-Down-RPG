@@ -5,6 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.util.Log;
 
+import java.util.Map;
+
 /**
  * Created by stefano on 04/02/17.
  */
@@ -35,9 +37,9 @@ public class Player extends AnimateObject {
 
     //add change velocity to update and call super
     @Override
-    public void update(Player[] players, NPC[] npcs, InanObject[] inanObjects, int id, GameObjectTypes type) {
+    public void update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type, Map<Integer, Integer> colMap, Map<Integer, GameObject> objMap){
         change_velocity();
-        super.update(players, npcs, inanObjects, id, type);
+        super.update(players, npcs, inanObjects, id, type,colMap,objMap);
     }
 
     //change the velocity based on button presses

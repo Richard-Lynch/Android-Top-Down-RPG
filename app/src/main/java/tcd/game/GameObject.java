@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.Log;
 
 import java.util.Map;
 
@@ -72,9 +73,10 @@ public class GameObject {
     protected boolean moving;
     protected int goalX, goalY;
     protected int deltaX, deltaY;
-    protected int gridSize;
+    protected int gridSize, gridWide,gridHeight;
     protected int gridX, gridY;
-
+    protected boolean gridUnset;
+    protected boolean collided;
 
 
 
@@ -141,7 +143,6 @@ public class GameObject {
         mapRect = canvasRect; //for now
         this.name = name;
         this.context = context;
-        this.gridSize = 50;
         // Loading default Sprites for each GameObject if not passed in
         if(type == GameObjectTypes.PLAYER){
             spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default);
@@ -186,6 +187,12 @@ public class GameObject {
                 dividedSpriteMap[i][j] = Bitmap.createBitmap(spriteMap, j*spriteMap.getWidth()/spritesWide, i*spriteMap.getHeight()/spritesTall, spriteMap.getWidth()/spritesWide, spriteMap.getHeight()/spritesTall);
             }
         }
+
+        this.gridSize = drawWidth;
+        this.gridWide = canvasWidth/drawWidth;
+        this.gridHeight = canvasHeight/drawHeight;
+        this.collided  = false;
+
 
         collisionBox = new Rect(0,0,colWidth,colHeight);
         drawBox = new Rect (0,0, drawWidth, drawHeight);
@@ -238,9 +245,11 @@ public class GameObject {
     }
 
     public void setGridPos(int posX, int posY) {
-        this.drawBox.left = posX*gridSize;
+        this.gridX = posX;
+        this.gridY = posY;
+        this.drawBox.left = posX*drawWidth;
         this.drawBox.right = this.drawBox.left + drawWidth;
-        this.drawBox.top = posY*gridSize;
+        this.drawBox.top = posY*drawHeight;
         this.drawBox.bottom = this.drawBox.top + drawHeight;
 
         this.collisionBox.left = this.drawBox.left + colWidthBuffer;
@@ -251,7 +260,7 @@ public class GameObject {
 
     public void setGrifX(int posX) {
         gridX = posX;
-        this.drawBox.left = posX*gridSize;
+        this.drawBox.left = posX*drawWidth;
         this.drawBox.right = this.drawBox.left + drawWidth;
 
         this.collisionBox.left = this.drawBox.left + colWidthBuffer;
@@ -260,7 +269,7 @@ public class GameObject {
 
     public void setGrifY(int posY) {
         gridY = posY;
-        this.drawBox.top = posY*gridSize;
+        this.drawBox.top = posY*drawHeight;
         this.drawBox.bottom = this.drawBox.top + drawHeight;
 
         this.collisionBox.top = this.drawBox.top + colHeightBuffer;
@@ -269,39 +278,52 @@ public class GameObject {
 
     public void setVelX(int velX) {
         if(this.velX != velX && !this.moving){
-            this.loops = 0;
+            if(!this.collided){
+                this.loops = 0;
+            }
             this.moving = true;
+            this.gridUnset = true;
             this.velX = velX;
 
-            this.deltaX = gridSize*velX;
-            this.deltaY = gridSize*velY;
+            this.deltaX = drawWidth*velX;
+            this.deltaY = drawHeight*velY;
 
 //            this.goalX = this.drawBox.left + this.deltaX;
 //            this.goalY = this.drawBox.top + this.deltaY;
-            this.goalX = this.drawBox.left + gridSize*velX;
-            this.goalY = this.drawBox.top + gridSize*velY;
-            gridX += velX;
+            this.goalX = this.drawBox.left + drawWidth*velX;
+            this.goalY = this.drawBox.top + drawHeight*velY;
+//            gridX += velX;
         }
     }
 
     public void setVelY(int velY) {
         if(this.velY != velY && !this.moving){
-            this.loops = 0;
+            if(!this.collided){
+                this.loops = 0;
+            }
+//            this.loops = 0;
             this.moving = true;
+            this.gridUnset = true;
             this.velY = velY;
 
-            this.deltaX = gridSize*velX;
-            this.deltaY = gridSize*velY;
+            this.deltaX = drawWidth*velX;
+            this.deltaY = drawHeight*velY;
 
-            this.goalX = this.drawBox.left + gridSize*velX;
-            this.goalY = this.drawBox.top + gridSize*velY;
-            gridY += velY;
-
+            this.goalX = this.drawBox.left + drawWidth*velX;
+            this.goalY = this.drawBox.top + drawHeight*velY;
+//            gridY += velY;
         }
+    }
+
+    public Coordinates getCoordinates(){
+        return new Coordinates(this.gridX, this.gridY);
     }
 
     private void move(){
 //||(abs(goalX-drawBox.left) > abs(25*velX) || (abs(goalY-drawBox.top) > abs(25*velY) ))
+
+
+
         if(moving){
             if((abs(deltaX) <= abs(velX*speed) && abs(deltaY) <= abs(velY*speed))) {
                 drawBox.offset(deltaX, deltaY);
@@ -316,6 +338,8 @@ public class GameObject {
                 deltaX -= velX*speed;
                 deltaY -= velY*speed;
             }
+
+
 //            drawBox.left += velX*speed;
 //            drawBox.right += velX*speed;
 //            drawBox.top += velY*speed;
@@ -349,38 +373,70 @@ public class GameObject {
 //        collisionBox.bottom -= velY*speed;
     }
 
-    public void update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type, Map<Integer, Integer> colMap, Map<Player, Integer> objMap){
+    public void update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type, Map<Integer, Integer> colMap, Map<Integer, GameObject> objMap){
         //move object by velocity
-        if()
-        move();
+        if(this.moving){
+            if(gridUnset){
+                if((goalX < 0 || goalX > canvasRect.right) || (goalY < 0 || goalY > canvasRect.bottom)){
+                    this.moving = false;
+                    deltaX = deltaY = 0;
+                    velX = velY = 0;
+                    this.collided = true;
 
-        //check for collision
-        for(int i=0;i<players.length;i++){
-            if(this.collision(players[i])){
-                if(players[i].getID() != this.getID()){
-                    unmove();
-                    return;
                 }
+                else if(colMap.get(new Coordinates(this.gridX+this.velX, this.gridY+this.velY).hashCode()) == (null)){
+                    this.collided = false;
+                    Log.d(TAG, "no item in front of me! setting new grid Pos");
+                    colMap.put(new Coordinates(this.gridX,this.gridY).hashCode(), null);
+                    this.gridX += velX;
+                    this.gridY += velY;
+                    Log.d(TAG, "now im at "+ gridX + " " + gridY);
+                    colMap.put(new Coordinates(this.gridX,this.gridY).hashCode(), this.getID());
+                    Log.d(TAG, "I stored my grid pos");
+                    move();
+                }else if(colMap.get(new Coordinates(this.gridX+velX, this.gridY+velY).hashCode()) != this.getID()){
+                    this.collided = true;
+                    Log.d(TAG, "oh DAMN item in front of me! not moving");
+                    velX = velY = 0;
+                    moving = false;
+
+                }
+                gridUnset = false;
+            }
+            else{
+                move();
             }
         }
 
-        for(int i=0;i<npcs.length;i++){
-            if(this.collision(npcs[i])){
-                if(npcs[i].getID() != this.getID()){
-                    unmove();
-                    return;
-                }
-            }
-        }
-
-        for(int i=0;i<inanObjects.length;i++){
-            if(this.collision(inanObjects[i])){
-                if(inanObjects[i].getID() != this.getID()){
-                    unmove();
-                    return;
-                }
-            }
-        }
+//        move();
+//
+//        //check for collision
+//        for(int i=0;i<players.length;i++){
+//            if(this.collision(players[i])){
+//                if(players[i].getID() != this.getID()){
+//                    unmove();
+//                    return;
+//                }
+//            }
+//        }
+//
+//        for(int i=0;i<npcs.length;i++){
+//            if(this.collision(npcs[i])){
+//                if(npcs[i].getID() != this.getID()){
+//                    unmove();
+//                    return;
+//                }
+//            }
+//        }
+//
+//        for(int i=0;i<inanObjects.length;i++){
+//            if(this.collision(inanObjects[i])){
+//                if(inanObjects[i].getID() != this.getID()){
+//                    unmove();
+//                    return;
+//                }
+//            }
+//        }
 
     }
 

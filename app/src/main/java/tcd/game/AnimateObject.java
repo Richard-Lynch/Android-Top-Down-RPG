@@ -5,6 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.util.Log;
 
+import java.util.Map;
+
 /**
  * Created by Richard on 09/02/2017.
  */
@@ -27,8 +29,9 @@ public class AnimateObject extends GameObject{
     }
 
     @Override
-    public void update(Player[] players, NPC[] npcs, InanObject[] inanObjects, int id, GameObjectTypes type) {
-        super.update(players, npcs, inanObjects, id, type);
+    public void update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type, Map<Integer, Integer> colMap, Map<Integer, GameObject> objMap) {
+
+//        super.update(players, npcs, inanObjects, id, type, colMap, objMap);
         //if we've waited long enough for an update
         loops--;
         if(loops <= 0){
@@ -90,6 +93,8 @@ public class AnimateObject extends GameObject{
             //resets animation timer ( loop )
             loops = animationSpeed;
         }
+        super.update(players, npcs, inanObjects, id, type, colMap, objMap);
+
     }
 
     //Flags
