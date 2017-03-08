@@ -5,6 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.media.AudioAttributes;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.util.Log;
 
 import java.util.Collections;
@@ -28,6 +31,16 @@ public class GameMode {
     private Player players[];
     private Map<Integer, GameObject> ObjMap = new HashMap<Integer, GameObject>(200);
     private Map<Integer, Integer> PosMap = new HashMap<Integer, Integer>(200);
+
+    // Declare mediaplayer for Music (soundpool buffer is too small for larger files)
+    private MediaPlayer mediaPlayer;
+
+    // Declare objects for sound effects
+    private SoundPool soundPool;
+    private AudioAttributes audioAttributes;
+    private int SP_ID_MarioCoin;
+    private int SP_ID_DoomGate;
+    private final int MAX_STREAM = 10;
 
 
     // Probably should have OpenWorld and Battle Classes  which extend this so dont need flag
@@ -149,6 +162,34 @@ public class GameMode {
         Log.d(TAG,"Ref inan ID:" + testinti);
         Log.d(TAG,"inan now im at "+ inanObjs[0].gridX + " " + inanObjs[0].gridY);
         Log.d(TAG,"inan now im at "+ testi.gridX + " " + testi.gridY);
+
+        // Initialise mediaplayer
+        mediaPlayer = MediaPlayer.create(context, R.raw.doom_gate);
+        mediaPlayer.start();
+
+        // Initialise soundpool for sound effects
+        audioAttributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_GAME)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build();
+        soundPool = new SoundPool.Builder()
+                .setAudioAttributes(audioAttributes)
+                .setMaxStreams(MAX_STREAM)
+                .build();
+
+        // Define the method that is called when a file is loaded to the soundPool
+        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+            @Override
+            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f);
+            }
+        });
+
+        SP_ID_MarioCoin = soundPool.load(context, R.raw.mario_coin, 1);
+        SP_ID_MarioCoin = soundPool.load(context, R.raw.mario_coin, 1);
+        SP_ID_MarioCoin = soundPool.load(context, R.raw.mario_coin, 1);
+        SP_ID_MarioCoin = soundPool.load(context, R.raw.mario_coin, 1);
+        SP_ID_MarioCoin = soundPool.load(context, R.raw.mario_coin, 1);
 
     }
 
