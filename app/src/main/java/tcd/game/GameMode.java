@@ -21,6 +21,7 @@ public class GameMode {
 
     // Map should probably have its own class for Reading from file etc
     private Bitmap map;
+    private WorldMap worldMap;
 
     // Declare Arrays of our GameObjects
     private InanObject inanObjs[];
@@ -90,8 +91,8 @@ public class GameMode {
 
 
     private void init(double levelID){
-
-        map = BitmapFactory.decodeResource(context.getResources(),R.drawable.map_default);
+        worldMap = new WorldMap(context,canvasWidth,canvasHeight);
+        //map = BitmapFactory.decodeResource(context.getResources(),R.drawable.map_default);
         players = new Player[1];
         npcs = new NPC[1];
         inanObjs = new InanObject[1];
@@ -100,10 +101,6 @@ public class GameMode {
         players[0] = new Player(context,"Donal", canvasWidth, canvasHeight);
         npcs[0] = new NPC(context,"Frank",canvasWidth, canvasHeight);
         inanObjs[0] = new InanObject(context,"House",canvasWidth,canvasHeight);
-//        players[0].setPosX(40);
-//        players[0].setPosY(50);
-//        players[0].setVelX(0);
-//        players[0].setVelY(0);
         players[0].setGridPos(3,2);
         players[0].setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default));
         ObjMap.put(players[0].getID(), players[0]);
@@ -181,7 +178,8 @@ public class GameMode {
     public void drawFrame(Canvas canvas){
 
         // Drawing Map -- should be else where possibly
-        canvas.drawBitmap(map,null, new Rect(0,0,canvas.getWidth(),canvas.getHeight()), null);
+        //canvas.drawBitmap(map,null, new Rect(0,0,canvas.getWidth(),canvas.getHeight()), null);
+        worldMap.drawFrame(canvas,new Rect(0,0,canvasWidth,canvasHeight));
 
         // Draw InanimateObjects
         for(int i=0;i<inanObjs.length;i++){
