@@ -9,6 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar"
         android:largeHeap="true">
+        <uses-permission android:name="android.permission.VIBRATE"></uses-permission>
         <activity android:name=".TitleScreen"
             android:screenOrientation="landscape">
             <intent-filter>

@@ -39,6 +39,7 @@ public class Player extends AnimateObject {
     @Override
     public void update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type, Map<Integer, Integer> colMap, Map<Integer, GameObject> objMap){
         change_velocity();
+
         super.update(players, npcs, inanObjects, id, type,colMap,objMap);
     }
 
@@ -94,6 +95,11 @@ public class Player extends AnimateObject {
         left_pressed = false;
         right_pressed = false;
         up_pressed = false;
+    }
+
+    public void setAllButFalse(){
+        A_pressed = false;
+        B_pressed = false;
     }
 
     //Setters and getters for flags

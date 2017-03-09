@@ -48,6 +48,11 @@ public class GameObject {
     protected int velX,velY;
     protected int speed;
 
+    protected boolean hasEvent;
+    protected int eventID;
+    protected int health;
+
+
     /** Box used for updating positions and collision checking */
     protected Rect collisionBox;
     protected Rect drawBox;
@@ -146,6 +151,7 @@ public class GameObject {
         // Loading default Sprites for each GameObject if not passed in
         if(type == GameObjectTypes.PLAYER){
 //            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default);
+            health = 100;
             spritesWide = 10;
             spritesTall = 8;
             drawScaleFactor = 0.25f;
@@ -153,17 +159,19 @@ public class GameObject {
             facing = GameObjectAnimationDirection.FACING_RIGHT;
         } else if (type == GameObjectTypes.INANOBJECT){
 //            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.inan_default);
+            health = -1;
             spritesWide = 1;
             spritesTall = 1;
             drawScaleFactor = 0.5f;
-            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.inan_default));
+            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.house_1));
             facing = GameObjectAnimationDirection.FACING_DOWN;
         } else if(type == GameObjectTypes.NPC){
 //            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_default);
+            health = 100;
             spritesWide = 10;
             spritesTall = 8;
             drawScaleFactor = 0.25f;
-            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_default));
+            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_4));
             facing = GameObjectAnimationDirection.FACING_DOWN;
         }
 
@@ -266,6 +274,38 @@ public class GameObject {
             this.goalX = this.drawBox.left + drawWidth*velX;
             this.goalY = this.drawBox.top + drawHeight*velY;
         }
+    }
+
+    /**Called when an event is activated on this game object.
+     *
+     * @param type: 0 = Object been attacked, 1 = object been interacted with
+     * @param attack_power  If the event is an attack, this is the power of it
+     * @returns 0 = health has been decreased, -999 = Object does not have event, otherwise returns the event ID associated with the object
+     */
+    public int OnEvent(int type, int attack_power){
+            switch (type){
+
+                //Event is an attack on the object
+                case 0:
+                    this.health = this.health - attack_power;
+                    return 0;
+
+                //Event is an interaction
+                case 1:
+                    if(this.hasEvent){
+                        return this.eventID;
+                    }
+                    else {
+                        return -999;
+                    }
+
+
+                default:
+                    return -999;
+
+            }
+
+
     }
 
     public Coordinates getCoordinates(){

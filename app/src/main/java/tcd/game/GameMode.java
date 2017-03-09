@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
 
@@ -18,9 +19,11 @@ public class GameMode {
     // Context is passed ot GameObjects for access to drawable resources
     private Context context;
     private int canvasWidth, canvasHeight;
+    private Paint paint;
 
     // Map should probably have its own class for Reading from file etc
     private Bitmap map;
+    private Bitmap speechbox;
 
     // Declare Arrays of our GameObjects
     private InanObject inanObjs[];
@@ -92,6 +95,7 @@ public class GameMode {
     private void init(double levelID){
 
         map = BitmapFactory.decodeResource(context.getResources(),R.drawable.map_default);
+        speechbox = BitmapFactory.decodeResource(context.getResources(),R.drawable.speechboxj);
         players = new Player[1];
         npcs = new NPC[1];
         inanObjs = new InanObject[1];
@@ -105,7 +109,7 @@ public class GameMode {
 //        players[0].setVelX(0);
 //        players[0].setVelY(0);
         players[0].setGridPos(3,2);
-        players[0].setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default));
+        players[0].setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.player_blue));
         ObjMap.put(players[0].getID(), players[0]);
         PosMap.put(players[0].getCoordinates().hashCode(), players[0].getID());
         Player test = (Player) ObjMap.get(players[0].getID());
@@ -122,9 +126,10 @@ public class GameMode {
 
 //        npcs[0].setPosX(700);
 //        npcs[0].setPosY(300);
-        npcs[0].setGridPos(4,4);
+        npcs[0].setGridPos(4,8);
         npcs[0].setVelX(1);
         npcs[0].setVelY(0);
+
         ObjMap.put(npcs[0].getID(), npcs[0]);
         PosMap.put(npcs[0].getCoordinates().hashCode(), npcs[0].getID());
         NPC testn = (NPC) ObjMap.get(npcs[0].getID());
@@ -183,6 +188,7 @@ public class GameMode {
         // Drawing Map -- should be else where possibly
         canvas.drawBitmap(map,null, new Rect(0,0,canvas.getWidth(),canvas.getHeight()), null);
 
+
         // Draw InanimateObjects
         for(int i=0;i<inanObjs.length;i++){
             inanObjs[i].drawFrame(canvas);
@@ -196,6 +202,10 @@ public class GameMode {
         // Draw Players
         for(int i=0;i<players.length;i++) {
             players[i].drawFrame(canvas);
+          /*  if(players[i].isA_pressed()){
+                canvas.drawBitmap(speechbox,null, new Rect(0,canvas.getHeight() - 400,canvas.getWidth(),canvas.getHeight()), null);
+
+            }*/
         }
     }
 

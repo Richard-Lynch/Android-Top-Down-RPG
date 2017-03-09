@@ -16,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.os.Vibrator;
 
 /**
  * This class creates a game fragment that can be embedded into an activity.
@@ -29,10 +30,13 @@ public class GameFragment extends Fragment{
 
     private GameRenderer gameRenderer;
     private GameMode gameMode;
+    private Vibrator Vib;
 
     // Controls
-    private Rect upRect, downRect,leftRect,rightRect;
-    private Bitmap controlIconUp, controlIconDown, controlIconLeft, controlIconRight;
+    private Rect upRect, downRect,leftRect,rightRect, A_rect, B_rect;
+    private Rect upRect_area, downRect_area,leftRect_area,rightRect_area, A_rect_area, B_rect_area;
+    private Bitmap controlIconUp, controlIconDown, controlIconLeft, controlIconRight, A_Button, B_Button;
+
 
     // As the game loop runs on separate thread, it starts before objects get fully initialized
     // We can let it loop but block the updating and drawing until it is ready
@@ -72,19 +76,33 @@ public class GameFragment extends Fragment{
 
                 if(event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE) {
                     Log.d(TAG,"Moving true");
-                    if (touchLoc.intersect(upRect)) {
+                    if (touchLoc.intersect(upRect_area)) {
                         gameMode.getPlayer().setUp_pressed(true);
-                    } else if (touchLoc.intersect(downRect)) {
+                        controlIconUp = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_up_pressed);
+                    } else if (touchLoc.intersect(downRect_area)) {
                         gameMode.getPlayer().setDown_pressed(true);
-                    } else if(touchLoc.intersect(rightRect)){
+                        controlIconDown = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_down_pressed);
+                    } else if(touchLoc.intersect(rightRect_area)){
                         gameMode.getPlayer().setRight_pressed(true);
-                    } else if(touchLoc.intersect(leftRect)){
+                        controlIconRight = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_right_pressed);
+                    } else if(touchLoc.intersect(leftRect_area)){
                         gameMode.getPlayer().setLeft_pressed(true);
+                        controlIconLeft = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_left_pressed);
+                    } else if(touchLoc.intersect(A_rect)){
+                        A_Button = BitmapFactory.decodeResource(getResources(), R.drawable.a_button_not);
+                        gameMode.getPlayer().setA_pressed(true);
+                    } else if (touchLoc.intersect(B_rect)){
+                        B_Button = BitmapFactory.decodeResource(getResources(), R.drawable.b_button_not);
+                        gameMode.getPlayer().setB_pressed(true);
                     }
 
                 } else if(event.getAction() == MotionEvent.ACTION_UP){
                     Log.d(TAG,"Moving false");
                     gameMode.getPlayer().setAllVelFalse();
+                    gameMode.getPlayer().setAllButFalse();
+                    restoreBitmaps();;
+                    //A_Button = BitmapFactory.decodeResource(getResources(), R.drawable.a_button);
+                    //B_Button = BitmapFactory.decodeResource(getResources(),R.drawable.b_button);
                 }
 
                 return true;
@@ -126,6 +144,16 @@ public class GameFragment extends Fragment{
         gameRenderer.resume();
     }
 
+    private void restoreBitmaps(){
+        controlIconUp = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_up);
+        controlIconDown = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_down);
+        controlIconLeft = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_left);
+        controlIconRight = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_right);
+
+        A_Button = BitmapFactory.decodeResource(getResources(), R.drawable.a_button);
+        B_Button = BitmapFactory.decodeResource(getResources(),R.drawable.b_button);
+    }
+
     /***********************************************************************************
      * Controls
      **********************************************************************************/
@@ -134,6 +162,10 @@ public class GameFragment extends Fragment{
         controlIconDown = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_down);
         controlIconLeft = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_left);
         controlIconRight = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_right);
+
+        A_Button = BitmapFactory.decodeResource(getResources(), R.drawable.a_button);
+        B_Button = BitmapFactory.decodeResource(getResources(),R.drawable.b_button);
+
 
         // Size of a single direction button is 1/18th of max screen size,
         // since that device is forced in landscape mode
@@ -149,6 +181,14 @@ public class GameFragment extends Fragment{
         upRect = new Rect(eleScreenOffset + eleSize * 1, height - (eleSize * 3), eleScreenOffset + eleSize * 2, height - (eleSize * 2));
         leftRect = new Rect(eleScreenOffset + eleSize * 0, height - (eleSize * 2), eleScreenOffset + eleSize * 1, height - (eleSize * 1));
         rightRect = new Rect(eleScreenOffset + eleSize * 2, height - (eleSize * 2), eleScreenOffset + eleSize * 3, height - (eleSize * 1));
+
+        downRect_area = new Rect(0, height - (eleSize * 1), eleScreenOffset + eleSize * 4, height - (eleSize * 0));
+        upRect_area = new Rect(0, height - (eleSize * 6), eleScreenOffset + eleSize * 4, height - (eleSize * 2));
+        leftRect_area = new Rect(0, height - (eleSize * 2), eleScreenOffset + eleSize * 1, height - (eleSize * 1));
+        rightRect_area = new Rect(eleScreenOffset + eleSize * 2, height - (eleSize * 2), eleScreenOffset + eleSize * 5, height - (eleSize * 1));
+
+        A_rect = new Rect(width - eleScreenOffset - eleSize * 4, height - (eleSize * 1),width - eleScreenOffset - eleSize * 3, height - (eleSize * 0));
+        B_rect = new Rect(width - eleScreenOffset - eleSize * 3, height - (eleSize * 2),width - eleScreenOffset - eleSize * 2, height - (eleSize * 1));
     }
 
     private void drawControls(Canvas canvas) {
@@ -156,6 +196,9 @@ public class GameFragment extends Fragment{
         canvas.drawBitmap(controlIconDown, null, downRect, null);
         canvas.drawBitmap(controlIconRight, null, rightRect, null);
         canvas.drawBitmap(controlIconLeft, null, leftRect, null);
+
+        canvas.drawBitmap(A_Button, null, A_rect, null);
+        canvas.drawBitmap(B_Button, null, B_rect, null);
     }
 
 
