@@ -117,7 +117,7 @@ public class WorldMap {
             tileSet = BitmapFactory.decodeResource(context.getResources(), R.drawable.pokemon_tileset);
 
             // Create our final bitmap
-            map = Bitmap.createBitmap(canvasWidth,canvasHeight,null);
+            map = Bitmap.createBitmap(canvasWidth,canvasHeight, Bitmap.Config.ARGB_8888);
 
             // Create inanObjects and save them
             inanObjects = new ArrayList<>();
