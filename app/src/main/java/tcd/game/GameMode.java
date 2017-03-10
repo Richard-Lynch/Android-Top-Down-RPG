@@ -32,6 +32,9 @@ public class GameMode {
     private Map<Integer, GameObject> ObjMap = new HashMap<Integer, GameObject>(200);
     private Map<Integer, Integer> PosMap = new HashMap<Integer, Integer>(200);
 
+    private int CurrentEventID;
+    private boolean EventActivated;
+
 
     // Probably should have OpenWorld and Battle Classes  which extend this so dont need flag
     // private boolean battle;
@@ -48,28 +51,27 @@ public class GameMode {
     /**
      * Creates a Game Mode
      * Must be initialized using gameMode.initialize()
+     *
      * @param context application context
      */
-    GameMode(Context context){
+    GameMode(Context context) {
         this.context = context;
     }
 
 
     /**
      * Creates and Initializes a Game Mode
-     * @param context application context
-     * @param canvasWidth screen width
+     *
+     * @param context      application context
+     * @param canvasWidth  screen width
      * @param canvasHeight screen height
      */
-    GameMode(Context context, int canvasWidth, int canvasHeight){
+    GameMode(Context context, int canvasWidth, int canvasHeight) {
         this.context = context;
         this.canvasHeight = canvasHeight;
         this.canvasWidth = canvasWidth;
         init(0);
     }
-
-
-
 
 
     /***********************************************************************************
@@ -79,54 +81,55 @@ public class GameMode {
     /**
      * Initializes a GameMode with size of screen. This is called from event fragment once the
      * view has been created and the dimensions are available
+     *
      * @param screenWidth
      * @param screenHeight
      */
-    public void initialize(int screenWidth,int screenHeight){
-        Log.d(TAG,"in initialise gamemode");
+    public void initialize(int screenWidth, int screenHeight) {
+        Log.d(TAG, "in initialise gamemode");
 
         this.canvasWidth = screenWidth;
         this.canvasHeight = screenHeight;
+        this.EventActivated =false;
         init(0);
     }
 
 
+    private void init(double levelID) {
 
-    private void init(double levelID){
-
-        map = BitmapFactory.decodeResource(context.getResources(),R.drawable.map_default);
-        speechbox = BitmapFactory.decodeResource(context.getResources(),R.drawable.speechboxj);
+        map = BitmapFactory.decodeResource(context.getResources(), R.drawable.map_default);
+        speechbox = BitmapFactory.decodeResource(context.getResources(), R.drawable.speechboxj);
         players = new Player[1];
         npcs = new NPC[1];
         inanObjs = new InanObject[1];
-        Log.d(TAG,"initing gamemode");
+        Log.d(TAG, "initing gamemode");
 
-        players[0] = new Player(context,"Donal", canvasWidth, canvasHeight);
-        npcs[0] = new NPC(context,"Frank",canvasWidth, canvasHeight);
-        inanObjs[0] = new InanObject(context,"House",canvasWidth,canvasHeight);
+        players[0] = new Player(context, "Donal", canvasWidth, canvasHeight);
+        npcs[0] = new NPC(context, "Frank", canvasWidth, canvasHeight);
+        inanObjs[0] = new InanObject(context, "House", canvasWidth, canvasHeight);
 //        players[0].setPosX(40);
 //        players[0].setPosY(50);
 //        players[0].setVelX(0);
 //        players[0].setVelY(0);
-        players[0].setGridPos(3,2);
-        players[0].setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.player_blue));
+        players[0].setGridPos(3, 2);
+        players[0].setSprite(BitmapFactory.decodeResource(context.getResources(), R.drawable.player_blue));
         ObjMap.put(players[0].getID(), players[0]);
         PosMap.put(players[0].getCoordinates().hashCode(), players[0].getID());
         Player test = (Player) ObjMap.get(players[0].getID());
         int testint = ObjMap.get(players[0].getID()).getID();
-        Log.d(TAG,"Real Player ID:" + players[0].getID());
-        Log.d(TAG,"Test Player ID:" + test.getID());
-        Log.d(TAG,"Ref Player ID:" + testint);
-        Log.d(TAG,"Player now im at "+ players[0].gridX + " " + players[0].gridY);
-        Log.d(TAG,"Player now im at "+ test.gridX + " " + test.gridY);
+        Log.d(TAG, "Real Player ID:" + players[0].getID());
+        Log.d(TAG, "Test Player ID:" + test.getID());
+        Log.d(TAG, "Ref Player ID:" + testint);
+        Log.d(TAG, "Player now im at " + players[0].gridX + " " + players[0].gridY);
+        Log.d(TAG, "Player now im at " + test.gridX + " " + test.gridY);
         Coordinates pl = new Coordinates(players[0].gridX, players[0].gridY);
-        Log.d(TAG,"Player coords "+ pl.getX() + " " + pl.getY());
+        Log.d(TAG, "Player coords " + pl.getX() + " " + pl.getY());
         int testPOS = PosMap.get(pl.hashCode());
-        Log.d(TAG,"Player pos map id: "+ testPOS + " pos: " + ObjMap.get(testPOS).gridX +" "+ ObjMap.get(testPOS).gridY);
+        Log.d(TAG, "Player pos map id: " + testPOS + " pos: " + ObjMap.get(testPOS).gridX + " " + ObjMap.get(testPOS).gridY);
 
 //        npcs[0].setPosX(700);
 //        npcs[0].setPosY(300);
-        npcs[0].setGridPos(4,8);
+        npcs[0].setGridPos(4, 8);
         npcs[0].setVelX(1);
         npcs[0].setVelY(0);
 
@@ -134,82 +137,104 @@ public class GameMode {
         PosMap.put(npcs[0].getCoordinates().hashCode(), npcs[0].getID());
         NPC testn = (NPC) ObjMap.get(npcs[0].getID());
         int testintn = ObjMap.get(npcs[0].getID()).getID();
-        Log.d(TAG,"Real NPC ID:" + npcs[0].getID());
-        Log.d(TAG,"Test NPC ID:" + testn.getID());
-        Log.d(TAG,"Ref NPC ID:" + testintn);
-        Log.d(TAG,"NPC now im at "+ npcs[0].gridX + " " + npcs[0].gridY);
-        Log.d(TAG,"NPC now im at "+ testn.gridX + " " + testn.gridY);
+        Log.d(TAG, "Real NPC ID:" + npcs[0].getID());
+        Log.d(TAG, "Test NPC ID:" + testn.getID());
+        Log.d(TAG, "Ref NPC ID:" + testintn);
+        Log.d(TAG, "NPC now im at " + npcs[0].gridX + " " + npcs[0].gridY);
+        Log.d(TAG, "NPC now im at " + testn.gridX + " " + testn.gridY);
 
 //        inanObjs[0].setPosX(600);
 //        inanObjs[0].setPosY(20);
-        inanObjs[0].setGridPos(5,4);
+        inanObjs[0].setGridPos(5, 4);
         inanObjs[0].setVelX(0);
         inanObjs[0].setVelY(0);
+        inanObjs[0].setEventID(10);
+        npcs[0].setEventID(10);
         ObjMap.put(inanObjs[0].getID(), inanObjs[0]);
         PosMap.put(inanObjs[0].getCoordinates().hashCode(), inanObjs[0].getID());
         InanObject testi = (InanObject) ObjMap.get(inanObjs[0].getID());
         int testinti = ObjMap.get(inanObjs[0].getID()).getID();
-        Log.d(TAG,"Real inan ID:" + inanObjs[0].getID());
-        Log.d(TAG,"Test inan ID:" + testi.getID());
-        Log.d(TAG,"Ref inan ID:" + testinti);
-        Log.d(TAG,"inan now im at "+ inanObjs[0].gridX + " " + inanObjs[0].gridY);
-        Log.d(TAG,"inan now im at "+ testi.gridX + " " + testi.gridY);
+        Log.d(TAG, "Real inan ID:" + inanObjs[0].getID());
+        Log.d(TAG, "Test inan ID:" + testi.getID());
+        Log.d(TAG, "Ref inan ID:" + testinti);
+        Log.d(TAG, "inan now im at " + inanObjs[0].gridX + " " + inanObjs[0].gridY);
+        Log.d(TAG, "inan now im at " + testi.gridX + " " + testi.gridY);
 
     }
 
     /**
      * Calls update methods for all game objects
      */
-    public void update(){
+    public void update() {
 
-        // Update Player positions
-        for(int i=0;i<players.length;i++) {
-            players[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.PLAYER, PosMap, ObjMap);
+        if (!EventActivated) {
+
+            // Update Player positions
+            for (int i = 0; i < players.length; i++) {
+               CurrentEventID = players[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.PLAYER, PosMap, ObjMap);
+               if(CurrentEventID == 10){
+                   EventActivated = true;
+               }
+            }
+
+            // Update NPC positions
+            for (int i = 0; i < npcs.length; i++) {
+                npcs[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.NPC, PosMap, ObjMap);
+
+            }
+
+            // Update Inanimate Object Positions
+            for (int i = 0; i < inanObjs.length; i++) {
+                inanObjs[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.INANOBJECT, PosMap, ObjMap);
+            }
+
         }
 
-        // Update NPC positions
-        for(int i=0;i<npcs.length;i++){
-            npcs[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.NPC, PosMap, ObjMap);
-        }
-
-        // Update Inanimate Object Positions
-        for(int i=0;i<inanObjs.length;i++){
-            inanObjs[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.INANOBJECT, PosMap, ObjMap);
-        }
     }
 
 
     /**
      * Calls draw method for all game objects
+     *
      * @param canvas
      */
-    public void drawFrame(Canvas canvas){
+    public void drawFrame(Canvas canvas) {
 
         // Drawing Map -- should be else where possibly
-        canvas.drawBitmap(map,null, new Rect(0,0,canvas.getWidth(),canvas.getHeight()), null);
+        canvas.drawBitmap(map, null, new Rect(0, 0, canvas.getWidth(), canvas.getHeight()), null);
 
 
-        // Draw InanimateObjects
-        for(int i=0;i<inanObjs.length;i++){
-            inanObjs[i].drawFrame(canvas);
-        }
+            // Draw InanimateObjects
+            for (int i = 0; i < inanObjs.length; i++) {
+                inanObjs[i].drawFrame(canvas);
+            }
 
-        // Draw Npcs
-        for(int i=0;i<npcs.length;i++){
-            npcs[i].drawFrame(canvas);
-        }
+            // Draw Npcs
+            for (int i = 0; i < npcs.length; i++) {
+                //Log.d(TAG, "NPC health: " + npcs[i].getHealth());
+                if(npcs[i].getHealth() > 0) {
+                    npcs[i].drawFrame(canvas);
+                }
+            }
 
-        // Draw Players
-        for(int i=0;i<players.length;i++) {
-            players[i].drawFrame(canvas);
-          /*  if(players[i].isA_pressed()){
-                canvas.drawBitmap(speechbox,null, new Rect(0,canvas.getHeight() - 400,canvas.getWidth(),canvas.getHeight()), null);
+            // Draw Players
+            for (int i = 0; i < players.length; i++) {
+                players[i].drawFrame(canvas);
 
-            }*/
+            }
+
+        if (EventActivated) {
+            canvas.drawBitmap(speechbox, null, new Rect(0, canvas.getHeight() - 400, canvas.getWidth() - 300, canvas.getHeight()), null);
         }
     }
+
+
+
 
     public Player getPlayer(){
         return players[0];
     }
+
+    public boolean isEventActivated() {return EventActivated;}
+    public void setEventActivated(boolean eventActivated) {EventActivated = eventActivated;}
 }

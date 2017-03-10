@@ -76,24 +76,28 @@ public class GameFragment extends Fragment{
 
                 if(event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE) {
                     Log.d(TAG,"Moving true");
+                    if(gameMode.isEventActivated() == false){
                     if (touchLoc.intersect(upRect_area)) {
                         gameMode.getPlayer().setUp_pressed(true);
                         controlIconUp = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_up_pressed);
-                    } else if (touchLoc.intersect(downRect_area)) {
-                        gameMode.getPlayer().setDown_pressed(true);
-                        controlIconDown = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_down_pressed);
-                    } else if(touchLoc.intersect(rightRect_area)){
-                        gameMode.getPlayer().setRight_pressed(true);
-                        controlIconRight = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_right_pressed);
-                    } else if(touchLoc.intersect(leftRect_area)){
-                        gameMode.getPlayer().setLeft_pressed(true);
-                        controlIconLeft = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_left_pressed);
-                    } else if(touchLoc.intersect(A_rect)){
-                        A_Button = BitmapFactory.decodeResource(getResources(), R.drawable.a_button_not);
-                        gameMode.getPlayer().setA_pressed(true);
-                    } else if (touchLoc.intersect(B_rect)){
-                        B_Button = BitmapFactory.decodeResource(getResources(), R.drawable.b_button_not);
-                        gameMode.getPlayer().setB_pressed(true);
+                        } else if (touchLoc.intersect(downRect_area)) {
+                                gameMode.getPlayer().setDown_pressed(true);
+                                controlIconDown = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_down_pressed);
+                        } else if(touchLoc.intersect(rightRect_area)){
+                                gameMode.getPlayer().setRight_pressed(true);
+                                controlIconRight = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_right_pressed);
+                         } else if(touchLoc.intersect(leftRect_area)) {
+                                gameMode.getPlayer().setLeft_pressed(true);
+                                controlIconLeft = BitmapFactory.decodeResource(getResources(), R.drawable.arrow_left_pressed);
+                        }
+                    }
+                        if(touchLoc.intersect(A_rect)){
+                            A_Button = BitmapFactory.decodeResource(getResources(), R.drawable.a_button_not);
+                            gameMode.getPlayer().setAPressed(true);
+                        } else if (touchLoc.intersect(B_rect)){
+                            B_Button = BitmapFactory.decodeResource(getResources(), R.drawable.b_button_not);
+                            gameMode.getPlayer().setBPressed(true);
+                            gameMode.setEventActivated(false);
                     }
 
                 } else if(event.getAction() == MotionEvent.ACTION_UP){
@@ -187,15 +191,17 @@ public class GameFragment extends Fragment{
         leftRect_area = new Rect(0, height - (eleSize * 2), eleScreenOffset + eleSize * 1, height - (eleSize * 1));
         rightRect_area = new Rect(eleScreenOffset + eleSize * 2, height - (eleSize * 2), eleScreenOffset + eleSize * 5, height - (eleSize * 1));
 
-        A_rect = new Rect(width - eleScreenOffset - eleSize * 4, height - (eleSize * 1),width - eleScreenOffset - eleSize * 3, height - (eleSize * 0));
-        B_rect = new Rect(width - eleScreenOffset - eleSize * 3, height - (eleSize * 2),width - eleScreenOffset - eleSize * 2, height - (eleSize * 1));
+        A_rect = new Rect(width - eleScreenOffset - eleSize * 2, height - (eleSize * 1),width - eleScreenOffset - eleSize * 1, height - (eleSize * 0));
+        B_rect = new Rect(width - eleScreenOffset - eleSize * 1, height - (eleSize * 2),width - eleScreenOffset - eleSize * 0, height - (eleSize * 1));
     }
 
     private void drawControls(Canvas canvas) {
-        canvas.drawBitmap(controlIconUp, null, upRect, null);
-        canvas.drawBitmap(controlIconDown, null, downRect, null);
-        canvas.drawBitmap(controlIconRight, null, rightRect, null);
-        canvas.drawBitmap(controlIconLeft, null, leftRect, null);
+        if(!gameMode.isEventActivated()) {
+            canvas.drawBitmap(controlIconUp, null, upRect, null);
+            canvas.drawBitmap(controlIconDown, null, downRect, null);
+            canvas.drawBitmap(controlIconRight, null, rightRect, null);
+            canvas.drawBitmap(controlIconLeft, null, leftRect, null);
+        }
 
         canvas.drawBitmap(A_Button, null, A_rect, null);
         canvas.drawBitmap(B_Button, null, B_rect, null);

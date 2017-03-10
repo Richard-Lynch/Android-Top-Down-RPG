@@ -29,7 +29,7 @@ public class AnimateObject extends GameObject{
     }
 
     @Override
-    public void update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type, Map<Integer, Integer> colMap, Map<Integer, GameObject> objMap) {
+    public int update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type, Map<Integer, Integer> colMap, Map<Integer, GameObject> objMap) {
 
 //        super.update(players, npcs, inanObjects, id, type, colMap, objMap);
         //if we've waited long enough for an update
@@ -93,8 +93,7 @@ public class AnimateObject extends GameObject{
             //resets animation timer ( loop )
             loops = animationSpeed;
         }
-        super.update(players, npcs, inanObjects, id, type, colMap, objMap);
-
+        return super.update(players, npcs, inanObjects, id, type, colMap, objMap);
     }
 
     //Flags

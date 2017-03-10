@@ -37,10 +37,22 @@ public class Player extends AnimateObject {
 
     //add change velocity to update and call super
     @Override
-    public void update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type, Map<Integer, Integer> colMap, Map<Integer, GameObject> objMap){
+    public int update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type, Map<Integer, Integer> colMap, Map<Integer, GameObject> objMap){
         change_velocity();
 
-        super.update(players, npcs, inanObjects, id, type,colMap,objMap);
+        return super.update(players, npcs, inanObjects, id, type,colMap,objMap);
+    }
+
+    public void setAPressed(boolean pressed) {
+        if(this.A_pressed == false){
+            this.A_pressed = true;
+        }
+    }
+
+    public void setBPressed(boolean pressed) {
+        if(this.B_pressed == false){
+            this.B_pressed = true;
+        }
     }
 
     //change the velocity based on button presses
