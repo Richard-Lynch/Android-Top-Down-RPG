@@ -188,7 +188,9 @@ public class GameObject {
         int cells_wide = 32;
         int cells_tall = 18;
         drawWidth = canvasWidth/cells_wide;
-        drawHeight = canvasHeight/cells_tall;
+        //drawHeight = canvasHeight/cells_tall;
+        drawHeight = drawWidth;
+
         gridSize = drawWidth;
 
         collided  = false;
