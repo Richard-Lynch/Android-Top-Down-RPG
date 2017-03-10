@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import android.widget.Toast;
 
-import java.lang.*;
+
 import java.util.ArrayList;
 
 class DatabaseHelper extends SQLiteOpenHelper {
@@ -16,24 +16,16 @@ class DatabaseHelper extends SQLiteOpenHelper {
     static final int DATABASE_VERSION = 1;  //probably never need this
     static final String DATABASE_NAME = "Game_Name_Needed.db";
     static final String TILES_TABLE = "Tiles";
-    static final String OBJECT_TABLE = "Object";
-    static final String PROJECT_TABLE = "Project";
-    static final String PROJECT_MEMBERSHIP_TABLE = "ProjectMembership";
+    static final String NPCS_TABLE = " Npcs";
 
-    Context ctx;    //just for debugging so we can TOAST from this thread
+    Context ctx;
 
 
     //Queries to create the required tables
-//    private static final String[] creationQueries = {
-//            "CREATE TABLE Individual (individual_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)",
-//            "CREATE TABLE Project (project_id INTEGER PRIMARY KEY AUTOINCREMENT, end_date INTEGER,name TEXT)",
-//            "CREATE TABLE Object (object_id INTEGER PRIMARY KEY AUTOINCREMENT, project INTEGER, " +
-//                    "individual INTEGER, barcode_ref TEXT, name TEXT, damaged_date INTEGER)",
-//            "CREATE TABLE ProjectMembership (dummy_id INTEGER PRIMARY KEY AUTOINCREMENT, project_id INTEGER, individual_id INTEGER)"
-//    };
     private static final String[] creationQueries = {
-            "CREATE TABLE Tiles (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Row INTEGER, Col INTEGER, SpanX INTEGER, SpanY INTEGER," +
-                    "Spritesheet TEXT, Collidable Boolean)"
+            "CREATE TABLE " + TILES_TABLE + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Row INTEGER, Col INTEGER, SpanX INTEGER, SpanY INTEGER," +
+                    "Spritesheet TEXT, Collidable Boolean)",
+            "CREATE TABLE " + NPCS_TABLE + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"
     };
 
     //Constructor
@@ -44,14 +36,14 @@ class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        //gets called by super() in constructor
-        //Runs only if db is null --> database hasnt been created, otherwise skips
+        //Runs only when app is first opened
 
+        // Iterate through table creation queries
         for (String query : creationQueries) {
             db.execSQL(query);
         }
 
-        // Note ID auto increments so isnt needed
+        // Note ID auto increments so isn't needed
         String[][] sampleTiles ={
                 { "Grass", "1", "1", "1", "1", "pokemon_tileset.png", "0"},
                 { "Brick", "11", "7", "1", "1", "pokemon_tileset.png", "0"},
@@ -60,8 +52,16 @@ class DatabaseHelper extends SQLiteOpenHelper {
                 { "Weed", "2", "1", "1", "1", "pokemon_tileset.png", "0"}
         };
 
-        //db.execSQL("INSERT INTO Tiles (Name, Row, Col, SpanX, SpanY, Spritesheet, Collidable) VALUES ('Grass', '1','1','1','1','pokemon_tileset.png','0')");
+        String[][] sampleNPCS = {
+                {"VonNeuyman"},
+                {"Dijkstra"},
+                {"Donall"},
+                {"FergalShevlin"},
+                {"AntonG"}
+        };
 
+
+        // Generate initial values in db - these will come from elsewhere
         for (String[] vals : sampleTiles){
             String query = "INSERT INTO " + TILES_TABLE + " (Name, Row, Col, SpanX, SpanY, Spritesheet, Collidable) VALUES (";
             for(String val : vals){
@@ -72,7 +72,19 @@ class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL(query);
 
         }
+
+        for(String[] vals : sampleNPCS){
+            String query = "INSERT INTO " + NPCS_TABLE + " (Name) VALUES (";
+            for(String val : vals){
+                query += "'" + val + "',";
+            }
+            query = query.substring(0,query.length()-1);
+            query += ")";
+            db.execSQL(query);
+
+        }
     }
+
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -83,7 +95,10 @@ class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    //  Add row to DB without ID
+    /**
+     * Add row to DB without ID - lazy hacky way to get number of fields
+     */
+
     void addRow(String tableName, String[] values) {
         //Grab column names -- Extra read query for every write query though
         String[] columns = getColsFromTable(tableName);
@@ -104,12 +119,14 @@ class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    /** Add multiple rows to DB */
     void addRows(String tableName, String[][] rows){
         for(String[] vals : rows){
             addRow(tableName,vals);
         }
     }
 
+    /** Gets column names from table */
     String[] getColsFromTable(String tableName){
         //Inefficient lazy way of getting column names so we don't need to pass them in each time
         SQLiteDatabase db = getReadableDatabase();
@@ -120,6 +137,8 @@ class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
+    //TODO: Return Hashmap of string arrays to ID keys
+    /** Executes Query and returns rows as  arraylist of string arrays */
     ArrayList<String[]> getRows(String query, String tableName, String[] args){
         SQLiteDatabase db = getReadableDatabase();
         String[] colNames = getColsFromTable(tableName);
@@ -142,9 +161,6 @@ class DatabaseHelper extends SQLiteOpenHelper {
         c.close();
         return results;
     }
-
-
-
 
     int countRows(String query, String[] args) {
         SQLiteDatabase db = getReadableDatabase();

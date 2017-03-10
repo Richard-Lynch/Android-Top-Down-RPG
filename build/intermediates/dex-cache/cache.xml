@@ -3,21 +3,21 @@
 
     <item
         is-multidex="true"
-        jar="/home/stefano/AndroidStudioProjects/3D5B/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jar="C:\Users\Stefano\Desktop\3D5b Game\3D5B\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.0"
-        sha1="78202df867e9775d36fd33fd9d578a823b6a0552">
-        <dex dex="/home/stefano/AndroidStudioProjects/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_9e8082f562bf5be65f5680655e43c76af78beb20/classes.dex" />
+        sha1="25c4e882d8ef80534937f61c6766af3eac10981c">
+        <dex dex="C:\Users\Stefano\Desktop\3D5b Game\3D5B\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_1931834d9d5bf3b552f1a77e8e9edaaab30eba85\classes.dex" />
     </item>
     <item
         is-multidex="true"
-        jar="/home/stefano/AndroidStudioProjects/3D5B/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jar="C:\Users\Stefano\Desktop\3D5b Game\3D5B\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.0"
         sha1="c82741bc129dd5f99f11a4ab8666ae24262053b6">
-        <dex dex="/home/stefano/AndroidStudioProjects/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run_109f60b077ef084290bbe3169563edcae4c3fe4c/classes.dex" />
+        <dex dex="C:\Users\Stefano\Desktop\3D5b Game\3D5B\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run_2aaf8f63a40b3511cb917a0b1fa09e0f8e52e76d\classes.dex" />
     </item>
 
 </items>
