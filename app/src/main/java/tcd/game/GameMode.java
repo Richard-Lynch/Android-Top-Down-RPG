@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,10 +22,11 @@ public class GameMode {
 
     // Map should probably have its own class for Reading from file etc
     private Bitmap map;
+    private WorldMap worldMap;
 
     // Declare Arrays of our GameObjects
     private InanObject inanObjs[];
-    private NPC npcs[];
+    private NPC[] npcs;
     private Player players[];
     private Map<Integer, GameObject> ObjMap = new HashMap<Integer, GameObject>(200);
     private Map<Integer, Integer> PosMap = new HashMap<Integer, Integer>(200);
@@ -90,20 +92,16 @@ public class GameMode {
 
 
     private void init(double levelID){
-
-        map = BitmapFactory.decodeResource(context.getResources(),R.drawable.map_default);
+        worldMap = new WorldMap(context,canvasWidth,canvasHeight);
+        //map = BitmapFactory.decodeResource(context.getResources(),R.drawable.map_default);
         players = new Player[1];
-        npcs = new NPC[1];
-        inanObjs = new InanObject[1];
+        npcs = worldMap.getNpcs();
+//        inanObjs = new InanObject[1];
+        inanObjs = worldMap.getInanObjects();
         Log.d(TAG,"initing gamemode");
 
         players[0] = new Player(context,"Donal", canvasWidth, canvasHeight);
-        npcs[0] = new NPC(context,"Frank",canvasWidth, canvasHeight);
-        inanObjs[0] = new InanObject(context,"House",canvasWidth,canvasHeight);
-//        players[0].setPosX(40);
-//        players[0].setPosY(50);
-//        players[0].setVelX(0);
-//        players[0].setVelY(0);
+        //inanObjs[0] = new InanObject(context,"House",canvasWidth,canvasHeight);
         players[0].setGridPos(3,2);
         players[0].setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default));
         ObjMap.put(players[0].getID(), players[0]);
@@ -120,11 +118,15 @@ public class GameMode {
         int testPOS = PosMap.get(pl.hashCode());
         Log.d(TAG,"Player pos map id: "+ testPOS + " pos: " + ObjMap.get(testPOS).gridX +" "+ ObjMap.get(testPOS).gridY);
 
-//        npcs[0].setPosX(700);
-//        npcs[0].setPosY(300);
-        npcs[0].setGridPos(4,4);
-        npcs[0].setVelX(1);
-        npcs[0].setVelY(0);
+
+        // Add all npcs to hash maps
+        for(int i=0;i<npcs.length;i++){
+            ObjMap.put(npcs[i].getID(),npcs[i]);
+            PosMap.put(npcs[i].getCoordinates().hashCode(),npcs[i].getID());
+            npcs[i].setVelX(1);
+            npcs[i].setVelY(0);
+        }
+/*
         ObjMap.put(npcs[0].getID(), npcs[0]);
         PosMap.put(npcs[0].getCoordinates().hashCode(), npcs[0].getID());
         NPC testn = (NPC) ObjMap.get(npcs[0].getID());
@@ -134,21 +136,26 @@ public class GameMode {
         Log.d(TAG,"Ref NPC ID:" + testintn);
         Log.d(TAG,"NPC now im at "+ npcs[0].gridX + " " + npcs[0].gridY);
         Log.d(TAG,"NPC now im at "+ testn.gridX + " " + testn.gridY);
+*/
 
+        for(int i=0;i<inanObjs.length;i++){
+            ObjMap.put(inanObjs[i].getID(),inanObjs[i]);
+            PosMap.put(inanObjs[i].getCoordinates().hashCode(),inanObjs[i].getID());
+        }
 //        inanObjs[0].setPosX(600);
 //        inanObjs[0].setPosY(20);
-        inanObjs[0].setGridPos(5,4);
-        inanObjs[0].setVelX(0);
-        inanObjs[0].setVelY(0);
-        ObjMap.put(inanObjs[0].getID(), inanObjs[0]);
-        PosMap.put(inanObjs[0].getCoordinates().hashCode(), inanObjs[0].getID());
-        InanObject testi = (InanObject) ObjMap.get(inanObjs[0].getID());
-        int testinti = ObjMap.get(inanObjs[0].getID()).getID();
-        Log.d(TAG,"Real inan ID:" + inanObjs[0].getID());
-        Log.d(TAG,"Test inan ID:" + testi.getID());
-        Log.d(TAG,"Ref inan ID:" + testinti);
-        Log.d(TAG,"inan now im at "+ inanObjs[0].gridX + " " + inanObjs[0].gridY);
-        Log.d(TAG,"inan now im at "+ testi.gridX + " " + testi.gridY);
+//        inanObjs[0].setGridPos(5,4);
+//        inanObjs[0].setVelX(0);
+//        inanObjs[0].setVelY(0);
+//        ObjMap.put(inanObjs[0].getID(), inanObjs[0]);
+//        PosMap.put(inanObjs[0].getCoordinates().hashCode(), inanObjs[0].getID());
+//        InanObject testi = (InanObject) ObjMap.get(inanObjs[0].getID());
+//        int testinti = ObjMap.get(inanObjs[0].getID()).getID();
+//        Log.d(TAG,"Real inan ID:" + inanObjs[0].getID());
+//        Log.d(TAG,"Test inan ID:" + testi.getID());
+//        Log.d(TAG,"Ref inan ID:" + testinti);
+//        Log.d(TAG,"inan now im at "+ inanObjs[0].gridX + " " + inanObjs[0].gridY);
+//        Log.d(TAG,"inan now im at "+ testi.gridX + " " + testi.gridY);
 
     }
 
@@ -159,18 +166,18 @@ public class GameMode {
 
         // Update Player positions
         for(int i=0;i<players.length;i++) {
-            players[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.PLAYER, PosMap, ObjMap);
+            players[i].update(players, npcs, inanObjs, players[0].getID(), GameObject.GameObjectTypes.PLAYER, PosMap, ObjMap);
         }
 
         // Update NPC positions
         for(int i=0;i<npcs.length;i++){
-            npcs[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.NPC, PosMap, ObjMap);
+            npcs[i].update(players, npcs, inanObjs, players[0].getID(), GameObject.GameObjectTypes.NPC, PosMap, ObjMap);
         }
 
         // Update Inanimate Object Positions
-        for(int i=0;i<inanObjs.length;i++){
-            inanObjs[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.INANOBJECT, PosMap, ObjMap);
-        }
+//        for(int i=0;i<inanObjs.length;i++){
+//            inanObjs[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.INANOBJECT, PosMap, ObjMap);
+//        }
     }
 
 
@@ -181,12 +188,13 @@ public class GameMode {
     public void drawFrame(Canvas canvas){
 
         // Drawing Map -- should be else where possibly
-        canvas.drawBitmap(map,null, new Rect(0,0,canvas.getWidth(),canvas.getHeight()), null);
+        //canvas.drawBitmap(map,null, new Rect(0,0,canvas.getWidth(),canvas.getHeight()), null);
+        worldMap.drawFrame(canvas,new Rect(0,0,canvasWidth,canvasHeight));
 
         // Draw InanimateObjects
-        for(int i=0;i<inanObjs.length;i++){
-            inanObjs[i].drawFrame(canvas);
-        }
+//        for(int i=0;i<inanObjs.length;i++){
+//            inanObjs[i].drawFrame(canvas);
+//        }
 
         // Draw Npcs
         for(int i=0;i<npcs.length;i++){
