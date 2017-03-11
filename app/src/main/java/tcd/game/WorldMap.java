@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -30,6 +31,7 @@ public class WorldMap {
     private Bitmap tileSet;
     private int GRID_SIZE;
     private int drawSize;
+    private Map<Integer, Bitmap[][]> SpriteMaps = new HashMap<Integer, Bitmap[][]>();
 
     private ArrayList<NPC> npcs;
     private ArrayList<InanObject>inanObjects;

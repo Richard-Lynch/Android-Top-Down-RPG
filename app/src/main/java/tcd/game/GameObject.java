@@ -235,16 +235,17 @@ public class GameObject {
     }
 
 
-    public void setSprite(Bitmap bitmap){
+    public Bitmap[][] setSprite(Bitmap bitmap){
         this.spriteMap = bitmap;
         dividedSpriteMap = new Bitmap[spritesTall][spritesWide]; //This 2-d array will store the split up frames from the sprite sheet
 
         // Divide up sprite sheet into 2d array of Bitmap objects for each individual sprite
         for (int i = 0; i < spritesTall; i++){
             for (int j = 0; j < spritesWide; j++){
-                dividedSpriteMap[i][j] = Bitmap.createBitmap(spriteMap, j*spriteMap.getWidth()/spritesWide, i*spriteMap.getHeight()/spritesTall, spriteMap.getWidth()/spritesWide, spriteMap.getHeight()/spritesTall);
+                dividedSpriteMap[i][j] = Bitmap.createBitmap(bitmap, j*bitmap.getWidth()/spritesWide, i*bitmap.getHeight()/spritesTall, bitmap.getWidth()/spritesWide, bitmap.getHeight()/spritesTall);
             }
         }
+        return dividedSpriteMap;
     }
 
     public void setCrop(int width, int height){
@@ -452,6 +453,7 @@ public class GameObject {
             }
 
             if(collided){
+                collided = false;
                 return 1;
             }
         }

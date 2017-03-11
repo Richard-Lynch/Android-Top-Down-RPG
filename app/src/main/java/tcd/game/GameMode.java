@@ -284,7 +284,7 @@ public class GameMode {
                 if (CurrentEventID == 10) {
                     EventActivated = true;
                 }else if(CurrentEventID == 1){
-                    SP_ID_MarioCoin = soundPool.load(context, R.raw.mario_coin, 1);
+                    //SP_ID_MarioCoin = soundPool.load(context, R.raw.mario_coin, 1);
                 }
             }
 
