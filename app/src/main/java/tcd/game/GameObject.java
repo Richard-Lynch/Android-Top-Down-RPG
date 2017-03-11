@@ -36,6 +36,11 @@ public class GameObject {
     /** Unique ID for each GameObject */
     protected int id;
 
+    // Added by Stefano -- required by Map class
+    // May need two IDS as id tracks what GameObject they are
+    // DatabaseID tracks there ID in a relevant table in database
+    protected short databaseID;
+
 
     /** Application Context to access Drawable Resources */
     protected Context context;
@@ -198,7 +203,9 @@ public class GameObject {
         int cells_wide = 32;
         int cells_tall = 18;
         drawWidth = canvasWidth/cells_wide;
-        drawHeight = canvasHeight/cells_tall;
+        //drawHeight = canvasHeight/cells_tall;
+        drawHeight = drawWidth;
+
         gridSize = drawWidth;
 
         collided  = false;
@@ -470,4 +477,18 @@ public class GameObject {
 
         public int getVal(){return value;} // to return the values in the brackets
     }
+
+    // Added by Stefano (required by WorldMap class)
+    public void setInfo(String[] s){
+        this.name = s[1];
+    }
+
+    public void setDatabaseID(short databaseID){
+        this.databaseID = databaseID;
+    }
+
+    public short getDatabaseID(){
+        return databaseID;
+    }
+
 }

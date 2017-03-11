@@ -321,7 +321,7 @@ public class GameFragment extends Fragment{
         public void run() {
             Log.d(TAG, "Run Method starting");
             while (!gameInitialized) {
-                Log.d(TAG, "Waiting for game to Initialise");
+               // Log.d(TAG, "Waiting for game to Initialise");
             }
             while (running) {
 //                    Log.d(TAG,"GameLoop Starting");
