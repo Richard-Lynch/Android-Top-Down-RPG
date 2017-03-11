@@ -53,6 +53,17 @@ public class GameObject {
     protected int velX,velY;
     protected int speed;
 
+    protected boolean hasEvent;
+
+    protected int eventID;
+
+    public int getHealth() {
+        return health;
+    }
+
+    protected int health;
+
+
     /** Box used for updating positions and collision checking */
     protected Rect collisionBox;
     protected Rect drawBox;
@@ -82,6 +93,7 @@ public class GameObject {
     protected int gridX, gridY;
     protected boolean gridUnset;
     protected boolean collided;
+
 
 
 
@@ -151,6 +163,7 @@ public class GameObject {
         // Loading default Sprites for each GameObject if not passed in
         if(type == GameObjectTypes.PLAYER){
 //            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default);
+            health = 100;
             spritesWide = 10;
             spritesTall = 8;
             drawScaleFactor = 0.25f;
@@ -158,17 +171,19 @@ public class GameObject {
             facing = GameObjectAnimationDirection.FACING_RIGHT;
         } else if (type == GameObjectTypes.INANOBJECT){
 //            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.inan_default);
+            health = -1;
             spritesWide = 1;
             spritesTall = 1;
             drawScaleFactor = 0.5f;
-            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.inan_default));
+            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.house_1));
             facing = GameObjectAnimationDirection.FACING_DOWN;
         } else if(type == GameObjectTypes.NPC){
 //            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_default);
+            health = 100;
             spritesWide = 10;
             spritesTall = 8;
             drawScaleFactor = 0.25f;
-            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_default));
+            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_4));
             facing = GameObjectAnimationDirection.FACING_DOWN;
         }
 
@@ -241,6 +256,8 @@ public class GameObject {
         this.drawBox.bottom = this.drawBox.top + drawHeight;
     }
 
+
+
     public void setVelX(int velX) {
         if(this.velX != velX && !this.moving){
             if(!this.collided){
@@ -275,6 +292,44 @@ public class GameObject {
         }
     }
 
+    public int getEventID() {
+        return eventID;
+    }
+
+    public void setEventID(int eventID) {
+        this.eventID = eventID;
+        this.hasEvent = true;
+    }
+
+    /**Called when an event is activated on this game object.
+     *
+     * @param type: 0 = Object been attacked, 1 = object been interacted with
+     * @param attack_power  If the event is an attack, this is the power of it
+     * @returns 0 = health has been decreased, -1 = Object does not have event, otherwise returns the event ID associated with the object
+     */
+    public int OnEvent(int type, int attack_power){
+            switch (type){
+
+                //Event is an attack on the object
+                case 0:
+                    this.health = this.health - attack_power;
+                    Log.d(TAG, "health decreased by " + attack_power);
+                    return 0;
+
+                //Event is an interaction
+                case 1:
+                    if(this.hasEvent){
+                        return this.eventID;
+                    }
+                    else {
+                        return -1;
+                    }
+                default:
+                    return -1;
+
+            }
+    }
+
     public Coordinates getCoordinates(){
         return new Coordinates(this.gridX, this.gridY);
     }
@@ -295,7 +350,44 @@ public class GameObject {
         }
     }
 
-    public void update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type, Map<Integer, Integer> colMap, Map<Integer, GameObject> objMap){
+    private int directionX(){
+        if( facing == GameObjectAnimationDirection.FACING_RIGHT){
+            return 1;
+        } else if(facing == GameObjectAnimationDirection.FACING_LEFT){
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+
+    private int directionY(){
+        if(facing == GameObjectAnimationDirection.FACING_DOWN) {
+            return 1;
+        } else if(facing == GameObjectAnimationDirection.FACING_UP){
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+
+    private int action(Map<Integer, GameObject> objMap,Map<Integer, Integer> colMap,int EventType){
+        int dirX = directionX();
+        int dirY = directionY();
+
+        int IdOfObject = colMap.get(new Coordinates(this.gridX + dirX, this.gridY + dirY).hashCode());
+
+        switch (EventType){
+            case 0:
+                return (objMap.get(IdOfObject)).OnEvent(0, 50);
+            case 1:
+                return (objMap.get(IdOfObject)).OnEvent(1, 0);
+            default:
+                return -1;
+        }
+    }
+
+
+    public int update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type, Map<Integer, Integer> colMap, Map<Integer, GameObject> objMap){
         //move object by velocity
         if(this.moving){
             if(gridUnset){
@@ -329,7 +421,22 @@ public class GameObject {
                 move();
             }
         }
+        else if(players[0].isA_pressed() && colMap.get(new Coordinates(this.gridX+directionX(), this.gridY+directionY()).hashCode()) != (null)) {
+
+            Log.d(TAG, "Event ID returned to main" + action(objMap,colMap,1));
+            return action(objMap,colMap,1); //Returns the event ID to run
+
+        }
+        else if(players[0].isB_pressed() && colMap.get(new Coordinates(this.gridX+directionX(), this.gridY+directionY()).hashCode()) != (null)) {
+
+            Log.d(TAG, "Attack has happened, returning 0");
+            return action(objMap, colMap, 0); //Returns 0 to signify that health has been decreased on object
+        }
+            //Log.d(TAG, "returned -1 no event happened");
+            return -1; //If no event happened, -1 returned
     }
+
+
 
     public void drawFrame(Canvas canvas){
         canvas.drawBitmap(
@@ -342,6 +449,7 @@ public class GameObject {
     public int getID(){
         return this.id;
     }
+
 
     public enum GameObjectTypes {
         PLAYER,

@@ -29,7 +29,7 @@ public class AnimateObject extends GameObject{
     }
 
     @Override
-    public void update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type, Map<Integer, Integer> colMap, Map<Integer, GameObject> objMap) {
+    public int update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type, Map<Integer, Integer> colMap, Map<Integer, GameObject> objMap) {
 
 //        super.update(players, npcs, inanObjects, id, type, colMap, objMap);
         //if we've waited long enough for an update
@@ -42,12 +42,12 @@ public class AnimateObject extends GameObject{
                 facing = GameObjectAnimationDirection.FACING_RIGHT; //set facing direction
                 maxAnimationColIndex = GameObjectAnimationDirection.MOVING_RIGHT.getVal();  //set the number of sprites in the animation
             } else if(velX == -1){
-                animationSpeed = 10;
+                animationSpeed = 40;
                 animationRowIndex = GameObjectAnimationDirection.MOVING_LEFT.ordinal();
                 facing = GameObjectAnimationDirection.FACING_LEFT;
                 maxAnimationColIndex = GameObjectAnimationDirection.MOVING_LEFT.getVal();
             }else if(velY == 1){
-                animationSpeed = 10;
+                animationSpeed = 40;
                 animationRowIndex = GameObjectAnimationDirection.MOVING_DOWN.ordinal();
                 facing = GameObjectAnimationDirection.FACING_DOWN;
                 maxAnimationColIndex = GameObjectAnimationDirection.MOVING_DOWN.getVal();
@@ -93,8 +93,7 @@ public class AnimateObject extends GameObject{
             //resets animation timer ( loop )
             loops = animationSpeed;
         }
-        super.update(players, npcs, inanObjects, id, type, colMap, objMap);
-
+        return super.update(players, npcs, inanObjects, id, type, colMap, objMap);
     }
 
     //Flags
