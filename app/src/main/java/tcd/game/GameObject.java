@@ -175,7 +175,7 @@ public class GameObject {
             spritesWide = 1;
             spritesTall = 1;
             drawScaleFactor = 0.5f;
-            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.house_1));
+            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.inan_default));
             facing = GameObjectAnimationDirection.FACING_DOWN;
         } else if(type == GameObjectTypes.NPC){
 //            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_default);
@@ -183,7 +183,7 @@ public class GameObject {
             spritesWide = 10;
             spritesTall = 8;
             drawScaleFactor = 0.25f;
-            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_4));
+            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_default));
             facing = GameObjectAnimationDirection.FACING_DOWN;
         }
 

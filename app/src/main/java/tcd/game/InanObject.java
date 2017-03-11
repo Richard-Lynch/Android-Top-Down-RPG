@@ -14,7 +14,7 @@ public class InanObject extends GameObject {
 
     InanObject(Context context, String s, int canvasWidth, int canvasHeight){
         super(context,s, GameObjectTypes.INANOBJECT, canvasWidth, canvasHeight);
-        setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.house_1));
+        setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.inan_default));
     }
 
     @Override

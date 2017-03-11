@@ -110,12 +110,9 @@ public class GameMode {
     }
 
 
-    private void init(double levelID) {
-
-
     private void init(double levelID){
         worldMap = new WorldMap(context,canvasWidth,canvasHeight);
-          speechbox = BitmapFactory.decodeResource(context.getResources(), R.drawable.speechboxj);
+          speechbox = BitmapFactory.decodeResource(context.getResources(), R.drawable.truck);
 
         //map = BitmapFactory.decodeResource(context.getResources(),R.drawable.map_default);
         players = new Player[1];
@@ -243,7 +240,7 @@ public class GameMode {
         // Update Inanimate Object Positions
 //        for(int i=0;i<inanObjs.length;i++){
 //            inanObjs[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.INANOBJECT, PosMap, ObjMap);
-//        }
+       }
     }
 
 

@@ -69,17 +69,17 @@ public class Player extends AnimateObject {
                 this.setVelX(1);
                 this.setVelY(0);
             }
-            if (left_pressed && velX !=-1) {
+            else if (left_pressed && velX !=-1) {
                 Log.d(TAG,"Left");
                 this.setVelX(-1);
                 this.setVelY(0);
             }
-            if (down_pressed && velY !=1) {
+            else if (down_pressed && velY !=1) {
                 Log.d(TAG,"Down");
                 this.setVelY(1);
                 this.setVelX(0);
             }
-            if (up_pressed && velY !=-1) {
+            else if (up_pressed && velY !=-1) {
                 Log.d(TAG,"Up");
                 this.setVelY(-1);
                 this.setVelX(0);

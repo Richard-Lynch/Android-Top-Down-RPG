@@ -77,34 +77,34 @@ public class GameFragment extends Fragment{
                 if(event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE) {
                     Log.d(TAG,"Moving true");
                     if(gameMode.isEventActivated() == false){
-                    if (touchLoc.intersect(upRect_area)) {
-                        gameMode.getPlayer().setUp_pressed(true);
-                        controlIconUp = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_up_pressed);
+                        if (touchLoc.intersect(upRect_area)) {
+                            gameMode.getPlayer().setUp_pressed(true);
+                            controlIconUp = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_up);
                         } else if (touchLoc.intersect(downRect_area)) {
-                                gameMode.getPlayer().setDown_pressed(true);
-                                controlIconDown = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_down_pressed);
+                            gameMode.getPlayer().setDown_pressed(true);
+                            controlIconDown = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_down);
                         } else if(touchLoc.intersect(rightRect_area)){
-                                gameMode.getPlayer().setRight_pressed(true);
-                                controlIconRight = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_right_pressed);
-                         } else if(touchLoc.intersect(leftRect_area)) {
-                                gameMode.getPlayer().setLeft_pressed(true);
-                                controlIconLeft = BitmapFactory.decodeResource(getResources(), R.drawable.arrow_left_pressed);
+                            gameMode.getPlayer().setRight_pressed(true);
+                            controlIconRight = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_right);
+                        } else if(touchLoc.intersect(leftRect_area)) {
+                            gameMode.getPlayer().setLeft_pressed(true);
+                            controlIconLeft = BitmapFactory.decodeResource(getResources(), R.drawable.arrow_left);
                         }
                     }
-                        if(touchLoc.intersect(A_rect)){
-                            A_Button = BitmapFactory.decodeResource(getResources(), R.drawable.a_button_not);
-                            gameMode.getPlayer().setAPressed(true);
-                        } else if (touchLoc.intersect(B_rect)){
-                            B_Button = BitmapFactory.decodeResource(getResources(), R.drawable.b_button_not);
-                            gameMode.getPlayer().setBPressed(true);
-                            gameMode.setEventActivated(false);
+                    if(touchLoc.intersect(A_rect)){
+                        A_Button = BitmapFactory.decodeResource(getResources(), R.drawable.truck);
+                        gameMode.getPlayer().setAPressed(true);
+                    } else if (touchLoc.intersect(B_rect)){
+                        B_Button = BitmapFactory.decodeResource(getResources(), R.drawable.truck);
+                        gameMode.getPlayer().setBPressed(true);
+                        gameMode.setEventActivated(false);
                     }
 
                 } else if(event.getAction() == MotionEvent.ACTION_UP){
                     Log.d(TAG,"Moving false");
                     gameMode.getPlayer().setAllVelFalse();
                     gameMode.getPlayer().setAllButFalse();
-                    restoreBitmaps();;
+                    restoreBitmaps();
                     //A_Button = BitmapFactory.decodeResource(getResources(), R.drawable.a_button);
                     //B_Button = BitmapFactory.decodeResource(getResources(),R.drawable.b_button);
                 }
@@ -154,8 +154,8 @@ public class GameFragment extends Fragment{
         controlIconLeft = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_left);
         controlIconRight = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_right);
 
-        A_Button = BitmapFactory.decodeResource(getResources(), R.drawable.a_button);
-        B_Button = BitmapFactory.decodeResource(getResources(),R.drawable.b_button);
+        A_Button = BitmapFactory.decodeResource(getResources(), R.drawable.truck);
+        B_Button = BitmapFactory.decodeResource(getResources(),R.drawable.truck);
     }
 
     /***********************************************************************************
@@ -167,8 +167,8 @@ public class GameFragment extends Fragment{
         controlIconLeft = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_left);
         controlIconRight = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_right);
 
-        A_Button = BitmapFactory.decodeResource(getResources(), R.drawable.a_button);
-        B_Button = BitmapFactory.decodeResource(getResources(),R.drawable.b_button);
+        A_Button = BitmapFactory.decodeResource(getResources(), R.drawable.truck);
+        B_Button = BitmapFactory.decodeResource(getResources(),R.drawable.truck);
 
 
         // Size of a single direction button is 1/18th of max screen size,

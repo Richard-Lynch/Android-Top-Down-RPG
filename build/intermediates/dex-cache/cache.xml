@@ -3,21 +3,12 @@
 
     <item
         is-multidex="true"
-        jar="/home/stefano/Desktop/3D5B/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jar="/home/richie/AndroidStudioProjects/3D5B_S/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.0"
-        sha1="c82741bc129dd5f99f11a4ab8666ae24262053b6">
-        <dex dex="/home/stefano/Desktop/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run_d51c81c243740f77849c68c3693064d20cdb6d07/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/home/stefano/Desktop/3D5B/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="1583e1cdf743fa5eeffb0a9743f5f83c9fc7959b">
-        <dex dex="/home/stefano/Desktop/3D5B/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_c7a701c4554c88566565f28079cce97aaf295899/classes.dex" />
+        sha1="c842d5df4abed54ad5979315ff85eb51423ff418">
+        <dex dex="/home/richie/AndroidStudioProjects/3D5B_S/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_aa4db5aa10ae742f16bfa43b3e74cd86c7efff14/classes.dex" />
     </item>
 
 </items>
