@@ -125,7 +125,7 @@ public class WorldMap {
             Log.d(TAG, "grid:"+GRID_SIZE);
 
             // Create our final bitmap
-            map = Bitmap.createBitmap(canvasWidth,canvasHeight, Bitmap.Config.ARGB_8888);
+            map = Bitmap.createBitmap(cols*drawSize,rows*drawSize, Bitmap.Config.ARGB_8888);
 
             // Create inanObjects and save them
             inanObjects = new ArrayList<>();
@@ -143,7 +143,7 @@ public class WorldMap {
                     }
                     if(tile.collidable){
                         Log.d(TAG, "con name:" + tile.convenienceName);
-                        InanObject inanObject = new InanObject(context,tile.convenienceName,canvasWidth,canvasHeight);
+                        InanObject inanObject = new InanObject(context,tile.convenienceName,canvasWidth,canvasHeight, map.getWidth(), map.getHeight());
                         inanObject.setGridPos(col,row);
                         t("Creating inan: (" + col + "," + row + ")");
                         inanObject.setSprite(Bitmap.createBitmap(tileSet,0,0, GRID_SIZE, GRID_SIZE));
@@ -173,7 +173,7 @@ public class WorldMap {
 
                     if(currentID != 0) {
                         // create npc
-                        NPC npc = new NPC(context, null, canvasWidth, canvasHeight);
+                        NPC npc = new NPC(context, null, canvasWidth, canvasHeight, map.getWidth(), map.getHeight());
                         npc.setGridPos(j,i);
                         npc.setDatabaseID(currentID);
                         npcs.add(npc);
@@ -231,6 +231,10 @@ public class WorldMap {
     public void drawFrame(Canvas canvas, Rect src) {
         canvas.drawBitmap(map,src,new Rect(0,0,canvas.getWidth(),canvas.getHeight()),null);
 
+    }
+
+    public Bitmap getMap(){
+        return map;
     }
 
 

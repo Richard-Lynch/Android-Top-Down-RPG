@@ -33,6 +33,7 @@ public class GameMode {
     private WorldMap worldMap;
     public int offset_x;
     public int offset_y;
+    private Map<Integer, Bitmap[][]> SpriteMaps = new HashMap<Integer, Bitmap[][]>(5);
 
 
     // Declare Arrays of our GameObjects
@@ -119,22 +120,28 @@ public class GameMode {
 
     private void init(double levelID){
         worldMap = new WorldMap(context,canvasWidth,canvasHeight);
-          speechbox = BitmapFactory.decodeResource(context.getResources(), R.drawable.truck);
-        map = worldMap.getMap;
+        speechbox = BitmapFactory.decodeResource(context.getResources(), R.drawable.truck);
+        map = worldMap.getMap();
         MapWidth = map.getWidth();
         MapHeight = map.getHeight();
 
         //map = BitmapFactory.decodeResource(context.getResources(),R.drawable.map_default);
         players = new Player[1];
         npcs = worldMap.getNpcs();
+        SpriteMaps.put(GameObject.GameObjectTypes.NPC.ordinal(),npcs[0].dividedSpriteMap);
+
 //        inanObjs = new InanObject[1];
         inanObjs = worldMap.getInanObjects();
+        SpriteMaps.put(GameObject.GameObjectTypes.INANOBJECT.ordinal(),inanObjs[0].dividedSpriteMap);
+
         Log.d(TAG,"initing gamemode");
 
-        players[0] = new Player(context,"Donal", canvasWidth, canvasHeight);
+        players[0] = new Player(context,"Donal", canvasWidth, canvasHeight, map.getWidth(), map.getHeight());
         //inanObjs[0] = new InanObject(context,"House",canvasWidth,canvasHeight);
         players[0].setGridPos(3,2);
         players[0].setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default));
+        SpriteMaps.put(GameObject.GameObjectTypes.PLAYER.ordinal(),players[0].dividedSpriteMap);
+
         ObjMap.put(players[0].getID(), players[0]);
         PosMap.put(players[0].getCoordinates().hashCode(), players[0].getID());
         Player test = (Player) ObjMap.get(players[0].getID());
@@ -327,8 +334,6 @@ public class GameMode {
      */
     public void drawFrame(Canvas canvas) {
     // can also pass a proameter in here as well as canvas
-    public void drawFrame(Canvas canvas)
-    {
         //TODO: make a camera class, and tidy up! And sort out col with edge of map!
 
         Rect Camera = new Rect(offset_x,offset_y,((canvas.getWidth())/MapWidth)*map.getWidth(),
@@ -363,7 +368,17 @@ public class GameMode {
 
         // Draw InanimateObjects
         for(int i=0;i<inanObjs.length;i++){
-            inanObjs[i].drawFrame(canvas,offset_x,offset_y);
+            //inanObjs[i].drawFrame(canvas,offset_x,offset_y);
+            Rect temp_drawBox = new Rect(inanObjs[i].drawBox);
+            temp_drawBox.offset(-offset_x,-offset_y);
+            if((temp_drawBox.left >= 0 && temp_drawBox.right <= canvas.getWidth()) &&  (temp_drawBox.top >= 0 && temp_drawBox.bottom <= canvas.getHeight()) ) {
+                canvas.drawBitmap(
+                        SpriteMaps.get(GameObject.GameObjectTypes.INANOBJECT.ordinal())[inanObjs[i].getAnimationRowIndex()][inanObjs[i].getAnimationColIndex()],
+                        null,
+                        temp_drawBox,
+                        null
+                );
+            }
         }
 
         // Draw Npcs
@@ -377,6 +392,16 @@ public class GameMode {
         // Draw Players
         for(int i=0;i<players.length;i++) {
             players[i].drawFrame(canvas,offset_x,offset_y);
+            //Rect temp_drawBox = new Rect(players[i].drawBox);
+//            temp_drawBox.offset(-offset_x,-offset_y);
+//            if((temp_drawBox.left >= 0 && temp_drawBox.right <= canvas.getWidth()) &&  (temp_drawBox.top >= 0 && temp_drawBox.bottom <= canvas.getHeight()) ) {
+//                canvas.drawBitmap(
+//                        SpriteMaps.get(GameObject.GameObjectTypes.PLAYER.ordinal())[players[i].getAnimationRowIndex()][players[i].getAnimationColIndex()],
+//                        null,
+//                        temp_drawBox,
+//                        null
+//                );
+//            }
 
         }
         if (EventActivated) {

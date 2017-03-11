@@ -214,6 +214,9 @@ public class GameObject {
         //drawHeight = canvasHeight/cells_tall;
         drawHeight = drawWidth;
 
+        gridWide = (int)Math.round((double)mapWidth/(double)drawWidth);
+        gridHeight = (int)Math.round((double)mapHeight/(double)drawWidth);
+
         gridSize = drawWidth;
 
         //gridSize = mapWidth/cells_wide;
@@ -415,7 +418,7 @@ public class GameObject {
         //move object by velocity
         if(this.moving){
             if(gridUnset){
-                if((gridX+velX < 0 || gridX+velX >= cells_wide) || (gridY+velY < 0 || gridY+velY >= cells_tall)){
+                if((gridX+velX < 0 || gridX+velX >= gridWide) || (gridY+velY < 0 || gridY+velY >= gridHeight)){
                     this.moving = false;
                     deltaX = deltaY = 0;
                     this.collided = true;
@@ -477,6 +480,14 @@ public class GameObject {
                     null
             );
         }
+    }
+
+    public int getAnimationRowIndex(){
+        return animationRowIndex;
+    }
+
+    public int getAnimationColIndex(){
+        return animationColIndex;
     }
 
     public int getID(){

@@ -39,12 +39,10 @@ public class AnimateObject extends GameObject{
                 facing = GameObjectAnimationDirection.FACING_RIGHT; //set facing direction
                 maxAnimationColIndex = GameObjectAnimationDirection.MOVING_RIGHT.getVal();  //set the number of sprites in the animation
             } else if(velX == -1){
-                animationSpeed = 40;
                 animationRowIndex = GameObjectAnimationDirection.MOVING_LEFT.ordinal();
                 facing = GameObjectAnimationDirection.FACING_LEFT;
                 maxAnimationColIndex = GameObjectAnimationDirection.MOVING_LEFT.getVal();
             }else if(velY == 1){
-                animationSpeed = 40;
                 animationRowIndex = GameObjectAnimationDirection.MOVING_DOWN.ordinal();
                 facing = GameObjectAnimationDirection.FACING_DOWN;
                 maxAnimationColIndex = GameObjectAnimationDirection.MOVING_DOWN.getVal();
