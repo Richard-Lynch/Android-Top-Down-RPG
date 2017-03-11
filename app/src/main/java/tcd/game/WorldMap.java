@@ -28,7 +28,7 @@ public class WorldMap {
 
     private Bitmap map;
     private Bitmap tileSet;
-    private final static int GRID_SIZE = 32;
+    private int GRID_SIZE;
     private int drawSize;
 
     private ArrayList<NPC> npcs;
@@ -92,8 +92,13 @@ public class WorldMap {
             // Go to Database and Get relevant rows
             databaseHelper = new DatabaseHelper(context);
 
+            Log.d(TAG, databaseHelper.tableToString(databaseHelper.TILES_TABLE));
+
             // Trim off last comma
             IDSFromDB = IDSFromDB.substring(0,IDSFromDB.length()-1);
+
+            Log.d(TAG, IDSFromDB);
+
 
             // Generate Query
             String query = " SELECT * FROM " + DatabaseHelper.TILES_TABLE + " WHERE ID IN (" + IDSFromDB + " ) ORDER BY ID";
@@ -103,7 +108,8 @@ public class WorldMap {
 
             // Iterate over tiles read from DB
             for(String[] s : results){
-                // Finish the initalization process of all the tiles required for the map
+                // Finish the initalization process of all the tiles required for the mapd
+                Log.d(TAG,s[0]);
                 Tile tile = tilesRequiredHashMap.get(Short.valueOf(s[0]));
                 if(tile != null) {
                     tile.setInfo(s);
@@ -115,9 +121,11 @@ public class WorldMap {
             // Get required tilesets (may need to do this one at a time to avoid oom)
             // For now just one so
             tileSet = BitmapFactory.decodeResource(context.getResources(), R.drawable.pokemon_tileset);
+            GRID_SIZE = tileSet.getWidth()/8;
+            Log.d(TAG, "grid:"+GRID_SIZE);
 
             // Create our final bitmap
-            map = Bitmap.createBitmap(canvasWidth,canvasHeight,null);
+            map = Bitmap.createBitmap(canvasWidth,canvasHeight, Bitmap.Config.ARGB_8888);
 
             // Create inanObjects and save them
             inanObjects = new ArrayList<>();
