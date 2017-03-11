@@ -86,6 +86,9 @@ public class GameObject {
     /** Flag indicating whether this GameObject can move (May be redundant) */
     protected boolean movable;
 
+    protected int cells_wide = 32;
+    protected int cells_tall = 18;
+
     protected boolean moving;
     protected int goalX, goalY;
     protected int deltaX, deltaY;
@@ -139,6 +142,12 @@ public class GameObject {
 //    protected int colWidthBuffer;
 //    protected int colHeightBuffer;
 
+    public int getDrawWidth(){
+        return this.drawWidth;
+    }
+    public int getDrawHeight(){
+        return  this.drawHeight;
+    }
 
     GameObject(){
         name = "Null-Man";
@@ -153,11 +162,11 @@ public class GameObject {
      * @param canvasWidth The width of the screen
      * @param canvasHeight
      */
-    GameObject(Context context, String name, GameObjectTypes type,int canvasWidth, int canvasHeight){
+    GameObject(Context context, String name, GameObjectTypes type,int canvasWidth, int canvasHeight,int mapWidth, int mapHeight){
         this.id = totalGameObjs;
         totalGameObjs++;
         canvasRect = new Rect(0,0,canvasWidth,canvasHeight);
-        mapRect = canvasRect; //for now
+        mapRect = new Rect(0,0,mapWidth,mapHeight);
         this.name = name;
         this.context = context;
         // Loading default Sprites for each GameObject if not passed in
@@ -197,16 +206,20 @@ public class GameObject {
 
 
         //grid
-// should really call a draw width here
+        // should really call a draw width here
         //TODO should call a setDraw method here
         //TODO idealy we want to do something with aspect ratio here
-        int cells_wide = 32;
-        int cells_tall = 18;
+
         drawWidth = canvasWidth/cells_wide;
         //drawHeight = canvasHeight/cells_tall;
         drawHeight = drawWidth;
 
+        gridWide = (int)Math.round((double)mapWidth/(double)drawWidth);
+        gridHeight = (int)Math.round((double)mapHeight/(double)drawWidth);
+
         gridSize = drawWidth;
+
+        //gridSize = mapWidth/cells_wide;
 
         collided  = false;
 
@@ -222,16 +235,17 @@ public class GameObject {
     }
 
 
-    public void setSprite(Bitmap bitmap){
+    public Bitmap[][] setSprite(Bitmap bitmap){
         this.spriteMap = bitmap;
         dividedSpriteMap = new Bitmap[spritesTall][spritesWide]; //This 2-d array will store the split up frames from the sprite sheet
 
         // Divide up sprite sheet into 2d array of Bitmap objects for each individual sprite
         for (int i = 0; i < spritesTall; i++){
             for (int j = 0; j < spritesWide; j++){
-                dividedSpriteMap[i][j] = Bitmap.createBitmap(spriteMap, j*spriteMap.getWidth()/spritesWide, i*spriteMap.getHeight()/spritesTall, spriteMap.getWidth()/spritesWide, spriteMap.getHeight()/spritesTall);
+                dividedSpriteMap[i][j] = Bitmap.createBitmap(bitmap, j*bitmap.getWidth()/spritesWide, i*bitmap.getHeight()/spritesTall, bitmap.getWidth()/spritesWide, bitmap.getHeight()/spritesTall);
             }
         }
+        return dividedSpriteMap;
     }
 
     public void setCrop(int width, int height){
@@ -295,6 +309,14 @@ public class GameObject {
             this.goalX = this.drawBox.left + drawWidth*velX;
             this.goalY = this.drawBox.top + drawHeight*velY;
         }
+    }
+
+    public int getPosX(){
+        return drawBox.left;
+    }
+
+    public int getPosY(){
+        return drawBox.top;
     }
 
     public int getEventID() {
@@ -397,13 +419,14 @@ public class GameObject {
         //move object by velocity
         if(this.moving){
             if(gridUnset){
-                if((goalX < 0 || goalX+drawWidth > canvasRect.right) || (goalY < 0 || goalY+drawHeight > canvasRect.bottom)){
+                if((gridX+velX < 0 || gridX+velX >= gridWide) || (gridY+velY < 0 || gridY+velY >= gridHeight)){
                     this.moving = false;
                     deltaX = deltaY = 0;
                     this.collided = true;
                     setVelX(0);
                     setVelY(0);
 
+                    Log.d(TAG, "gone off the map");
                 }
                 else if(colMap.get(new Coordinates(this.gridX+this.velX, this.gridY+this.velY).hashCode()) == (null)){
                     this.collided = false;
@@ -425,7 +448,13 @@ public class GameObject {
                 gridUnset = false;
             }
             else{
+                Log.d(TAG, "just moving");
                 move();
+            }
+
+            if(collided){
+                collided = false;
+                return 1;
             }
         }
         else if(players[0].isA_pressed() && colMap.get(new Coordinates(this.gridX+directionX(), this.gridY+directionY()).hashCode()) != (null)) {
@@ -445,12 +474,26 @@ public class GameObject {
 
 
 
-    public void drawFrame(Canvas canvas){
-        canvas.drawBitmap(
-                dividedSpriteMap[animationRowIndex][animationColIndex], null,
-                drawBox,
-                null
-        );
+    public void drawFrame(Canvas canvas,int offset_x,int offset_y){
+        //put this in game mode -> change drawbox -> translations
+        Rect temp_drawBox = new Rect(drawBox);
+        temp_drawBox.offset(-offset_x,-offset_y);
+        if((temp_drawBox.left >= 0 && temp_drawBox.right <= canvas.getWidth()) &&  (temp_drawBox.top >= 0 && temp_drawBox.bottom <= canvas.getHeight()) ) {
+            canvas.drawBitmap(
+                    dividedSpriteMap[animationRowIndex][animationColIndex],
+                    null,
+                    temp_drawBox,
+                    null
+            );
+        }
+    }
+
+    public int getAnimationRowIndex(){
+        return animationRowIndex;
+    }
+
+    public int getAnimationColIndex(){
+        return animationColIndex;
     }
 
     public int getID(){

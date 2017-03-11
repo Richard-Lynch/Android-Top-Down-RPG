@@ -1,9 +1,6 @@
 package tcd.game;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Rect;
-import android.util.Log;
 
 import java.util.Map;
 
@@ -19,8 +16,8 @@ import java.util.Map;
 public class AnimateObject extends GameObject{
 
     private static final String TAG = "Player";
-    AnimateObject(Context context, String s, GameObjectTypes type, int canvasWidth, int canvasHeight){
-        super(context,s, type ,canvasWidth, canvasHeight);
+    AnimateObject(Context context, String name, GameObjectTypes type,int canvasWidth, int canvasHeight,int mapWidth, int mapHeight){
+        super(context,name, type ,canvasWidth, canvasHeight, mapWidth, mapHeight);
         health = 100;
         skill = 1;
         strength = 10;
@@ -42,12 +39,10 @@ public class AnimateObject extends GameObject{
                 facing = GameObjectAnimationDirection.FACING_RIGHT; //set facing direction
                 maxAnimationColIndex = GameObjectAnimationDirection.MOVING_RIGHT.getVal();  //set the number of sprites in the animation
             } else if(velX == -1){
-                animationSpeed = 40;
                 animationRowIndex = GameObjectAnimationDirection.MOVING_LEFT.ordinal();
                 facing = GameObjectAnimationDirection.FACING_LEFT;
                 maxAnimationColIndex = GameObjectAnimationDirection.MOVING_LEFT.getVal();
             }else if(velY == 1){
-                animationSpeed = 40;
                 animationRowIndex = GameObjectAnimationDirection.MOVING_DOWN.ordinal();
                 facing = GameObjectAnimationDirection.FACING_DOWN;
                 maxAnimationColIndex = GameObjectAnimationDirection.MOVING_DOWN.getVal();
@@ -111,14 +106,14 @@ public class AnimateObject extends GameObject{
     private int skill;
     private int strength;
 
-    @Override
-    public void drawFrame(Canvas canvas){
-        canvas.drawBitmap( //Draw the sprite to the canvas
-                dividedSpriteMap[animationRowIndex][animationColIndex], null,
-                drawBox,
-                null
-        );
-    }
+//    @Override
+//    public void drawFrame(Canvas canvas){
+//        canvas.drawBitmap( //Draw the sprite to the canvas
+//                dividedSpriteMap[animationRowIndex][animationColIndex], null,
+//                drawBox,
+//                null
+//        );
+//    }
 
     //Setters
     public int getHealth() {
