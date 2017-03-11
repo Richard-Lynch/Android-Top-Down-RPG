@@ -175,7 +175,7 @@ public class GameObject {
             spritesWide = 1;
             spritesTall = 1;
             drawScaleFactor = 0.5f;
-            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.house_1));
+            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.inan_default));
             facing = GameObjectAnimationDirection.FACING_DOWN;
         } else if(type == GameObjectTypes.NPC){
 //            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_default);
@@ -183,7 +183,7 @@ public class GameObject {
             spritesWide = 10;
             spritesTall = 8;
             drawScaleFactor = 0.25f;
-            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_4));
+            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_default));
             facing = GameObjectAnimationDirection.FACING_DOWN;
         }
 
@@ -263,8 +263,11 @@ public class GameObject {
             if(!this.collided){
                 this.loops = 0;
             }
-            this.moving = true;
-            this.gridUnset = true;
+            if(velX != 0){
+                this.moving = true;
+                this.gridUnset = true;
+            }
+
             this.velX = velX;
 
             this.deltaX = drawWidth*velX;
@@ -280,8 +283,10 @@ public class GameObject {
             if(!this.collided){
                 this.loops = 0;
             }
-            this.moving = true;
-            this.gridUnset = true;
+            if(velY != 0){
+                this.moving = true;
+                this.gridUnset = true;
+            }
             this.velY = velY;
 
             this.deltaX = drawWidth*velX;
@@ -339,8 +344,9 @@ public class GameObject {
             if((abs(deltaX) <= abs(velX*speed) && abs(deltaY) <= abs(velY*speed))) {    //prevents overshoot
                 drawBox.offset(deltaX, deltaY);
                 deltaX = deltaY = 0;
-                velX = velY = 0;
                 this.moving = false;
+                setVelX(0);
+                setVelY(0);
 
             }else{
                 drawBox.offset(velX*speed, velY*speed);
@@ -394,8 +400,9 @@ public class GameObject {
                 if((goalX < 0 || goalX+drawWidth > canvasRect.right) || (goalY < 0 || goalY+drawHeight > canvasRect.bottom)){
                     this.moving = false;
                     deltaX = deltaY = 0;
-                    velX = velY = 0;
                     this.collided = true;
+                    setVelX(0);
+                    setVelY(0);
 
                 }
                 else if(colMap.get(new Coordinates(this.gridX+this.velX, this.gridY+this.velY).hashCode()) == (null)){
@@ -411,9 +418,9 @@ public class GameObject {
                 }else if(colMap.get(new Coordinates(this.gridX+velX, this.gridY+velY).hashCode()) != this.getID()){
                     this.collided = true;
                     Log.d(TAG, "oh DAMN item in front of me! not moving");
-                    velX = velY = 0;
                     moving = false;
-
+                    setVelX(0);
+                    setVelY(0);
                 }
                 gridUnset = false;
             }

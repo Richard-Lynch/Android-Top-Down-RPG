@@ -142,9 +142,11 @@ public class WorldMap {
                         break;
                     }
                     if(tile.collidable){
+                        Log.d(TAG, "con name:" + tile.convenienceName);
                         InanObject inanObject = new InanObject(context,tile.convenienceName,canvasWidth,canvasHeight);
                         inanObject.setGridPos(col,row);
                         t("Creating inan: (" + col + "," + row + ")");
+                        inanObject.setSprite(Bitmap.createBitmap(tileSet,0,0, GRID_SIZE, GRID_SIZE));
                         inanObjects.add(inanObject);
                     }
                     src = tile.getSourceRect();
@@ -272,7 +274,8 @@ public class WorldMap {
          * @return Source Rectangle on sprite sheet
          */
         public Rect getSourceRect(){
-            return new Rect(col*GRID_SIZE,row*GRID_SIZE,(col*GRID_SIZE)+(spanX*GRID_SIZE),(row*GRID_SIZE)+(spanY*GRID_SIZE));
+            int edgecrop = 1;
+            return new Rect(col*GRID_SIZE+edgecrop,row*GRID_SIZE+edgecrop,(col*GRID_SIZE)+(spanX*GRID_SIZE)-edgecrop,(row*GRID_SIZE)+(spanY*GRID_SIZE)-edgecrop);
         }
     }
 
