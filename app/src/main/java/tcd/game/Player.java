@@ -1,8 +1,6 @@
 package tcd.game;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.util.Log;
 
 import java.util.Map;
@@ -30,8 +28,8 @@ public class Player extends AnimateObject {
     private int strength;
 
     //constructor
-    Player(Context context, String s,int canvasWidth, int canvasHeight){
-        super(context,s, GameObjectTypes.PLAYER ,canvasWidth, canvasHeight);
+    Player(Context context, String s,int canvasWidth, int canvasHeight,int mapWidth, int mapHeight){
+        super(context,s, GameObjectTypes.PLAYER ,canvasWidth, canvasHeight, mapWidth, mapHeight);
         //TODO: Adjust player velocities properly (aspect ratio of device?)
     }
 
