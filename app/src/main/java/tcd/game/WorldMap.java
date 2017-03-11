@@ -122,7 +122,7 @@ public class WorldMap {
             // For now just one so
             tileSet = BitmapFactory.decodeResource(context.getResources(), R.drawable.pokemon_tileset);
             GRID_SIZE = tileSet.getWidth()/8;
-            //Log.d(TAG, GRID_SIZE);
+            Log.d(TAG, "grid:"+GRID_SIZE);
 
             // Create our final bitmap
             map = Bitmap.createBitmap(canvasWidth,canvasHeight, Bitmap.Config.ARGB_8888);
