@@ -450,6 +450,10 @@ public class GameObject {
                 Log.d(TAG, "just moving");
                 move();
             }
+
+            if(collided){
+                return 1;
+            }
         }
         else if(players[0].isA_pressed() && colMap.get(new Coordinates(this.gridX+directionX(), this.gridY+directionY()).hashCode()) != (null)) {
 

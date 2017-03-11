@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
+import android.os.Build;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -208,14 +209,18 @@ public class GameMode {
         mediaPlayer.start();
 
         // Initialise soundpool for sound effects
-        audioAttributes = new AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_GAME)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .build();
-        soundPool = new SoundPool.Builder()
-                .setAudioAttributes(audioAttributes)
-                .setMaxStreams(MAX_STREAM)
-                .build();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            audioAttributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_GAME)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build();
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            soundPool = new SoundPool.Builder()
+                    .setAudioAttributes(audioAttributes)
+                    .setMaxStreams(MAX_STREAM)
+                    .build();
+        }
 
         // Define the method that is called when a file is loaded to the soundPool
         soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
@@ -278,6 +283,8 @@ public class GameMode {
                 CurrentEventID = players[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.PLAYER, PosMap, ObjMap);
                 if (CurrentEventID == 10) {
                     EventActivated = true;
+                }else if(CurrentEventID == 1){
+                    SP_ID_MarioCoin = soundPool.load(context, R.raw.mario_coin, 1);
                 }
             }
 
