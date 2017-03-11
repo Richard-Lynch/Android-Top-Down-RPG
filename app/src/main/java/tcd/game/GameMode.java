@@ -7,7 +7,6 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.util.Log;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,9 +17,14 @@ public class GameMode {
     // Context is passed ot GameObjects for access to drawable resources
     private Context context;
     private int canvasWidth, canvasHeight;
+    private int MapWidth;
+    private int MapHeight;
 
     // Map should probably have its own class for Reading from file etc
     private Bitmap map;
+    public int offset_x;
+    public int offset_y;
+
 
     // Declare Arrays of our GameObjects
     private InanObject inanObjs[];
@@ -28,6 +32,8 @@ public class GameMode {
     private Player players[];
     private Map<Integer, GameObject> ObjMap = new HashMap<Integer, GameObject>(200);
     private Map<Integer, Integer> PosMap = new HashMap<Integer, Integer>(200);
+
+
 
 
     // Probably should have OpenWorld and Battle Classes  which extend this so dont need flag
@@ -84,27 +90,27 @@ public class GameMode {
 
         this.canvasWidth = screenWidth;
         this.canvasHeight = screenHeight;
+
         init(0);
     }
 
 
 
-    private void init(double levelID){
-
+    private void init(double levelID)
+    {
+        MapWidth = 2000;
+        MapHeight = 2000;
         map = BitmapFactory.decodeResource(context.getResources(),R.drawable.map_default);
         players = new Player[1];
         npcs = new NPC[1];
         inanObjs = new InanObject[1];
         Log.d(TAG,"initing gamemode");
 
-        players[0] = new Player(context,"Donal", canvasWidth, canvasHeight);
-        npcs[0] = new NPC(context,"Frank",canvasWidth, canvasHeight);
-        inanObjs[0] = new InanObject(context,"House",canvasWidth,canvasHeight);
-//        players[0].setPosX(40);
-//        players[0].setPosY(50);
-//        players[0].setVelX(0);
-//        players[0].setVelY(0);
-        players[0].setGridPos(3,2);
+        players[0] = new Player(context,"Donal", canvasWidth, canvasHeight, MapWidth, MapHeight);
+        npcs[0] = new NPC(context,"Frank",canvasWidth, canvasHeight, MapWidth, MapHeight);
+        inanObjs[0] = new InanObject(context,"House",canvasWidth,canvasHeight, MapWidth, MapHeight);
+
+        players[0].setGridPos(0,0);
         players[0].setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default));
         ObjMap.put(players[0].getID(), players[0]);
         PosMap.put(players[0].getCoordinates().hashCode(), players[0].getID());
@@ -120,8 +126,7 @@ public class GameMode {
         int testPOS = PosMap.get(pl.hashCode());
         Log.d(TAG,"Player pos map id: "+ testPOS + " pos: " + ObjMap.get(testPOS).gridX +" "+ ObjMap.get(testPOS).gridY);
 
-//        npcs[0].setPosX(700);
-//        npcs[0].setPosY(300);
+
         npcs[0].setGridPos(4,4);
         npcs[0].setVelX(1);
         npcs[0].setVelY(0);
@@ -135,9 +140,8 @@ public class GameMode {
         Log.d(TAG,"NPC now im at "+ npcs[0].gridX + " " + npcs[0].gridY);
         Log.d(TAG,"NPC now im at "+ testn.gridX + " " + testn.gridY);
 
-//        inanObjs[0].setPosX(600);
-//        inanObjs[0].setPosY(20);
-        inanObjs[0].setGridPos(5,4);
+
+        inanObjs[0].setGridPos(20,4);
         inanObjs[0].setVelX(0);
         inanObjs[0].setVelY(0);
         ObjMap.put(inanObjs[0].getID(), inanObjs[0]);
@@ -149,6 +153,39 @@ public class GameMode {
         Log.d(TAG,"Ref inan ID:" + testinti);
         Log.d(TAG,"inan now im at "+ inanObjs[0].gridX + " " + inanObjs[0].gridY);
         Log.d(TAG,"inan now im at "+ testi.gridX + " " + testi.gridY);
+
+        //Updating Camera offsets
+        offset_x = players[0].getPosX() + players[0].getDrawWidth()/2 - canvasWidth/2;
+        offset_y = players[0].getPosY() + players[0].getDrawHeight()/2 - canvasHeight/2;
+        Log.d(TAG,"POSX: " +players[0].getPosX());
+        Log.d(TAG,"POSY: " + players[0].getPosY());
+        Log.d(TAG,"PW: " + players[0].getDrawWidth()/2 ) ;
+        Log.d(TAG,"PH: " + players[0].getDrawHeight()/2 ) ;
+        Log.d(TAG, "CanvasW: " + canvasWidth/2);
+        Log.d(TAG,"CanvasH: " + canvasHeight/2);
+
+
+        if(offset_y <= 0)
+        {
+            offset_y = 0;
+        }
+        if(offset_x <= 0)
+        {
+            offset_x = 0;
+        }
+        if(offset_y + canvasHeight >= MapHeight)
+        {
+            offset_y = MapHeight - canvasHeight;
+        }
+        if(offset_x + canvasWidth >= MapWidth)
+        {
+            offset_x = MapWidth - canvasWidth;
+        }
+
+
+        Log.d(TAG,"oy: " + offset_y);
+        Log.d(TAG,"ox: " + offset_x);
+
 
     }
 
@@ -171,31 +208,93 @@ public class GameMode {
         for(int i=0;i<inanObjs.length;i++){
             inanObjs[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.INANOBJECT, PosMap, ObjMap);
         }
+
+        //Updating Camera offsets
+        offset_x = players[0].getPosX() + players[0].getDrawWidth()/2 - canvasWidth/2;
+        offset_y = players[0].getPosY() + players[0].getDrawHeight()/2 - canvasHeight/2;
+
+
+            if(offset_y <= 0)
+            {
+                offset_y = 0;
+            }
+
+            if(offset_x <= 0)
+            {
+                offset_x = 0;
+            }
+
+            if(offset_y + canvasHeight > MapHeight)
+            {
+                Log.d(TAG, "shit");
+                offset_y = MapHeight - canvasHeight;
+            }
+
+            if(offset_x + canvasWidth > MapWidth)
+            {
+                offset_x = MapWidth - canvasWidth;
+            }
+        //}
+
+        Log.d(TAG,"oy: " + offset_y);
+        Log.d(TAG,"ox: " + offset_x);
     }
 
 
+    void Rel_bit(){
+
+    }
     /**
      * Calls draw method for all game objects
      * @param canvas
      */
-    public void drawFrame(Canvas canvas){
+    // can also pass a proameter in here as well as canvas
+    public void drawFrame(Canvas canvas)
+    {
+        //TODO: make a camera class, and tidy up! And sort out col with edge of map!
+
+        Rect Camera = new Rect(offset_x,offset_y,((canvas.getWidth())/MapWidth)*map.getWidth(),
+                ((canvas.getHeight())/MapHeight)*map.getHeight());
+
+        canvas.drawBitmap(map, new Rect(
+                (int)Math.round(((double)offset_x/(double)MapWidth)*(double)map.getWidth()),
+                (int)Math.round(((double)offset_y/(double)MapHeight)*(double)map.getHeight()),
+                (int)Math.round((((double)canvas.getWidth())/(double)MapWidth)*(double)map.getWidth()+((double)offset_x/(double)MapWidth)*(double)map.getWidth()),
+                (int)Math.round((((double)canvas.getHeight())/(double)MapHeight)*(double)map.getHeight()+((double)offset_y/(double)MapHeight)*(double)map.getHeight())),
+                new Rect(0,0, canvas.getWidth(), canvas.getHeight()), null
+        );
+        Log.d(TAG, "map.get:" + map.getWidth());
+        Log.d(TAG, "MapWidth:" + MapWidth);
+        Log.d(TAG, "MapHeight:" + MapHeight);
+        Log.d(TAG, "canvas.getW:" + canvas.getWidth());
+        Log.d(TAG, "offsetX:" + offset_x);
+        Log.d(TAG, "div: " + (offset_x/MapWidth));
+        Log.d(TAG, "(int)div: " + (int)(offset_x/MapWidth));
+        Log.d(TAG, "(int)round.div: " + (int)Math.round(((double)offset_x/(double)MapWidth)));
+
+        Log.d(TAG,"1:" + Math.round((offset_x/MapWidth)*map.getWidth()));
+        Log.d(TAG,"2:" + Math.round((offset_y/MapHeight)*map.getHeight()));
+        Log.d(TAG,"3:" + Math.round(((canvas.getWidth())/MapWidth)*map.getWidth()+(offset_x/MapWidth)*map.getWidth()));
+        Log.d(TAG,"4:" + Math.round(((canvas.getHeight())/MapHeight)*map.getHeight()+(offset_y/MapHeight)*map.getHeight()));
+
 
         // Drawing Map -- should be else where possibly
-        canvas.drawBitmap(map,null, new Rect(0,0,canvas.getWidth(),canvas.getHeight()), null);
+
 
         // Draw InanimateObjects
         for(int i=0;i<inanObjs.length;i++){
-            inanObjs[i].drawFrame(canvas);
+            inanObjs[i].drawFrame(canvas,offset_x,offset_y);
         }
 
         // Draw Npcs
         for(int i=0;i<npcs.length;i++){
-            npcs[i].drawFrame(canvas);
+            npcs[i].drawFrame(canvas,offset_x,offset_y);
         }
 
         // Draw Players
         for(int i=0;i<players.length;i++) {
-            players[i].drawFrame(canvas);
+            players[i].drawFrame(canvas,offset_x,offset_y);
+
         }
     }
 

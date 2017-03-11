@@ -12,8 +12,8 @@ import java.util.Map;
 public class InanObject extends GameObject {
 
 
-    InanObject(Context context, String s, int canvasWidth, int canvasHeight){
-        super(context,s, GameObjectTypes.INANOBJECT, canvasWidth, canvasHeight);
+    InanObject(Context context, String s, int canvasWidth, int canvasHeight,int mapWidth, int mapHeight){
+        super(context,s, GameObjectTypes.INANOBJECT, canvasWidth, canvasHeight, mapWidth, mapHeight);
         setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.inan_default));
     }
 
