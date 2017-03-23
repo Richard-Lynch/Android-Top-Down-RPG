@@ -17,6 +17,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import tcd.game.AFXObject;
+
 
 public class GameMode {
     private final static String TAG = "GameMode";
@@ -50,15 +52,8 @@ public class GameMode {
   // Declare mediaplayer for Music (soundpool buffer is too small for larger files)
     private MediaPlayer mediaPlayer;
 
-    // Declare objects for sound effects
-    private SoundPool soundPool;
-    private AudioAttributes audioAttributes;
-    private int SP_ID_MarioCoin;
-    private int SP_ID_DoomGate;
-    private final int MAX_STREAM = 10;
-
-
-
+    // Declare AFXObject for sound effects
+    private AFXObject AFX = new AFXObject();
 
     // Probably should have OpenWorld and Battle Classes  which extend this so dont need flag
     // private boolean battle;
@@ -207,34 +202,13 @@ public class GameMode {
         // Initialise mediaplayer
         mediaPlayer = MediaPlayer.create(context, R.raw.doom_gate);
         mediaPlayer.start();
+        mediaPlayer.setLooping(true);   // Set soundtrack to loop
 
-        // Initialise soundpool for sound effects
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            audioAttributes = new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_GAME)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .build();
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            soundPool = new SoundPool.Builder()
-                    .setAudioAttributes(audioAttributes)
-                    .setMaxStreams(MAX_STREAM)
-                    .build();
-        }
+        AFX.playAFX(context, AFX_ID.AFX_mario_coin);
 
-        // Define the method that is called when a file is loaded to the soundPool
-        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-            @Override
-            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-                soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f);
-            }
-        });
+        //AFX.playAFX(context, AFX_ID.AFX_mario_coin);
+        //AFX.playAFX(context, AFX_ID.AFX_mario_coin);
 
-        SP_ID_MarioCoin = soundPool.load(context, R.raw.mario_coin, 1);
-        SP_ID_MarioCoin = soundPool.load(context, R.raw.mario_coin, 1);
-        SP_ID_MarioCoin = soundPool.load(context, R.raw.mario_coin, 1);
-        SP_ID_MarioCoin = soundPool.load(context, R.raw.mario_coin, 1);
-        SP_ID_MarioCoin = soundPool.load(context, R.raw.mario_coin, 1);
 
 
         //Updating Camera offsets
@@ -283,8 +257,8 @@ public class GameMode {
                 CurrentEventID = players[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.PLAYER, PosMap, ObjMap);
                 if (CurrentEventID == 10) {
                     EventActivated = true;
-                }else if(CurrentEventID == 1){
-                    //SP_ID_MarioCoin = soundPool.load(context, R.raw.mario_coin, 1);
+                } else if(CurrentEventID == 1) {
+                    AFX.playAFX(context, AFX_ID.AFX_ouch_1);
                 }
             }
 
