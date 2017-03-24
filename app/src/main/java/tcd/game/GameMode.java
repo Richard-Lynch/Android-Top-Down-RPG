@@ -40,7 +40,8 @@ public class GameMode {
     // Declare Arrays of our GameObjects
     private InanObject inanObjs[];
     private NPC[] npcs;
-    private Player players[];
+    //private Player players[];
+    private SidePlayer sidePlayer[];
     private Map<Integer, GameObject> ObjMap = new HashMap<Integer, GameObject>(200);
     private Map<Integer, Integer> PosMap = new HashMap<Integer, Integer>(200);
 
@@ -127,7 +128,7 @@ public class GameMode {
         MapHeight = map.getHeight();
 
         //map = BitmapFactory.decodeResource(context.getResources(),R.drawable.map_default);
-        players = new Player[1];
+        sidePlayer = new SidePlayer[1];
         npcs = worldMap.getNpcs();
         SpriteMaps.put(GameObject.GameObjectTypes.NPC.ordinal(),npcs[0].dividedSpriteMap);
 
@@ -137,22 +138,26 @@ public class GameMode {
 
         Log.d(TAG,"initing gamemode");
 
-        players[0] = new Player(context,"Donal", canvasWidth, canvasHeight, map.getWidth(), map.getHeight());
+        sidePlayer[0] = new SidePlayer(context,"Donal", canvasWidth, canvasHeight, map.getWidth(), map.getHeight());
         //inanObjs[0] = new InanObject(context,"House",canvasWidth,canvasHeight);
-        players[0].setGridPos(3,2);
-        players[0].setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default));
-        SpriteMaps.put(GameObject.GameObjectTypes.PLAYER.ordinal(),players[0].dividedSpriteMap);
+        sidePlayer[0].setGridPos(10,10);
+        //sidePlayer[0].gridY = 10;
+        //sidePlayer[0].gridx = 10;
 
-        ObjMap.put(players[0].getID(), players[0]);
-        PosMap.put(players[0].getCoordinates().hashCode(), players[0].getID());
-        Player test = (Player) ObjMap.get(players[0].getID());
-        int testint = ObjMap.get(players[0].getID()).getID();
-        Log.d(TAG, "Real Player ID:" + players[0].getID());
+        //sidePlayer[0].setGridPos(3,2);
+        sidePlayer[0].setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default));
+        SpriteMaps.put(GameObject.GameObjectTypes.PLAYER.ordinal(), sidePlayer[0].dividedSpriteMap);
+
+        ObjMap.put(sidePlayer[0].getID(), sidePlayer[0]);
+        PosMap.put(sidePlayer[0].getCoordinates().hashCode(), sidePlayer[0].getID());
+        Player test = (Player) ObjMap.get(sidePlayer[0].getID());
+        int testint = ObjMap.get(sidePlayer[0].getID()).getID();
+        Log.d(TAG, "Real Player ID:" + sidePlayer[0].getID());
         Log.d(TAG, "Test Player ID:" + test.getID());
         Log.d(TAG, "Ref Player ID:" + testint);
-        Log.d(TAG, "Player now im at " + players[0].gridX + " " + players[0].gridY);
+        Log.d(TAG, "Player now im at " + sidePlayer[0].gridX + " " + sidePlayer[0].gridY);
         Log.d(TAG, "Player now im at " + test.gridX + " " + test.gridY);
-        Coordinates pl = new Coordinates(players[0].gridX, players[0].gridY);
+        Coordinates pl = new Coordinates(sidePlayer[0].gridX, sidePlayer[0].gridY);
         Log.d(TAG, "Player coords " + pl.getX() + " " + pl.getY());
         int testPOS = PosMap.get(pl.hashCode());
         Log.d(TAG, "Player pos map id: " + testPOS + " pos: " + ObjMap.get(testPOS).gridX + " " + ObjMap.get(testPOS).gridY);
@@ -171,6 +176,9 @@ public class GameMode {
             npcs[i].setVelX(1);
             npcs[i].setVelY(0);
         }
+
+
+
 /*
         ObjMap.put(npcs[0].getID(), npcs[0]);
         PosMap.put(npcs[0].getCoordinates().hashCode(), npcs[0].getID());
@@ -187,6 +195,13 @@ public class GameMode {
         for(int i=0;i<inanObjs.length;i++){
             ObjMap.put(inanObjs[i].getID(),inanObjs[i]);
             PosMap.put(inanObjs[i].getCoordinates().hashCode(),inanObjs[i].getID());
+
+            Coordinates coo = inanObjs[i].getCoordinates();
+            Log.d(TAG,"SidePlayer added to coll "+ coo.getX() + " " + coo.getY());
+
+
+                    //
+
         }
 //        inanObjs[0].setPosX(600);
 //        inanObjs[0].setPosY(20);
@@ -238,12 +253,12 @@ public class GameMode {
 
 
         //Updating Camera offsets
-        offset_x = players[0].getPosX() + players[0].getDrawWidth()/2 - canvasWidth/2;
-        offset_y = players[0].getPosY() + players[0].getDrawHeight()/2 - canvasHeight/2;
-        Log.d(TAG,"POSX: " +players[0].getPosX());
-        Log.d(TAG,"POSY: " + players[0].getPosY());
-        Log.d(TAG,"PW: " + players[0].getDrawWidth()/2 ) ;
-        Log.d(TAG,"PH: " + players[0].getDrawHeight()/2 ) ;
+        offset_x = sidePlayer[0].getPosX() + sidePlayer[0].getDrawWidth()/2 - canvasWidth/2;
+        offset_y = sidePlayer[0].getPosY() + sidePlayer[0].getDrawHeight()/2 - canvasHeight/2;
+        Log.d(TAG,"POSX: " +sidePlayer[0].getPosX());
+        Log.d(TAG,"POSY: " + sidePlayer[0].getPosY());
+        Log.d(TAG,"PW: " + sidePlayer[0].getDrawWidth()/2 ) ;
+        Log.d(TAG,"PH: " + sidePlayer[0].getDrawHeight()/2 ) ;
         Log.d(TAG, "CanvasW: " + canvasWidth/2);
         Log.d(TAG,"CanvasH: " + canvasHeight/2);
 
@@ -279,8 +294,8 @@ public class GameMode {
         if (!EventActivated) {
 
             // Update Player positions
-            for (int i = 0; i < players.length; i++) {
-                CurrentEventID = players[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.PLAYER, PosMap, ObjMap);
+            for (int i = 0; i < sidePlayer.length; i++) {
+                CurrentEventID = sidePlayer[i].update(sidePlayer, npcs, inanObjs, sidePlayer[i].getID(), GameObject.GameObjectTypes.PLAYER, PosMap, ObjMap);
                 if (CurrentEventID == 10) {
                     EventActivated = true;
                 }else if(CurrentEventID == 1){
@@ -290,22 +305,22 @@ public class GameMode {
 
             // Update NPC positions
             for (int i = 0; i < npcs.length; i++) {
-                npcs[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.NPC, PosMap, ObjMap);
+                npcs[i].update(sidePlayer, npcs, inanObjs, sidePlayer[i].getID(), GameObject.GameObjectTypes.NPC, PosMap, ObjMap);
 
             }
 
 
             // Update Inanimate Object Positions
 //        for(int i=0;i<inanObjs.length;i++){
-//            inanObjs[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.INANOBJECT, PosMap, ObjMap);
+//            inanObjs[i].update(sidePlayer, npcs, inanObjs, sidePlayer[i].getID(), GameObject.GameObjectTypes.INANOBJECT, PosMap, ObjMap);
 
 //        for(int i=0;i<inanObjs.length;i++){
-//            inanObjs[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.INANOBJECT, PosMap, ObjMap);
+//            inanObjs[i].update(sidePlayer, npcs, inanObjs, sidePlayer[i].getID(), GameObject.GameObjectTypes.INANOBJECT, PosMap, ObjMap);
 //        }
 
             //Updating Camera offsets
-            offset_x = players[0].getPosX() + players[0].getDrawWidth() / 2 - canvasWidth / 2;
-            offset_y = players[0].getPosY() + players[0].getDrawHeight() / 2 - canvasHeight / 2;
+            offset_x = sidePlayer[0].getPosX() + sidePlayer[0].getDrawWidth() / 2 - canvasWidth / 2;
+            offset_y = sidePlayer[0].getPosY() + sidePlayer[0].getDrawHeight() / 2 - canvasHeight / 2;
 
 
             if (offset_y <= 0) {
@@ -397,13 +412,13 @@ public class GameMode {
         }
 
         // Draw Players
-        for(int i=0;i<players.length;i++) {
-            players[i].drawFrame(canvas,offset_x,offset_y);
-            //Rect temp_drawBox = new Rect(players[i].drawBox);
+        for(int i=0;i<sidePlayer.length;i++) {
+            sidePlayer[i].drawFrame(canvas,offset_x,offset_y);
+            //Rect temp_drawBox = new Rect(sidePlayer[i].drawBox);
 //            temp_drawBox.offset(-offset_x,-offset_y);
 //            if((temp_drawBox.left >= 0 && temp_drawBox.right <= canvas.getWidth()) &&  (temp_drawBox.top >= 0 && temp_drawBox.bottom <= canvas.getHeight()) ) {
 //                canvas.drawBitmap(
-//                        SpriteMaps.get(GameObject.GameObjectTypes.PLAYER.ordinal())[players[i].getAnimationRowIndex()][players[i].getAnimationColIndex()],
+//                        SpriteMaps.get(GameObject.GameObjectTypes.PLAYER.ordinal())[sidePlayer[i].getAnimationRowIndex()][sidePlayer[i].getAnimationColIndex()],
 //                        null,
 //                        temp_drawBox,
 //                        null
@@ -420,7 +435,7 @@ public class GameMode {
 
 
     public Player getPlayer(){
-        return players[0];
+        return sidePlayer[0];
     }
 
     public boolean isEventActivated() {return EventActivated;}

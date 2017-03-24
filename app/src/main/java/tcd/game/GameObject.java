@@ -50,7 +50,7 @@ public class GameObject {
     protected Bitmap spriteMap;
     protected Bitmap [][]dividedSpriteMap; // 2-d array containing a bitmap for each frame of animation
 
-    protected int velX,velY;
+protected int velX,velY;
     protected int speed;
 
     protected boolean hasEvent;
@@ -284,11 +284,13 @@ public class GameObject {
 
             this.velX = velX;
 
+            // removed .deltaY from here due to race condition with SidePlayer -- and because it's just wrong in here
+
             this.deltaX = drawWidth*velX;
-            this.deltaY = drawHeight*velY;
+            //this.deltaY = drawHeight*velY;
 
             this.goalX = this.drawBox.left + drawWidth*velX;
-            this.goalY = this.drawBox.top + drawHeight*velY;
+            //this.goalY = this.drawBox.top + drawHeight*velY;
         }
     }
 
@@ -361,7 +363,7 @@ public class GameObject {
         return new Coordinates(this.gridX, this.gridY);
     }
 
-    private void move(){
+    public void move(){
         if(moving){
             if((abs(deltaX) <= abs(velX*speed) && abs(deltaY) <= abs(velY*speed))) {    //prevents overshoot
                 drawBox.offset(deltaX, deltaY);
@@ -429,12 +431,14 @@ public class GameObject {
                     Log.d(TAG, "gone off the map");
                 }
                 else if(colMap.get(new Coordinates(this.gridX+this.velX, this.gridY+this.velY).hashCode()) == (null)){
+
                     this.collided = false;
                     Log.d(TAG, "no item in front of me! setting new grid Pos");
+                    Log.d(TAG, "added to coll grid "+ gridX + " " + gridY);
                     colMap.put(new Coordinates(this.gridX,this.gridY).hashCode(), null);
                     this.gridX += velX;
                     this.gridY += velY;
-                    Log.d(TAG, "now im at "+ gridX + " " + gridY);
+                    Log.d(TAG, "added to coll grid "+ gridX + " " + gridY);
                     colMap.put(new Coordinates(this.gridX,this.gridY).hashCode(), this.getID());
                     Log.d(TAG, "I stored my grid pos");
                     move();

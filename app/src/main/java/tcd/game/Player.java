@@ -54,7 +54,7 @@ public class Player extends AnimateObject {
     }
 
     //change the velocity based on button presses
-    private void change_velocity(){
+    public void change_velocity(){
         int number_of_presses = press_check();
         if(number_of_presses > 1 || number_of_presses == 0)  {
             this.setVelY(0);
