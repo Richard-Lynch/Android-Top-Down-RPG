@@ -26,7 +26,6 @@ public class AFXObject {
     private long  time_since_ouch;
 
     public AFXObject () {
-        //AudioAttributes audioAttributes;
 
         // Initialise soundpool for sound effects
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -65,9 +64,5 @@ public class AFXObject {
                 }
                 break;
         }
-    }
-
-    private void countdown (int AFX_countdown) {
-
     }
 }
