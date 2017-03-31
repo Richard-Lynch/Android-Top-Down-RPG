@@ -28,35 +28,6 @@ public class SidePlayer extends Player {
         // I like positive velocities when starting
         this.velY = velY * -1000;
         this.deltaY = 0;
-        //this.deltaY = drawHeight*velY*1;
-
-/*
-        if(this.velY != velY && !this.moving){
-            if(!this.collided){
-                this.loops = 0;
-            }
-            if(velY != 0){
-                this.moving = true;
-                this.gridUnset = true;
-            }
-            this.velY = 1;
-
-            //this.deltaX = drawWidth*velX;
-            //this.deltaY = drawHeight*velY*1;
-
-            //this.goalX = this.drawBox.left + drawWidth*velX;
-            //this.goalY = this.drawBox.top + drawHeight*velY*2;
-        }
-
-        return;
-*/
-        /*if(this.moving || this.velY != 0 || velY != 1)
-            return;
-
-        this.moving = true;
-        this.gridUnset = true;
-
-        this.velY = 1;*/
     }
 
     public void move(Map<Integer, Integer> colMap){
@@ -77,7 +48,8 @@ public class SidePlayer extends Player {
 
         // negative or positive vel, it always needs to end up at 0.
         // this should allow all cases, including peak of parabola
-        if(velY != 0 || deltaY > 0) {
+        // if(velY != 0 || deltaY > 0) {
+        if(true)
             velY -= 50;
 
             // freefall limit
@@ -93,23 +65,22 @@ public class SidePlayer extends Player {
                 velY = 0;
             }*/
 
+            // Grid before/after would calculate the same when passing through 0.
+            // For example, deltaY = 10; offset = -40 => before/after are both 0,
+            // leading to a nasty bug that took too long to figure out - the funny part
+            // is that I thought about this when writing the code, then simply supposed it had to be fine.
+            // max_jump is now basically the max number of grids we can have during freefall
+            int max_jump = 1000;
+
             // Somehow localGridX needs to be used because grid is a multiple of 10
             // with an offset depending on init position... Why, I have no idea.
             // Oh, btw, Y is fine, so using gridY for that.
             int localGridX = (this.gridX / 10) + 9;
 
             int offset = (int) (velY * 0.020); //0.020
-            int grid_before = deltaY / drawWidth;
-            int grid_after = (deltaY + offset) / drawWidth;
+            int grid_before = ((deltaY +  (drawWidth * max_jump)) / drawWidth) - max_jump;
+            int grid_after = ((deltaY + offset +  (drawWidth * max_jump)) / drawWidth) - max_jump;
             int grid_diff = grid_after - grid_before;
-
-
-
-            //if(deltaY == 0 && offset > 0)
-            //    grid_diff++;
-
-//            if(velY == 0 && deltaY > 0)
-//                this.gridY++;
 
             if(offset > drawWidth / 2)
             {
@@ -139,84 +110,43 @@ public class SidePlayer extends Player {
                 // We are now simply going down one pixel at the time until when we hit the solid.
                 // Also needs to limit descend ratio to speed set above
 
-                offset = -1;
-                grid_after = (deltaY + offset) / drawWidth;
-                grid_before = deltaY / drawWidth;
-                grid_diff = grid_after - grid_before;
-                localGridY = gridY - grid_diff + 0;
+                int max_offset = offset;
 
-                if (colMap.get(new Coordinates(localGridX, localGridY).hashCode()) != (null) && colMap.get(new Coordinates(localGridX, localGridY).hashCode()) != this.getID()) {
-                    // Solid hit, stop cycling to here
-                    velY = 0;
-                    deltaY = 0;
-
-                    Log.d(TAG, "COLLIDED!" + " X: " + localGridX + " Y: " + localGridY);
-
-                    drawBox.offset(0, -drawWidth + 1);
-                    //drawBox.offset(0, -drawWidth + 1);
-                    //drawBox.offset(0, -drawWidth);
-                    //deltaY += -drawWidth;
-//                    this.gridY -= grid_diff;
-
-                    //velY = 0;
-                    //deltaY = 0;
-
-
-                } else {
-                    Log.d(TAG, "Offset: " + (-offset));
-
-                    drawBox.offset(0, -offset);
-                    deltaY += offset;
-                    this.gridY -= grid_diff;
-
-                    if(grid_diff != 0)
-                    {
-                        Log.d(TAG, "Grid diff: " + grid_diff);
-                    }
-
-                    Log.d(TAG, "Close to colliding" + " X: " + localGridX + " Y: " + localGridY);
-
-                }
-
-/*
-                while(offset < 0) {
-                    int local_offset = -1;
-                    offset -= local_offset;
-                    grid_before = deltaY / drawWidth;
-                    grid_after = (deltaY + local_offset) / drawWidth;
+                while(max_offset < 0)
+                {
+                    offset = -1;
+                    grid_after = ((deltaY + offset + (drawWidth * max_jump)) / drawWidth) - max_jump;
+                    grid_before = ((deltaY + (drawWidth * max_jump)) / drawWidth) - max_jump;
                     grid_diff = grid_after - grid_before;
-                    localGridY = gridY - grid_diff;
+                    localGridY = gridY - grid_diff + 0;
 
-                    if (colMap.get(new Coordinates(localGridX, localGridY).hashCode()) != (null)) {
+                    if (colMap.get(new Coordinates(localGridX, localGridY).hashCode()) != (null) && colMap.get(new Coordinates(localGridX, localGridY).hashCode()) != this.getID()) {
                         // Solid hit, stop cycling to here
                         velY = 0;
                         deltaY = 0;
+                        max_offset = 0;
+
+                        Log.d(TAG, "COLLIDED!" + " X: " + localGridX + " Y: " + localGridY);
+
+                    } else {
+                        Log.d(TAG, "Offset: " + (-offset));
+
+                        drawBox.offset(0, -offset);
+                        deltaY += offset;
+                        this.gridY -= grid_diff;
+
+                        if(grid_diff != 0)
+                        {
+                            Log.d(TAG, "Grid diff: " + grid_diff);
+                        }
+
+                        max_offset += offset;
+
+                        Log.d(TAG, "Close to colliding" + " X: " + localGridX + " Y: " + localGridY);
+
                     }
-
-                    this.gridY -= grid_diff;
-
-                    if(velY == 0)
-                        return;
-
-                    drawBox.offset(0, -local_offset);
-
-                    deltaY += offset;
                 }
-*/
-                //deltaY += offset;
-
-
-            }/*
-            else
-            {
-                velY = 0;
-            }*/
-
-
-
-
-            int a = 1;
-            a++;
+            }
         }
     }
 
