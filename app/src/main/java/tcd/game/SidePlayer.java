@@ -49,7 +49,7 @@ public class SidePlayer extends Player {
         // negative or positive vel, it always needs to end up at 0.
         // this should allow all cases, including peak of parabola
         // if(velY != 0 || deltaY > 0) {
-        if(true)
+        if(true) {
             velY -= 50;
 
             // freefall limit
