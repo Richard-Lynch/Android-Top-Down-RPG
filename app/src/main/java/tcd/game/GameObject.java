@@ -31,7 +31,7 @@ public class GameObject {
     protected String TAG = "GameObject";
 
     // Used for generating GameObjects IDS
-    private static int totalGameObjs = 0;
+    private static int totalGameObjs = 1;
 
     /** Unique ID for each GameObject */
     protected int id;
@@ -57,11 +57,18 @@ public class GameObject {
 
     protected int eventID;
 
-    public int getHealth() {
-        return health;
+    public String getEventText() {
+        return eventText;
     }
 
+    public void setEventText(String eventText) {
+        this.eventText = eventText;
+    }
+
+    protected String eventText;
+
     protected int health;
+    protected boolean IsAlive;
 
 
     /** Box used for updating positions and collision checking */
@@ -172,6 +179,7 @@ public class GameObject {
         // Loading default Sprites for each GameObject if not passed in
         if(type == GameObjectTypes.PLAYER){
 //            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default);
+            IsAlive = true;
             health = 100;
             spritesWide = 10;
             spritesTall = 8;
@@ -188,6 +196,7 @@ public class GameObject {
             facing = GameObjectAnimationDirection.FACING_DOWN;
         } else if(type == GameObjectTypes.NPC){
 //            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_default);
+            IsAlive = true;
             health = 100;
             spritesWide = 10;
             spritesTall = 8;
@@ -230,7 +239,7 @@ public class GameObject {
         velX = 0;
         velY = 0;
         this.moving = false;
-        speed = 6;
+        speed = 12;
 
     }
 
@@ -325,6 +334,7 @@ public class GameObject {
 
     public void setEventID(int eventID) {
         this.eventID = eventID;
+        this.eventText = "Default Text";
         this.hasEvent = true;
     }
 
@@ -346,7 +356,7 @@ public class GameObject {
                 //Event is an interaction
                 case 1:
                     if(this.hasEvent){
-                        return this.eventID;
+                        return this.id;
                     }
                     else {
                         return -1;
@@ -417,6 +427,14 @@ public class GameObject {
 
     public int update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type, Map<Integer, Integer> colMap, Map<Integer, GameObject> objMap){
         //move object by velocity
+        if(health < 1 && type != GameObjectTypes.INANOBJECT){
+            if(IsAlive) {
+                IsAlive = false;
+                colMap.remove((new Coordinates(this.gridX, this.gridY).hashCode()));
+                objMap.remove(id);
+                hasEvent = false;
+            }
+        }
         if(this.moving){
             if(gridUnset){
                 if((gridX+velX < 0 || gridX+velX >= gridWide) || (gridY+velY < 0 || gridY+velY >= gridHeight)){
@@ -454,7 +472,7 @@ public class GameObject {
 
             if(collided){
                 collided = false;
-                return 1;
+                return -1;
             }
         }
         else if(players[0].isA_pressed() && colMap.get(new Coordinates(this.gridX+directionX(), this.gridY+directionY()).hashCode()) != (null)) {
@@ -500,6 +518,10 @@ public class GameObject {
         return this.id;
     }
 
+    public int getHealth() {
+        return health;
+    }
+    public boolean isAlive() {return IsAlive;}
 
     public enum GameObjectTypes {
         PLAYER,
