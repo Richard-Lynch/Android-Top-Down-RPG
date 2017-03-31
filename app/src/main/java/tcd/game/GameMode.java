@@ -4,12 +4,14 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Build;
+import android.util.EventLog;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -26,11 +28,12 @@ public class GameMode {
     private int canvasWidth, canvasHeight;
     private int MapWidth;
     private int MapHeight;
-    private Paint paint;
+    private Paint textPaint;
 
     // Map should probably have its own class for Reading from file etc
     private Bitmap map;
     private Bitmap speechbox;
+    private Bitmap skull;
     private WorldMap worldMap;
     public int offset_x;
     public int offset_y;
@@ -44,9 +47,9 @@ public class GameMode {
     private Map<Integer, GameObject> ObjMap = new HashMap<Integer, GameObject>(200);
     private Map<Integer, Integer> PosMap = new HashMap<Integer, Integer>(200);
 
-    private int CurrentEventID;
+    private int CurrentID;
     private boolean EventActivated;
-
+    private int numberOfEvents;
   // Declare mediaplayer for Music (soundpool buffer is too small for larger files)
     private MediaPlayer mediaPlayer;
 
@@ -56,6 +59,8 @@ public class GameMode {
     private int SP_ID_MarioCoin;
     private int SP_ID_DoomGate;
     private final int MAX_STREAM = 10;
+
+
 
 
 
@@ -119,29 +124,34 @@ public class GameMode {
     }
 
 
-    private void init(double levelID){
-        worldMap = new WorldMap(context,canvasWidth,canvasHeight);
-        speechbox = BitmapFactory.decodeResource(context.getResources(), R.drawable.truck);
+    private void init(double levelID) {
+        worldMap = new WorldMap(context, canvasWidth, canvasHeight);
+        speechbox = BitmapFactory.decodeResource(context.getResources(), R.drawable.speechboxj);
+        skull = BitmapFactory.decodeResource(context.getResources(), R.drawable.skull);
         map = worldMap.getMap();
         MapWidth = map.getWidth();
         MapHeight = map.getHeight();
+        textPaint = new Paint(Color.BLACK);
+        textPaint.setTextSize(75.0f);
+        numberOfEvents = 1;
+
 
         //map = BitmapFactory.decodeResource(context.getResources(),R.drawable.map_default);
         players = new Player[1];
         npcs = worldMap.getNpcs();
-        SpriteMaps.put(GameObject.GameObjectTypes.NPC.ordinal(),npcs[0].dividedSpriteMap);
+        SpriteMaps.put(GameObject.GameObjectTypes.NPC.ordinal(), npcs[0].dividedSpriteMap);
 
 //        inanObjs = new InanObject[1];
         inanObjs = worldMap.getInanObjects();
-        SpriteMaps.put(GameObject.GameObjectTypes.INANOBJECT.ordinal(),inanObjs[0].dividedSpriteMap);
+        SpriteMaps.put(GameObject.GameObjectTypes.INANOBJECT.ordinal(), inanObjs[0].dividedSpriteMap);
 
-        Log.d(TAG,"initing gamemode");
+        Log.d(TAG, "initing gamemode");
 
-        players[0] = new Player(context,"Donal", canvasWidth, canvasHeight, map.getWidth(), map.getHeight());
+        players[0] = new Player(context, "Donal", canvasWidth, canvasHeight, map.getWidth(), map.getHeight());
         //inanObjs[0] = new InanObject(context,"House",canvasWidth,canvasHeight);
-        players[0].setGridPos(3,2);
-        players[0].setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default));
-        SpriteMaps.put(GameObject.GameObjectTypes.PLAYER.ordinal(),players[0].dividedSpriteMap);
+        players[0].setGridPos(3, 2);
+        players[0].setSprite(BitmapFactory.decodeResource(context.getResources(), R.drawable.player_default));
+        SpriteMaps.put(GameObject.GameObjectTypes.PLAYER.ordinal(), players[0].dividedSpriteMap);
 
         ObjMap.put(players[0].getID(), players[0]);
         PosMap.put(players[0].getCoordinates().hashCode(), players[0].getID());
@@ -162,7 +172,20 @@ public class GameMode {
         npcs[0].setGridPos(4, 8);
         npcs[0].setVelX(1);
         npcs[0].setVelY(0);
+        npcs[0].setEventID(10);
+        for (int i = 0; i < npcs.length; i++) {
+            //npcs[i].setEventID(numberOfEvents);
+            //numberOfEvents++;
+            npcs[i].hasEvent = true;
+            npcs[i].setEventText("Hello I am " + (npcs[0].name) + ".");
+        }
 
+        for (int i = 0; i < inanObjs.length; i++) {
+            //inanObjs[i].setEventID(numberOfEvents);
+            //numberOfEvents++;
+            inanObjs[i].hasEvent = true;
+            inanObjs[i].setEventText("This is signpost " + (inanObjs[i].getID()) + ".");
+        }
 
         // Add all npcs to hash maps
         for(int i=0;i<npcs.length;i++){
@@ -185,8 +208,23 @@ public class GameMode {
 */
 
         for(int i=0;i<inanObjs.length;i++){
-            ObjMap.put(inanObjs[i].getID(),inanObjs[i]);
-            PosMap.put(inanObjs[i].getCoordinates().hashCode(),inanObjs[i].getID());
+            InanObject inanObject = inanObjs[i];
+            ObjMap.put(inanObject.getID(),inanObject);
+
+            int spanX = inanObject.getSpanX();
+            int spanY = inanObject.getSpanY();
+            int firstIterator = Math.min(spanX,spanY);
+            int secondIterator = Math.max(spanX,spanY);
+
+            // Add its span blocks to PosMap
+            for(int j=0;j<spanX;j++){
+                for(int k=0;k<spanY;k++){
+                    Coordinates tmpCoords = new Coordinates(inanObject.getCoordinates().getX()+(j),inanObject.getCoordinates().getY()+k);
+                    PosMap.put(tmpCoords.hashCode(),inanObject.getID());
+                }
+
+            }
+
         }
 //        inanObjs[0].setPosX(600);
 //        inanObjs[0].setPosY(20);
@@ -280,18 +318,20 @@ public class GameMode {
 
             // Update Player positions
             for (int i = 0; i < players.length; i++) {
-                CurrentEventID = players[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.PLAYER, PosMap, ObjMap);
-                if (CurrentEventID == 10) {
+                CurrentID = players[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.PLAYER, PosMap, ObjMap);
+                if (CurrentID > 0) {
                     EventActivated = true;
-                }else if(CurrentEventID == 1){
-                    //SP_ID_MarioCoin = soundPool.load(context, R.raw.mario_coin, 1);
                 }
             }
 
             // Update NPC positions
             for (int i = 0; i < npcs.length; i++) {
-                npcs[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.NPC, PosMap, ObjMap);
+                //if (npcs[i].IsAlive){
+                    npcs[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.NPC, PosMap, ObjMap);
 
+                //}else{
+                  //  npcs[i].setSprite(skull);
+                //}
             }
 
 
@@ -390,7 +430,7 @@ public class GameMode {
 
         // Draw Npcs
         for(int i=0;i<npcs.length;i++){
-            if(npcs[i].getHealth() > 0) {
+            if(npcs[i].IsAlive) {
                 npcs[i].drawFrame(canvas,offset_x,offset_y);
             }
 
@@ -412,7 +452,17 @@ public class GameMode {
 
         }
         if (EventActivated) {
+
+
             canvas.drawBitmap(speechbox, null, new Rect(0, canvas.getHeight() - 400, canvas.getWidth() - 300, canvas.getHeight()), null);
+           String eventString = ObjMap.get(CurrentID).eventText;
+           canvas.drawText(eventString,100f,canvasHeight - 250,textPaint);
+
+
+
+
+            //npcs[0].Event.AnimateText(canvas);
+            Log.d(TAG,"EVENT ACTIVATED AHAHHAAHHA");
         }
     }
 
