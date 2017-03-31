@@ -11,6 +11,8 @@ import java.util.Map;
 
 public class InanObject extends GameObject {
 
+    protected int spanX = 0, spanY = 0;
+
 
     InanObject(Context context, String s, int canvasWidth, int canvasHeight,int mapWidth, int mapHeight){
         super(context,s, GameObjectTypes.INANOBJECT, canvasWidth, canvasHeight, mapWidth, mapHeight);
@@ -22,4 +24,17 @@ public class InanObject extends GameObject {
         return super.update(players, npcs, inanObjects, id, type, colMap, objMap);
     }
 
+
+    public void setSpan(int spanX, int spanY){
+        this.spanX = spanX;
+        this.spanY = spanY;
+    }
+
+    public int getSpanX(){
+        return spanX;
+    }
+
+    public int getSpanY() {
+        return spanY;
+    }
 }

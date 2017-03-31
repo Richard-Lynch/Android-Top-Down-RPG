@@ -185,8 +185,23 @@ public class GameMode {
 */
 
         for(int i=0;i<inanObjs.length;i++){
-            ObjMap.put(inanObjs[i].getID(),inanObjs[i]);
-            PosMap.put(inanObjs[i].getCoordinates().hashCode(),inanObjs[i].getID());
+            InanObject inanObject = inanObjs[i];
+            ObjMap.put(inanObject.getID(),inanObject);
+
+            int spanX = inanObject.getSpanX();
+            int spanY = inanObject.getSpanY();
+            int firstIterator = Math.min(spanX,spanY);
+            int secondIterator = Math.max(spanX,spanY);
+
+            // Add its span blocks to PosMap
+            for(int j=0;j<spanX;j++){
+                for(int k=0;k<spanY;k++){
+                    Coordinates tmpCoords = new Coordinates(inanObject.getCoordinates().getX()+(j),inanObject.getCoordinates().getY()+k);
+                    PosMap.put(tmpCoords.hashCode(),inanObject.getID());
+                }
+
+            }
+
         }
 //        inanObjs[0].setPosX(600);
 //        inanObjs[0].setPosY(20);

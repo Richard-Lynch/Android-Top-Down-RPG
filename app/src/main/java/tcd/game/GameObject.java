@@ -64,6 +64,8 @@ public class GameObject {
     protected int health;
 
 
+
+
     /** Box used for updating positions and collision checking */
     protected Rect collisionBox;
     protected Rect drawBox;
@@ -201,7 +203,7 @@ public class GameObject {
         maxAnimationColIndex = 0;
         animationRowIndex = 0;
         loops = 0;
-        animationSpeed = 8;
+        animationSpeed = 16;
         blink_speed = 16;
 
 
@@ -230,7 +232,7 @@ public class GameObject {
         velX = 0;
         velY = 0;
         this.moving = false;
-        speed = 6;
+        speed = 12;
 
     }
 

@@ -26,7 +26,7 @@ import android.os.Vibrator;
 
 public class GameFragment extends Fragment{
     private static final String TAG = "GameFragment";
-    private final int TARGET_FPS = 60;
+    private final int TARGET_FPS = 30;
 
     private GameRenderer gameRenderer;
     private GameMode gameMode;
