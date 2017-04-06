@@ -40,6 +40,7 @@ public class WorldMap {
 
 
     WorldMap(Context context, int canvasWidth, int canvasHeight) {
+
         this.context = context;
         Log.d(TAG,"Starting");
         // These will come from else where
@@ -85,7 +86,9 @@ public class WorldMap {
                     if(!tilesRequiredHashMap.containsKey(currentID)){
                         //t("Putting " + currentID + " in hash table");
                         tilesRequiredHashMap.put(currentID,new Tile(currentID));
-                        IDSFromDB += String.valueOf(currentID)+",";
+                        if(currentID != -1) {
+                            IDSFromDB += String.valueOf(currentID) + ",";
+                        }
                     }
                 }
                 i++;
@@ -94,6 +97,9 @@ public class WorldMap {
             // Go to Database and Get relevant rows
             databaseHelper = new DatabaseHelper(context);
 
+            // Delete database so that new things we add to it will be included
+            // Just for debugging obviously
+            databaseHelper.deleteDB();
             Log.d(TAG, databaseHelper.tableToString(databaseHelper.TILES_TABLE));
 
             // Trim off last comma
@@ -128,32 +134,41 @@ public class WorldMap {
 
             // Create our final bitmap
             map = Bitmap.createBitmap(cols*drawSize,rows*drawSize, Bitmap.Config.ARGB_8888);
+            Canvas c = new Canvas(map);
 
+            for(int row = 0; row< tileIDS.length; row++){
+                for(int col = 0; col< tileIDS[0].length; col++) {
+                    Tile tile = tilesRequiredHashMap.get(tileIDS[1][1]);
+                    Rect src = tile.getSourceRect();
+                    Rect dest = new Rect(0,0,0,0);
+                    dest.set(col * drawSize, row * drawSize, (col * drawSize) + (tile.spanX*drawSize), (row * drawSize) + (tile.spanY*drawSize));
+                    c.drawBitmap(tileSet, src, dest, null);
+                }
+            }
             // Create inanObjects and save them
             inanObjects = new ArrayList<>();
 
             // Draw to it
-            Canvas c = new Canvas(map);
+
             Rect src;
             Rect dest = new Rect(0,0,0,0);
             for(int row = 0; row< tileIDS.length; row++){
                 for(int col = 0; col< tileIDS[0].length; col++){
-                    Tile tile = tilesRequiredHashMap.get(tileIDS[row][col]);
-                    if(tile == null){
-                        t("error");
-                        break;
+                    if(!(tileIDS[row][col] == -1)) {
+                        Tile tile = tilesRequiredHashMap.get(tileIDS[row][col]);
+                        if (tile.collidable) {
+                            Log.d(TAG, "con name:" + tile.convenienceName);
+                            InanObject inanObject = new InanObject(context, tile.convenienceName, canvasWidth, canvasHeight, map.getWidth(), map.getHeight());
+                            inanObject.setGridPos(col, row);
+                            //t("Creating inan: (" + col + "," + row + ")");
+                            inanObject.setSprite(Bitmap.createBitmap(tileSet, 0, 0, GRID_SIZE, GRID_SIZE));
+                            inanObject.setSpan(tile.spanX,tile.spanY);
+                            inanObjects.add(inanObject);
+                        }
+                        src = tile.getSourceRect();
+                        dest.set(col * drawSize, row * drawSize, (col * drawSize) + (tile.spanX*drawSize), (row * drawSize) + (tile.spanY*drawSize));
+                        c.drawBitmap(tileSet, src, dest, null);
                     }
-                    if(tile.collidable){
-                        Log.d(TAG, "con name:" + tile.convenienceName);
-                        InanObject inanObject = new InanObject(context,tile.convenienceName,canvasWidth,canvasHeight, map.getWidth(), map.getHeight());
-                        inanObject.setGridPos(col,row);
-                        t("Creating inan: (" + col + "," + row + ")");
-                        inanObject.setSprite(Bitmap.createBitmap(tileSet,0,0, GRID_SIZE, GRID_SIZE));
-                        inanObjects.add(inanObject);
-                    }
-                    src = tile.getSourceRect();
-                    dest.set(col* drawSize,row* drawSize,(col* drawSize)+ drawSize,(row* drawSize)+ drawSize);
-                    c.drawBitmap(tileSet,src,dest,null);
                 }
             }
 
@@ -191,15 +206,16 @@ public class WorldMap {
             // Trim comma
             IDSFromDB = IDSFromDB.substring(0,IDSFromDB.length()-1);
             query = " SELECT * FROM " + DatabaseHelper.NPCS_TABLE + " WHERE ID IN (" + IDSFromDB + ") ORDER BY ID";
-
+            t(query);
             // Save Results
-            results = databaseHelper.getRows(query, DatabaseHelper.NPCS_TABLE,null);
+            ArrayList<String[]> results2 = databaseHelper.getRows(query, DatabaseHelper.NPCS_TABLE,null);
 
 
             // Parse through the results
             HashMap<Short,String[]> npcHashMap = new HashMap<>();
-            for(String[] s : results){
+            for(String[] s : results2){
                 // Store NPC rows in key value pair (should really be done in DB class)
+                t("Id is " + s[0]);
                 npcHashMap.put(Short.valueOf(s[0]),s);
                 // Note could search for each NPC which matches this ID here and assign it that way
                 // But think iterating over the npcs and getting the info from the hash map would be quicker?
@@ -207,7 +223,7 @@ public class WorldMap {
 
             // Set relevant values from DB to each NPC (may be multiple NPC's with same ID (generic ones or W.E.))
             for(NPC npc : npcs){
-                String[] s = npcHashMap.get(npc.getDatabaseID());
+                String[] s = npcHashMap.get(Short.valueOf(npc.getDatabaseID()));
                 if(s!= null){
                     npc.setInfo(s);
                 } else {

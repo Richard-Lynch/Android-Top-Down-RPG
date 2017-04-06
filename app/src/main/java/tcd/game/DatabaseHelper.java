@@ -6,12 +6,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import android.util.Log;
 import android.widget.Toast;
 
 
 import java.util.ArrayList;
 
 class DatabaseHelper extends SQLiteOpenHelper {
+    private final static String TAG = "DBHelper";
 
     static final int DATABASE_VERSION = 1;  //probably never need this
     static final String DATABASE_NAME = "Game_Name_Needed.db";
@@ -25,7 +27,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
     private static final String[] creationQueries = {
             "CREATE TABLE " + TILES_TABLE + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Row INTEGER, Col INTEGER, SpanX INTEGER, SpanY INTEGER," +
                     "Spritesheet TEXT, Collidable Boolean)",
-            "CREATE TABLE " + NPCS_TABLE + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"
+            "CREATE TABLE " + NPCS_TABLE + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, SpiteSheet TEXT)"
     };
 
     //Constructor
@@ -38,6 +40,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         //Runs only when app is first opened
 
+        Toast.makeText(ctx,"Recreating DB",Toast.LENGTH_LONG).show();
         // Iterate through table creation queries
         for (String query : creationQueries) {
             db.execSQL(query);
@@ -49,15 +52,22 @@ class DatabaseHelper extends SQLiteOpenHelper {
                 { "Brick", "11", "7", "1", "1", "pokemon_tileset.png", "0"},
                 { "Rose", "2", "2", "1", "1", "pokemon_tileset.png", "0"},
                 { "Sign", "0", "3", "1", "1", "pokemon_tileset.png", "1"},
-                { "Weed", "2", "1", "1", "1", "pokemon_tileset.png", "0"}
+                { "Weed", "2", "1", "1", "1", "pokemon_tileset.png", "0"},
+                { "Tree", "3", "7", "1", "2", "pokemon_tileset.png", "1"},
+                { "Rock", "23", "5", "3", "3", "pokemon_tileset.png", "1"},
+                { "Pond", "34", "0", "2", "2", "pokemon_tileset.png", "0"},
+                { "RoofTip", "8", "0", "4", "1", "pokemon_tileset.png", "1"},
+                { "RoofMid", "9", "0", "4", "2", "pokemon_tileset.png", "1"},
+                { "Building", "11", "0", "4", "2", "pokemon_tileset.png", "1"},
+                { "BuildingSide", "47", "7", "1", "5", "pokemon_tileset.png", "1"}
         };
 
         String[][] sampleNPCS = {
-                {"VonNeuyman"},
-                {"Dijkstra"},
-                {"Donall"},
-                {"FergalShevlin"},
-                {"AntonG"}
+                {"VonNeuyman","npc_1.png"},
+                {"Dijkstra","npc_2.png"},
+                {"Donall","npc_3.png"},
+                {"FergalShevlin","npc_4.png"},
+                {"AntonG","npc_5.png"}
         };
 
 
@@ -69,12 +79,13 @@ class DatabaseHelper extends SQLiteOpenHelper {
             }
             query = query.substring(0,query.length()-1);
             query += ")";
+            Log.d(TAG,query);
             db.execSQL(query);
 
         }
 
         for(String[] vals : sampleNPCS){
-            String query = "INSERT INTO " + NPCS_TABLE + " (Name) VALUES (";
+            String query = "INSERT INTO " + NPCS_TABLE + " (Name, SpiteSheet) VALUES (";
             for(String val : vals){
                 query += "'" + val + "',";
             }
@@ -115,7 +126,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
             contentValues.put(columns[i+1], values[i]);
         }
         SQLiteDatabase db = getWritableDatabase();      //db = database we are going to write to
-        db.insert(tableName, null, contentValues);   // takes table name, null, content values object as above
+        db.insert(tableName, null, contentValues);      // takes table name, null, content values object as above
         db.close();
     }
 
@@ -183,6 +194,10 @@ class DatabaseHelper extends SQLiteOpenHelper {
     public void deleteAllRows(String tableName){
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE * FROM " +tableName);
+    }
+
+    public void deleteDB(){
+        this.ctx.deleteDatabase(DATABASE_NAME);
     }
 
     //  Display Table as string

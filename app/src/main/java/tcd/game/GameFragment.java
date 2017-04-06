@@ -26,7 +26,7 @@ import android.os.Vibrator;
 
 public class GameFragment extends Fragment{
     private static final String TAG = "GameFragment";
-    private final int TARGET_FPS = 60;
+    private final int TARGET_FPS = 30;
 
     private GameRenderer gameRenderer;
     private GameMode gameMode;
@@ -79,23 +79,23 @@ public class GameFragment extends Fragment{
                     if(gameMode.isEventActivated() == false){
                         if (touchLoc.intersect(upRect_area)) {
                             gameMode.getPlayer().setUp_pressed(true);
-                            controlIconUp = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_up);
+                            controlIconUp = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_up_pressed);
                         } else if (touchLoc.intersect(downRect_area)) {
                             gameMode.getPlayer().setDown_pressed(true);
-                            controlIconDown = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_down);
+                            controlIconDown = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_down_pressed);
                         } else if(touchLoc.intersect(rightRect_area)){
                             gameMode.getPlayer().setRight_pressed(true);
-                            controlIconRight = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_right);
+                            controlIconRight = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_right_pressed);
                         } else if(touchLoc.intersect(leftRect_area)) {
                             gameMode.getPlayer().setLeft_pressed(true);
-                            controlIconLeft = BitmapFactory.decodeResource(getResources(), R.drawable.arrow_left);
+                            controlIconLeft = BitmapFactory.decodeResource(getResources(), R.drawable.arrow_left_pressed);
                         }
                     }
                     if(touchLoc.intersect(A_rect)){
-                        A_Button = BitmapFactory.decodeResource(getResources(), R.drawable.truck);
+                        A_Button = BitmapFactory.decodeResource(getResources(), R.drawable.a_button_not);
                         gameMode.getPlayer().setAPressed(true);
                     } else if (touchLoc.intersect(B_rect)){
-                        B_Button = BitmapFactory.decodeResource(getResources(), R.drawable.truck);
+                        B_Button = BitmapFactory.decodeResource(getResources(), R.drawable.b_button_not);
                         gameMode.getPlayer().setBPressed(true);
                         gameMode.setEventActivated(false);
                     }
@@ -105,9 +105,7 @@ public class GameFragment extends Fragment{
                     gameMode.getPlayer().setAllVelFalse();
                     gameMode.getPlayer().setAllButFalse();
                     restoreBitmaps();
-                    //A_Button = BitmapFactory.decodeResource(getResources(), R.drawable.a_button);
-                    //B_Button = BitmapFactory.decodeResource(getResources(),R.drawable.b_button);
-                }
+                    }
 
                 return true;
             }
@@ -154,8 +152,8 @@ public class GameFragment extends Fragment{
         controlIconLeft = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_left);
         controlIconRight = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_right);
 
-        A_Button = BitmapFactory.decodeResource(getResources(), R.drawable.truck);
-        B_Button = BitmapFactory.decodeResource(getResources(),R.drawable.truck);
+        A_Button = BitmapFactory.decodeResource(getResources(), R.drawable.a_button);
+        B_Button = BitmapFactory.decodeResource(getResources(),R.drawable.b_button);
     }
 
     /***********************************************************************************
@@ -167,8 +165,8 @@ public class GameFragment extends Fragment{
         controlIconLeft = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_left);
         controlIconRight = BitmapFactory.decodeResource(getResources(),R.drawable.arrow_right);
 
-        A_Button = BitmapFactory.decodeResource(getResources(), R.drawable.truck);
-        B_Button = BitmapFactory.decodeResource(getResources(),R.drawable.truck);
+        A_Button = BitmapFactory.decodeResource(getResources(), R.drawable.a_button);
+        B_Button = BitmapFactory.decodeResource(getResources(),R.drawable.b_button);
 
 
         // Size of a single direction button is 1/18th of max screen size,
@@ -319,50 +317,47 @@ public class GameFragment extends Fragment{
 
         @Override
         public void run() {
-            Log.d(TAG, "Run Method starting");
-            while (!gameInitialized) {
-               // Log.d(TAG, "Waiting for game to Initialise");
-            }
-            while (running) {
-//                    Log.d(TAG,"GameLoop Starting");
-                long starTime = System.nanoTime();
+            // Wait for all game objects to be initialized
+            while (!gameInitialized) {}
 
-                // Update frame
+            while (running) {
+                long startTime = System.nanoTime();
+
+
                 try {
+                    // Update frame
                     update();
 
                     // Check if still drawing on GUI thread
                     if (!drawing) {
                         drawing = true;
-                        // Methods: invalidate(), postInvalidate()
-                        // If we update ANY view (TextView, View, SurfaceView, CanvasView.. etc)
-                        // The GUI thread needs to redraw it
-                        // By calling invalidate(), we trigger a redraw of the view on the GUI thread
-                        // By calling postInvalidate(), sends message to GUI thread FROM ANOTHER THREAD (which we are on)
+                        // Trigger a redraw of fragment on GUI thread
                         postInvalidate();
                     }
                 } catch (NullPointerException npe) {
                     Log.d(TAG, "NPE while updating " + npe.getMessage());
                 }
 
-
+                // Compute ideal sleeping time
                 long endTime = System.nanoTime();
-                long intendedSleepTime = targetStepPeriod - (endTime - starTime);
+                long intendedSleepTime = targetStepPeriod - (endTime - startTime);
 
                 // Correct for an oversleeping on previous tick
                 intendedSleepTime = intendedSleepTime - overSleepTime;
 
+                // If we have time to spare, sleep
                 if (intendedSleepTime > 0) {
                     try {
                         // Convert intendedSleepTime from ns to ms
                         Thread.sleep(intendedSleepTime / 1000000L);
+
+                        // Wake and check if we overslept
                         long actualSleepTime = System.nanoTime() - endTime;
                         overSleepTime = actualSleepTime - intendedSleepTime;
                     } catch (InterruptedException e) {
                         Log.d(TAG, "Thread interrupted: " + e.getMessage());
                     }
                 } else {
-                    // TODO: May be sub optimal to just reset this to 0
                     overSleepTime = 0L;
                 }
 

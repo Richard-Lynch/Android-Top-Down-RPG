@@ -9,7 +9,9 @@ import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
+import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.Map;
 
 import static java.lang.Math.abs;
@@ -31,7 +33,7 @@ public class GameObject {
     protected String TAG = "GameObject";
 
     // Used for generating GameObjects IDS
-    private static int totalGameObjs = 0;
+    private static int totalGameObjs = 1;
 
     /** Unique ID for each GameObject */
     protected int id;
@@ -57,11 +59,20 @@ public class GameObject {
 
     protected int eventID;
 
-    public int getHealth() {
-        return health;
+    public String getEventText() {
+        return eventText;
     }
 
+    public void setEventText(String eventText) {
+        this.eventText = eventText;
+    }
+
+    protected String eventText;
+
     protected int health;
+    protected boolean IsAlive;
+
+
 
 
     /** Box used for updating positions and collision checking */
@@ -172,6 +183,7 @@ public class GameObject {
         // Loading default Sprites for each GameObject if not passed in
         if(type == GameObjectTypes.PLAYER){
 //            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.player_default);
+            IsAlive = true;
             health = 100;
             spritesWide = 10;
             spritesTall = 8;
@@ -188,11 +200,12 @@ public class GameObject {
             facing = GameObjectAnimationDirection.FACING_DOWN;
         } else if(type == GameObjectTypes.NPC){
 //            spriteMap = BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_default);
+            IsAlive = true;
             health = 100;
             spritesWide = 10;
             spritesTall = 8;
             drawScaleFactor = 0.25f;
-            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_default));
+            //this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_default));
             facing = GameObjectAnimationDirection.FACING_DOWN;
         }
 
@@ -201,7 +214,7 @@ public class GameObject {
         maxAnimationColIndex = 0;
         animationRowIndex = 0;
         loops = 0;
-        animationSpeed = 8;
+        animationSpeed = 16;
         blink_speed = 16;
 
 
@@ -223,20 +236,22 @@ public class GameObject {
 
         collided  = false;
 
-        setCrop(spriteMap.getWidth()/spritesWide,spriteMap.getHeight()/spritesTall); //sets the sprite width and height variables
+        //setCrop(spriteMap.getWidth()/spritesWide,spriteMap.getHeight()/spritesTall); //sets the sprite width and height variables
 
         drawBox = new Rect (0,0, drawWidth, drawHeight);
 
         velX = 0;
         velY = 0;
         this.moving = false;
-        speed = 6;
+        speed = 12;
 
     }
 
 
     public Bitmap[][] setSprite(Bitmap bitmap){
         this.spriteMap = bitmap;
+        setCrop(spriteMap.getWidth()/spritesWide,spriteMap.getHeight()/spritesTall); //sets the sprite width and height variables
+
         dividedSpriteMap = new Bitmap[spritesTall][spritesWide]; //This 2-d array will store the split up frames from the sprite sheet
 
         // Divide up sprite sheet into 2d array of Bitmap objects for each individual sprite
@@ -325,6 +340,7 @@ public class GameObject {
 
     public void setEventID(int eventID) {
         this.eventID = eventID;
+        this.eventText = "Default Text";
         this.hasEvent = true;
     }
 
@@ -346,7 +362,7 @@ public class GameObject {
                 //Event is an interaction
                 case 1:
                     if(this.hasEvent){
-                        return this.eventID;
+                        return this.id;
                     }
                     else {
                         return -1;
@@ -417,6 +433,14 @@ public class GameObject {
 
     public int update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type, Map<Integer, Integer> colMap, Map<Integer, GameObject> objMap){
         //move object by velocity
+        if(health < 1 && type != GameObjectTypes.INANOBJECT){
+            if(IsAlive) {
+                IsAlive = false;
+                colMap.remove((new Coordinates(this.gridX, this.gridY).hashCode()));
+                objMap.remove(id);
+                hasEvent = false;
+            }
+        }
         if(this.moving){
             if(gridUnset){
                 if((gridX+velX < 0 || gridX+velX >= gridWide) || (gridY+velY < 0 || gridY+velY >= gridHeight)){
@@ -454,7 +478,7 @@ public class GameObject {
 
             if(collided){
                 collided = false;
-                return 1;
+                return -1;
             }
         }
         else if(players[0].isA_pressed() && colMap.get(new Coordinates(this.gridX+directionX(), this.gridY+directionY()).hashCode()) != (null)) {
@@ -500,6 +524,10 @@ public class GameObject {
         return this.id;
     }
 
+    public int getHealth() {
+        return health;
+    }
+    public boolean isAlive() {return IsAlive;}
 
     public enum GameObjectTypes {
         PLAYER,
@@ -531,6 +559,30 @@ public class GameObject {
     // Added by Stefano (required by WorldMap class)
     public void setInfo(String[] s){
         this.name = s[1];
+        String filepath = s[2];
+
+        Log.d("Stefano",filepath);
+        int drawableID = context.getResources().getIdentifier("arrow_down.png", "drawable", context.getPackageName());
+        Log.d("Stefano",String.valueOf(drawableID));
+        //Bitmap temp = BitmapFactory.decodeResource(context.getResources(),drawableID);
+        //Bitmap temp = BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_1);
+        //Bitmap temp = BitmapFactory.decodeFile(context.getAssets
+        Bitmap temp = null;
+        try {
+            temp = BitmapFactory.decodeStream(context.getAssets().open("sprites/" + filepath));
+        } catch (IOException e){
+            Log.d("Stefano","Catch");
+        }
+        if(temp == null){
+            Toast.makeText(context,"temp null", Toast.LENGTH_LONG).show();
+            Log.d(TAG,"Temp was null");
+        } else {
+            spriteMap = temp;
+            Log.d(TAG,"Temp not null");
+            this.setSprite(spriteMap);
+        }
+
+
     }
 
     public void setDatabaseID(short databaseID){
