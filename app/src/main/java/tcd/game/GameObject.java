@@ -9,7 +9,9 @@ import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
+import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.Map;
 
 import static java.lang.Math.abs;
@@ -203,7 +205,7 @@ public class GameObject {
             spritesWide = 10;
             spritesTall = 8;
             drawScaleFactor = 0.25f;
-            this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_default));
+            //this.setSprite(BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_default));
             facing = GameObjectAnimationDirection.FACING_DOWN;
         }
 
@@ -234,7 +236,7 @@ public class GameObject {
 
         collided  = false;
 
-        setCrop(spriteMap.getWidth()/spritesWide,spriteMap.getHeight()/spritesTall); //sets the sprite width and height variables
+        //setCrop(spriteMap.getWidth()/spritesWide,spriteMap.getHeight()/spritesTall); //sets the sprite width and height variables
 
         drawBox = new Rect (0,0, drawWidth, drawHeight);
 
@@ -248,6 +250,8 @@ public class GameObject {
 
     public Bitmap[][] setSprite(Bitmap bitmap){
         this.spriteMap = bitmap;
+        setCrop(spriteMap.getWidth()/spritesWide,spriteMap.getHeight()/spritesTall); //sets the sprite width and height variables
+
         dividedSpriteMap = new Bitmap[spritesTall][spritesWide]; //This 2-d array will store the split up frames from the sprite sheet
 
         // Divide up sprite sheet into 2d array of Bitmap objects for each individual sprite
@@ -555,6 +559,30 @@ public class GameObject {
     // Added by Stefano (required by WorldMap class)
     public void setInfo(String[] s){
         this.name = s[1];
+        String filepath = s[2];
+
+        Log.d("Stefano",filepath);
+        int drawableID = context.getResources().getIdentifier("arrow_down.png", "drawable", context.getPackageName());
+        Log.d("Stefano",String.valueOf(drawableID));
+        //Bitmap temp = BitmapFactory.decodeResource(context.getResources(),drawableID);
+        //Bitmap temp = BitmapFactory.decodeResource(context.getResources(),R.drawable.npc_1);
+        //Bitmap temp = BitmapFactory.decodeFile(context.getAssets
+        Bitmap temp = null;
+        try {
+            temp = BitmapFactory.decodeStream(context.getAssets().open("sprites/" + filepath));
+        } catch (IOException e){
+            Log.d("Stefano","Catch");
+        }
+        if(temp == null){
+            Toast.makeText(context,"temp null", Toast.LENGTH_LONG).show();
+            Log.d(TAG,"Temp was null");
+        } else {
+            spriteMap = temp;
+            Log.d(TAG,"Temp not null");
+            this.setSprite(spriteMap);
+        }
+
+
     }
 
     public void setDatabaseID(short databaseID){

@@ -177,7 +177,7 @@ public class GameMode {
             //npcs[i].setEventID(numberOfEvents);
             //numberOfEvents++;
             npcs[i].hasEvent = true;
-            npcs[i].setEventText("Hello I am " + (npcs[0].name) + ".");
+            npcs[i].setEventText("Hello I am " + (npcs[i].name) + ".");
         }
 
         for (int i = 0; i < inanObjs.length; i++) {
@@ -327,7 +327,7 @@ public class GameMode {
             // Update NPC positions
             for (int i = 0; i < npcs.length; i++) {
                 //if (npcs[i].IsAlive){
-                    npcs[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.NPC, PosMap, ObjMap);
+                    npcs[i].update(players, npcs, inanObjs, players[0].getID(), GameObject.GameObjectTypes.NPC, PosMap, ObjMap);
 
                 //}else{
                   //  npcs[i].setSprite(skull);

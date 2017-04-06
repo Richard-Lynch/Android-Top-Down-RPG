@@ -27,7 +27,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
     private static final String[] creationQueries = {
             "CREATE TABLE " + TILES_TABLE + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Row INTEGER, Col INTEGER, SpanX INTEGER, SpanY INTEGER," +
                     "Spritesheet TEXT, Collidable Boolean)",
-            "CREATE TABLE " + NPCS_TABLE + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"
+            "CREATE TABLE " + NPCS_TABLE + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, SpiteSheet TEXT)"
     };
 
     //Constructor
@@ -63,11 +63,11 @@ class DatabaseHelper extends SQLiteOpenHelper {
         };
 
         String[][] sampleNPCS = {
-                {"VonNeuyman"},
-                {"Dijkstra"},
-                {"Donall"},
-                {"FergalShevlin"},
-                {"AntonG"}
+                {"VonNeuyman","npc_1.png"},
+                {"Dijkstra","npc_2.png"},
+                {"Donall","npc_3.png"},
+                {"FergalShevlin","npc_4.png"},
+                {"AntonG","npc_5.png"}
         };
 
 
@@ -85,7 +85,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         for(String[] vals : sampleNPCS){
-            String query = "INSERT INTO " + NPCS_TABLE + " (Name) VALUES (";
+            String query = "INSERT INTO " + NPCS_TABLE + " (Name, SpiteSheet) VALUES (";
             for(String val : vals){
                 query += "'" + val + "',";
             }
@@ -126,7 +126,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
             contentValues.put(columns[i+1], values[i]);
         }
         SQLiteDatabase db = getWritableDatabase();      //db = database we are going to write to
-        db.insert(tableName, null, contentValues);   // takes table name, null, content values object as above
+        db.insert(tableName, null, contentValues);      // takes table name, null, content values object as above
         db.close();
     }
 

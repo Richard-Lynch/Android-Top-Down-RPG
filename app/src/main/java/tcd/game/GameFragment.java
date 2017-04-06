@@ -317,50 +317,47 @@ public class GameFragment extends Fragment{
 
         @Override
         public void run() {
-            Log.d(TAG, "Run Method starting");
-            while (!gameInitialized) {
-               // Log.d(TAG, "Waiting for game to Initialise");
-            }
-            while (running) {
-//                    Log.d(TAG,"GameLoop Starting");
-                long starTime = System.nanoTime();
+            // Wait for all game objects to be initialized
+            while (!gameInitialized) {}
 
-                // Update frame
+            while (running) {
+                long startTime = System.nanoTime();
+
+
                 try {
+                    // Update frame
                     update();
 
                     // Check if still drawing on GUI thread
                     if (!drawing) {
                         drawing = true;
-                        // Methods: invalidate(), postInvalidate()
-                        // If we update ANY view (TextView, View, SurfaceView, CanvasView.. etc)
-                        // The GUI thread needs to redraw it
-                        // By calling invalidate(), we trigger a redraw of the view on the GUI thread
-                        // By calling postInvalidate(), sends message to GUI thread FROM ANOTHER THREAD (which we are on)
+                        // Trigger a redraw of fragment on GUI thread
                         postInvalidate();
                     }
                 } catch (NullPointerException npe) {
                     Log.d(TAG, "NPE while updating " + npe.getMessage());
                 }
 
-
+                // Compute ideal sleeping time
                 long endTime = System.nanoTime();
-                long intendedSleepTime = targetStepPeriod - (endTime - starTime);
+                long intendedSleepTime = targetStepPeriod - (endTime - startTime);
 
                 // Correct for an oversleeping on previous tick
                 intendedSleepTime = intendedSleepTime - overSleepTime;
 
+                // If we have time to spare, sleep
                 if (intendedSleepTime > 0) {
                     try {
                         // Convert intendedSleepTime from ns to ms
                         Thread.sleep(intendedSleepTime / 1000000L);
+
+                        // Wake and check if we overslept
                         long actualSleepTime = System.nanoTime() - endTime;
                         overSleepTime = actualSleepTime - intendedSleepTime;
                     } catch (InterruptedException e) {
                         Log.d(TAG, "Thread interrupted: " + e.getMessage());
                     }
                 } else {
-                    // TODO: May be sub optimal to just reset this to 0
                     overSleepTime = 0L;
                 }
 
