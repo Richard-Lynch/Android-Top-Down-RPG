@@ -296,9 +296,9 @@ public class GameMode {
                 if (CurrentID > 0) {
                     EventActivated = true;
 
-                } else if(CurrentEventID == 1) {
+                } /*else if(CurrentEventID == 1) {
                     AFX.playAFX(context, AFX_ID.AFX_ouch_1);
-                }
+                }*/
             }
 
             // Update NPC positions
