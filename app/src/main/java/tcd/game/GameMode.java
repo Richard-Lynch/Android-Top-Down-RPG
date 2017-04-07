@@ -86,6 +86,8 @@ public class GameMode {
      */
     GameMode(Context context){
         this.context = context;
+        mediaPlayer = MediaPlayer.create(context, R.raw.doom_gate);
+        mediaPlayer.start();
     }
 
 
@@ -99,6 +101,8 @@ public class GameMode {
         this.context = context;
         this.canvasHeight = canvasHeight;
         this.canvasWidth = canvasWidth;
+        // Initialise mediaplayer
+
        // init(1);
     }
 
@@ -126,6 +130,16 @@ public class GameMode {
 
 
     private void init(double levelID) {
+
+        // Clearing everything OOM bug
+  /*      SpriteMaps.clear();
+        ObjMap.clear();*/
+        if(!ObjMap.isEmpty()){
+            ObjMap.clear();
+            PosMap.clear();
+        }
+
+
         worldMap = new WorldMap(context, canvasWidth, canvasHeight, (int)levelID);
         speechbox = BitmapFactory.decodeResource(context.getResources(), R.drawable.speechboxj);
         skull = BitmapFactory.decodeResource(context.getResources(), R.drawable.skull);
@@ -153,7 +167,6 @@ public class GameMode {
         players[0].setGridPos(3, 2);
         players[0].setSprite(BitmapFactory.decodeResource(context.getResources(), R.drawable.player_default));
         SpriteMaps.put(GameObject.GameObjectTypes.PLAYER.ordinal(), players[0].dividedSpriteMap);
-
         ObjMap.put(players[0].getID(), players[0]);
         PosMap.put(players[0].getCoordinates().hashCode(), players[0].getID());
         Player test = (Player) ObjMap.get(players[0].getID());
@@ -181,12 +194,12 @@ public class GameMode {
             npcs[i].setEventText("Hello I am " + (npcs[i].name) + ".");
         }
 
-        for (int i = 0; i < inanObjs.length; i++) {
+/*        for (int i = 0; i < inanObjs.length; i++) {
             //inanObjs[i].setEventID(numberOfEvents);
             //numberOfEvents++;
             inanObjs[i].hasEvent = true;
             inanObjs[i].setEventText("This is signpost " + (inanObjs[i].getID()) + ".");
-        }
+        }*/
 
         // Add all npcs to hash maps
         for(int i=0;i<npcs.length;i++){
@@ -243,9 +256,7 @@ public class GameMode {
 //        Log.d(TAG,"inan now im at "+ inanObjs[0].gridX + " " + inanObjs[0].gridY);
 //        Log.d(TAG,"inan now im at "+ testi.gridX + " " + testi.gridY);
 
-        // Initialise mediaplayer
-        mediaPlayer = MediaPlayer.create(context, R.raw.doom_gate);
-        mediaPlayer.start();
+
 
         // Initialise soundpool for sound effects
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -322,23 +333,13 @@ public class GameMode {
                 CurrentID = players[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.PLAYER, PosMap, ObjMap);
                 if (CurrentID > 0) {
                     EventActivated = true;
-/*                    if(levelID == 1){
+                  if(levelID == 1){
                         levelID = 2;
                     } else {
                         levelID = 1;
                     }
-                    Log.d("Stefano","Chanign world");
-                    worldMap = null;
-                    System.gc();
-                    init(levelID);*/
-/*                    worldMap = new WorldMap(context,canvasWidth,canvasHeight,levelID);
-                    map = worldMap.getMap();
-                    MapWidth = map.getWidth();
-                    MapHeight = map.getHeight();
-                    npcs = worldMap.getNpcs();
-                    inanObjs = worldMap.getInanObjects();*/
-
-
+                    EventActivated = false;
+                    init(levelID);
                 }
             }
 

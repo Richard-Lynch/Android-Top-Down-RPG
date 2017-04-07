@@ -66,7 +66,8 @@ class DatabaseHelper extends SQLiteOpenHelper {
                 { "Lamppost",   "45", "7", "1", "2",  "pokemon_tileset.png", "1"},
                 { "Lake",       "52", "0", "3", "3",  "pokemon_tileset.png", "0"},
                 { "Sand",       "62", "7", "1", "1",  "pokemon_tileset.png", "0"},
-                { "SandFade",   "31", "6", "1", "1",  "pokemon_tileset.png", "0"}
+                { "SandFade",   "31", "6", "1", "1",  "pokemon_tileset.png", "0"},
+                { "RockToBeach","19", "0", "3", "3",  "pokemon_tileset.png", "0"}
 
         };
 

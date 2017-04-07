@@ -170,6 +170,8 @@ public class WorldMap {
                             //t("Creating inan: (" + col + "," + row + ")");
                             inanObject.setSprite(Bitmap.createBitmap(tileSet, 0, 0, GRID_SIZE, GRID_SIZE));
                             inanObject.setSpan(tile.spanX, tile.spanY);
+                            inanObject.setEventID(tileIDS[row][col]);
+                            inanObject.setEventText("inan obj " + tileIDS[row][col]);
                             inanObjects.add(inanObject);
                         }
                         src = tile.getSourceRect();
@@ -246,6 +248,8 @@ public class WorldMap {
             Toast.makeText(context,"Error",Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
+
+        tileSet = null;
     }
 
     /**
