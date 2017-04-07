@@ -61,6 +61,7 @@ public class GameMode {
     private final int MAX_STREAM = 10;
 
 
+    private int levelID = 1;
 
 
 
@@ -98,7 +99,7 @@ public class GameMode {
         this.context = context;
         this.canvasHeight = canvasHeight;
         this.canvasWidth = canvasWidth;
-        init(0);
+       // init(1);
     }
 
 
@@ -120,12 +121,12 @@ public class GameMode {
         this.canvasHeight = screenHeight;
         this.EventActivated =false;
 
-        init(0);
+        init(levelID);
     }
 
 
     private void init(double levelID) {
-        worldMap = new WorldMap(context, canvasWidth, canvasHeight);
+        worldMap = new WorldMap(context, canvasWidth, canvasHeight, (int)levelID);
         speechbox = BitmapFactory.decodeResource(context.getResources(), R.drawable.speechboxj);
         skull = BitmapFactory.decodeResource(context.getResources(), R.drawable.skull);
         map = worldMap.getMap();
@@ -321,6 +322,23 @@ public class GameMode {
                 CurrentID = players[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.PLAYER, PosMap, ObjMap);
                 if (CurrentID > 0) {
                     EventActivated = true;
+/*                    if(levelID == 1){
+                        levelID = 2;
+                    } else {
+                        levelID = 1;
+                    }
+                    Log.d("Stefano","Chanign world");
+                    worldMap = null;
+                    System.gc();
+                    init(levelID);*/
+/*                    worldMap = new WorldMap(context,canvasWidth,canvasHeight,levelID);
+                    map = worldMap.getMap();
+                    MapWidth = map.getWidth();
+                    MapHeight = map.getHeight();
+                    npcs = worldMap.getNpcs();
+                    inanObjs = worldMap.getInanObjects();*/
+
+
                 }
             }
 
