@@ -333,13 +333,6 @@ public class GameMode {
                 CurrentID = players[i].update(players, npcs, inanObjs, players[i].getID(), GameObject.GameObjectTypes.PLAYER, PosMap, ObjMap);
                 if (CurrentID > 0) {
                     EventActivated = true;
-                  if(levelID == 1){
-                        levelID = 2;
-                    } else {
-                        levelID = 1;
-                    }
-                    EventActivated = false;
-                    init(levelID);
                 }
             }
 
@@ -472,10 +465,20 @@ public class GameMode {
         }
         if (EventActivated) {
 
-
-            canvas.drawBitmap(speechbox, null, new Rect(0, canvas.getHeight() - 400, canvas.getWidth() - 300, canvas.getHeight()), null);
-           String eventString = ObjMap.get(CurrentID).eventText;
-           canvas.drawText(eventString,100f,canvasHeight - 250,textPaint);
+            int ID = ObjMap.get(players[0].lastInteracted).getEventID();
+            if(ID == 19){
+                if(levelID == 1){
+                    levelID = 2;
+                } else {
+                    levelID = 1;
+                }
+                EventActivated = false;
+                init(levelID);
+            } else {
+                canvas.drawBitmap(speechbox, null, new Rect(0, canvas.getHeight() - 400, canvas.getWidth() - 300, canvas.getHeight()), null);
+                String eventString = ObjMap.get(CurrentID).eventText;
+                canvas.drawText(eventString, 100f, canvasHeight - 250, textPaint);
+            }
 
 
 

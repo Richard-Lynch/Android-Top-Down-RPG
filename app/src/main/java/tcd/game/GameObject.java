@@ -37,6 +37,7 @@ public class GameObject {
 
     /** Unique ID for each GameObject */
     protected int id;
+    public int lastInteracted;
 
     // Added by Stefano -- required by Map class
     // May need two IDS as id tracks what GameObject they are
@@ -432,6 +433,15 @@ public class GameObject {
         }
     }
 
+    private int action2(Map<Integer, GameObject> objMap,Map<Integer, Integer> colMap,int EventType){
+        int dirX = directionX();
+        int dirY = directionY();
+
+        int IdOfObject = colMap.get(new Coordinates(this.gridX + dirX, this.gridY + dirY).hashCode());
+
+        return IdOfObject;
+    }
+
 
     public int update(Player players[], NPC npcs[], InanObject inanObjects[], int id, GameObjectTypes type, Map<Integer, Integer> colMap, Map<Integer, GameObject> objMap){
         //move object by velocity
@@ -486,6 +496,7 @@ public class GameObject {
         else if(players[0].isA_pressed() && colMap.get(new Coordinates(this.gridX+directionX(), this.gridY+directionY()).hashCode()) != (null)) {
 
             Log.d(TAG, "Event ID returned to main" + action(objMap,colMap,1));
+            lastInteracted = action2(objMap,colMap,1);
             return action(objMap,colMap,1); //Returns the event ID to run
 
         }
