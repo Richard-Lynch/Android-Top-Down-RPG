@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/3D5B.iml" filepath="$PROJECT_DIR$/3D5B.iml" />
+      <module fileurl="file://$PROJECT_DIR$/3D5B.iml" filepath="$PROJECT_DIR$/3D5B.iml" />
       <module fileurl="file://$PROJECT_DIR$/NpcMovement.iml" filepath="$PROJECT_DIR$/NpcMovement.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/master2.iml" filepath="$PROJECT_DIR$/master2.iml" />
     </modules>
