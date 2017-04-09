@@ -32,14 +32,24 @@ public class NPC extends AnimateObject {
 
     NPC(Context context, String s,int canvasWidth, int canvasHeight,int mapWidth, int mapHeight){
         super(context,s, GameObjectTypes.NPC, canvasWidth, canvasHeight, mapWidth, mapHeight);
-        Coordinates c1,c2,c3;
-        c1=new Coordinates(100,-15);
-        c2=new Coordinates(120,-25);
-        c3=new Coordinates(130,-35);
+        Coordinates c1 = null,c2 = null,c3 = null;
+        if(this.databaseID == 1){
+            c1=new Coordinates(100,100);
+            c2=new Coordinates(100,205);
+//            c3=new Coordinates(130,-35);
+        } else if(this.databaseID == 2){
+            c1=new Coordinates(100,100);
+            c2=new Coordinates(100,205);
+//            c3=new Coordinates(130,-35);
+        } else{
+            c1=new Coordinates(100,100);
+            c2=new Coordinates(100,205);
+
+        }
+
 
         this.coordinates.add(c1);
         this.coordinates.add(c2);
-        this.coordinates.add(c3);
     }
 
 

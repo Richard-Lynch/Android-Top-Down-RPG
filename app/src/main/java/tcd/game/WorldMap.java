@@ -39,13 +39,20 @@ public class WorldMap {
     private short[][] tileIDS;
 
 
-    WorldMap(Context context, int canvasWidth, int canvasHeight) {
+    WorldMap(Context context, int canvasWidth, int canvasHeight, int level) {
 
         this.context = context;
         Log.d(TAG,"Starting");
         // These will come from else where
         drawSize = canvasWidth / 32;
 
+        String filename;
+
+        if(level == 1){
+            filename = "map.csv";
+        } else {
+            filename = "map2.csv";
+        }
 
 
         // Store tiles to be read from DB in hash map for easy lookup
@@ -56,8 +63,8 @@ public class WorldMap {
         int rows,cols;
         try {
             // Read first line to get width and height
-             BufferedReader br = new BufferedReader(
-                    new InputStreamReader(context.getAssets().open("map.csv")));
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(context.getAssets().open(filename)));
             String line = br.readLine();
             String[] vals = line.split(",");
             cols = Integer.valueOf(vals[0]);
@@ -68,25 +75,25 @@ public class WorldMap {
             tileIDS = new short[rows][cols];
 
             // Fill it
-            int i=0;
+            int i = 0;
             while (((line = br.readLine()) != null)) {
                 String[] ids = line.split(",");
                 // Check if end of block reached (all commas)
-                if(i==rows){
+                if (i == rows) {
                     // Line break read
                     break;
                 }
-                for(int j=0;j<ids.length;j++){
+                for (int j = 0; j < ids.length; j++) {
                     short currentID = Short.valueOf(ids[j]);
 
                     // put current tile into 2d array
                     tileIDS[i][j] = currentID;
 
                     // if not already in required hash table add it
-                    if(!tilesRequiredHashMap.containsKey(currentID)){
+                    if (!tilesRequiredHashMap.containsKey(currentID)) {
                         //t("Putting " + currentID + " in hash table");
-                        tilesRequiredHashMap.put(currentID,new Tile(currentID));
-                        if(currentID != -1) {
+                        tilesRequiredHashMap.put(currentID, new Tile(currentID));
+                        if (currentID != -1) {
                             IDSFromDB += String.valueOf(currentID) + ",";
                         }
                     }
@@ -103,7 +110,7 @@ public class WorldMap {
             Log.d(TAG, databaseHelper.tableToString(databaseHelper.TILES_TABLE));
 
             // Trim off last comma
-            IDSFromDB = IDSFromDB.substring(0,IDSFromDB.length()-1);
+            IDSFromDB = IDSFromDB.substring(0, IDSFromDB.length() - 1);
 
             Log.d(TAG, IDSFromDB);
 
@@ -112,36 +119,36 @@ public class WorldMap {
             String query = " SELECT * FROM " + DatabaseHelper.TILES_TABLE + " WHERE ID IN (" + IDSFromDB + " ) ORDER BY ID";
 
             // Save Results
-            ArrayList<String[]> results = databaseHelper.getRows(query, DatabaseHelper.TILES_TABLE,null);
+            ArrayList<String[]> results = databaseHelper.getRows(query, DatabaseHelper.TILES_TABLE, null);
 
             // Iterate over tiles read from DB
-            for(String[] s : results){
+            for (String[] s : results) {
                 // Finish the initalization process of all the tiles required for the mapd
-                Log.d(TAG,s[0]);
+                Log.d(TAG, s[0]);
                 Tile tile = tilesRequiredHashMap.get(Short.valueOf(s[0]));
-                if(tile != null) {
+                if (tile != null) {
                     tile.setInfo(s);
                 } else {
-                    Toast.makeText(context,"Null: id= " + s[0],Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Null: id= " + s[0], Toast.LENGTH_SHORT).show();
                 }
             }
 
             // Get required tilesets (may need to do this one at a time to avoid oom)
             // For now just one so
             tileSet = BitmapFactory.decodeResource(context.getResources(), R.drawable.pokemon_tileset);
-            GRID_SIZE = tileSet.getWidth()/8;
-            Log.d(TAG, "grid:"+GRID_SIZE);
+            GRID_SIZE = tileSet.getWidth() / 8;
+            Log.d(TAG, "grid:" + GRID_SIZE);
 
             // Create our final bitmap
-            map = Bitmap.createBitmap(cols*drawSize,rows*drawSize, Bitmap.Config.ARGB_8888);
+            map = Bitmap.createBitmap(cols * drawSize, rows * drawSize, Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(map);
 
-            for(int row = 0; row< tileIDS.length; row++){
-                for(int col = 0; col< tileIDS[0].length; col++) {
+            for (int row = 0; row < tileIDS.length; row++) {
+                for (int col = 0; col < tileIDS[0].length; col++) {
                     Tile tile = tilesRequiredHashMap.get(tileIDS[1][1]);
                     Rect src = tile.getSourceRect();
-                    Rect dest = new Rect(0,0,0,0);
-                    dest.set(col * drawSize, row * drawSize, (col * drawSize) + (tile.spanX*drawSize), (row * drawSize) + (tile.spanY*drawSize));
+                    Rect dest = new Rect(0, 0, 0, 0);
+                    dest.set(col * drawSize, row * drawSize, (col * drawSize) + (tile.spanX * drawSize), (row * drawSize) + (tile.spanY * drawSize));
                     c.drawBitmap(tileSet, src, dest, null);
                 }
             }
@@ -151,10 +158,10 @@ public class WorldMap {
             // Draw to it
 
             Rect src;
-            Rect dest = new Rect(0,0,0,0);
-            for(int row = 0; row< tileIDS.length; row++){
-                for(int col = 0; col< tileIDS[0].length; col++){
-                    if(!(tileIDS[row][col] == -1)) {
+            Rect dest = new Rect(0, 0, 0, 0);
+            for (int row = 0; row < tileIDS.length; row++) {
+                for (int col = 0; col < tileIDS[0].length; col++) {
+                    if (!(tileIDS[row][col] == -1)) {
                         Tile tile = tilesRequiredHashMap.get(tileIDS[row][col]);
                         if (tile.collidable) {
                             Log.d(TAG, "con name:" + tile.convenienceName);
@@ -162,11 +169,13 @@ public class WorldMap {
                             inanObject.setGridPos(col, row);
                             //t("Creating inan: (" + col + "," + row + ")");
                             inanObject.setSprite(Bitmap.createBitmap(tileSet, 0, 0, GRID_SIZE, GRID_SIZE));
-                            inanObject.setSpan(tile.spanX,tile.spanY);
+                            inanObject.setSpan(tile.spanX, tile.spanY);
+                            inanObject.setEventID(tileIDS[row][col]);
+                            inanObject.setEventText("inan obj " + tileIDS[row][col]);
                             inanObjects.add(inanObject);
                         }
                         src = tile.getSourceRect();
-                        dest.set(col * drawSize, row * drawSize, (col * drawSize) + (tile.spanX*drawSize), (row * drawSize) + (tile.spanY*drawSize));
+                        dest.set(col * drawSize, row * drawSize, (col * drawSize) + (tile.spanX * drawSize), (row * drawSize) + (tile.spanY * drawSize));
                         c.drawBitmap(tileSet, src, dest, null);
                     }
                 }
@@ -176,22 +185,22 @@ public class WorldMap {
             npcs = new ArrayList<>();
 
             // Read from file
-            i=0;
+            i = 0;
             IDSFromDB = "";
             while (((line = br.readLine()) != null)) {
                 String[] ids = line.split(",");
                 // Check if end of block reached (all commas)
-                if(i==rows){
+                if (i == rows) {
                     // Line break read
                     break;
                 }
-                for(int j=0;j<ids.length;j++){
+                for (int j = 0; j < ids.length; j++) {
                     short currentID = Short.valueOf(ids[j]);
 
-                    if(currentID != 0) {
+                    if (currentID != 0) {
                         // create npc
                         NPC npc = new NPC(context, null, canvasWidth, canvasHeight, map.getWidth(), map.getHeight());
-                        npc.setGridPos(j,i);
+                        npc.setGridPos(j, i);
                         npc.setDatabaseID(currentID);
                         npcs.add(npc);
                         IDSFromDB += String.valueOf(currentID) + ",";
@@ -204,27 +213,27 @@ public class WorldMap {
             // Currently just have bame but this can be extended
 
             // Trim comma
-            IDSFromDB = IDSFromDB.substring(0,IDSFromDB.length()-1);
+            IDSFromDB = IDSFromDB.substring(0, IDSFromDB.length() - 1);
             query = " SELECT * FROM " + DatabaseHelper.NPCS_TABLE + " WHERE ID IN (" + IDSFromDB + ") ORDER BY ID";
             t(query);
             // Save Results
-            ArrayList<String[]> results2 = databaseHelper.getRows(query, DatabaseHelper.NPCS_TABLE,null);
+            ArrayList<String[]> results2 = databaseHelper.getRows(query, DatabaseHelper.NPCS_TABLE, null);
 
 
             // Parse through the results
-            HashMap<Short,String[]> npcHashMap = new HashMap<>();
-            for(String[] s : results2){
+            HashMap<Short, String[]> npcHashMap = new HashMap<>();
+            for (String[] s : results2) {
                 // Store NPC rows in key value pair (should really be done in DB class)
                 t("Id is " + s[0]);
-                npcHashMap.put(Short.valueOf(s[0]),s);
+                npcHashMap.put(Short.valueOf(s[0]), s);
                 // Note could search for each NPC which matches this ID here and assign it that way
                 // But think iterating over the npcs and getting the info from the hash map would be quicker?
             }
 
             // Set relevant values from DB to each NPC (may be multiple NPC's with same ID (generic ones or W.E.))
-            for(NPC npc : npcs){
+            for (NPC npc : npcs) {
                 String[] s = npcHashMap.get(Short.valueOf(npc.getDatabaseID()));
-                if(s!= null){
+                if (s != null) {
                     npc.setInfo(s);
                 } else {
                     t("null on " + npc.getDatabaseID());
@@ -239,6 +248,8 @@ public class WorldMap {
             Toast.makeText(context,"Error",Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
+
+        tileSet = null;
     }
 
     /**
@@ -322,7 +333,7 @@ public class WorldMap {
 
     //delete me - my logs were broken so everything was toasted
     void t(String s){
-        Toast.makeText(context,s,Toast.LENGTH_SHORT).show();
+        //Toast.makeText(context,s,Toast.LENGTH_SHORT).show();
     }
 
 }

@@ -40,7 +40,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         //Runs only when app is first opened
 
-        Toast.makeText(ctx,"Recreating DB",Toast.LENGTH_LONG).show();
+        //Toast.makeText(ctx,"Recreating DB",Toast.LENGTH_LONG).show();
         // Iterate through table creation queries
         for (String query : creationQueries) {
             db.execSQL(query);
@@ -48,26 +48,37 @@ class DatabaseHelper extends SQLiteOpenHelper {
 
         // Note ID auto increments so isn't needed
         String[][] sampleTiles ={
-                { "Grass", "1", "1", "1", "1", "pokemon_tileset.png", "0"},
-                { "Brick", "11", "7", "1", "1", "pokemon_tileset.png", "0"},
-                { "Rose", "2", "2", "1", "1", "pokemon_tileset.png", "0"},
-                { "Sign", "0", "3", "1", "1", "pokemon_tileset.png", "1"},
-                { "Weed", "2", "1", "1", "1", "pokemon_tileset.png", "0"},
-                { "Tree", "3", "7", "1", "2", "pokemon_tileset.png", "1"},
-                { "Rock", "23", "5", "3", "3", "pokemon_tileset.png", "1"},
-                { "Pond", "34", "0", "2", "2", "pokemon_tileset.png", "0"},
-                { "RoofTip", "8", "0", "4", "1", "pokemon_tileset.png", "1"},
-                { "RoofMid", "9", "0", "4", "2", "pokemon_tileset.png", "1"},
-                { "Building", "11", "0", "4", "2", "pokemon_tileset.png", "1"},
-                { "BuildingSide", "47", "7", "1", "5", "pokemon_tileset.png", "1"}
+//                Name,         row, col, spanx, spanY,       tile sheet,    collision
+                { "Grass",      "1", "1", "1", "1",    "pokemon_tileset.png", "0"},
+                { "Sand",       "62", "7", "1", "1",   "pokemon_tileset.png", "0"},
+                { "Rose",       "2", "2", "1", "1",    "pokemon_tileset.png", "0"},
+                { "Sign",       "0", "3", "1", "1",    "pokemon_tileset.png", "1"},
+                { "Weed",       "2", "1", "1", "1",    "pokemon_tileset.png", "0"},
+                { "Tree",       "3", "7", "1", "2",    "pokemon_tileset.png", "1"},
+                { "Rock",       "23", "5", "3", "3",   "pokemon_tileset.png", "1"},
+                { "Pond",       "34", "0", "2", "2",   "pokemon_tileset.png", "0"},
+                { "RoofTip",    "8", "0", "4", "1",    "pokemon_tileset.png", "1"},
+                { "RoofMid",    "9", "0", "4", "2",    "pokemon_tileset.png", "1"},
+                { "Building",   "11", "0", "4", "2",   "pokemon_tileset.png", "1"},
+                { "BuildingSide","47", "7", "1", "5",  "pokemon_tileset.png", "1"},
+                { "Sandpit",    "26", "3", "3", "3",  "pokemon_tileset.png", "0"},
+                { "Mailbox",    "29", "7", "1", "2",  "pokemon_tileset.png", "1"},
+                { "Lamppost",   "45", "7", "1", "2",  "pokemon_tileset.png", "1"},
+                { "Lake",       "52", "0", "3", "3",  "pokemon_tileset.png", "0"},
+                { "Sand",       "62", "7", "1", "1",  "pokemon_tileset.png", "0"},
+                { "SandFade",   "31", "6", "1", "1",  "pokemon_tileset.png", "0"},
+                { "RockToBeach","19", "0", "3", "3",  "pokemon_tileset.png", "1"}
+
         };
 
+
         String[][] sampleNPCS = {
-                {"VonNeuyman","npc_1.png"},
-                {"Dijkstra","npc_2.png"},
-                {"Donall","npc_3.png"},
-                {"FergalShevlin","npc_4.png"},
-                {"AntonG","npc_5.png"}
+//                Name          Spritesheet
+                {"VonNeuyman",  "npc_1.png"},
+                {"Dijkstra",    "npc_2.png"},
+                {"Donall",      "npc_3.png"},
+                {"Null-Man",    "npc_4.png"},
+                {"AntonG",      "npc_5.png"}
         };
 
 

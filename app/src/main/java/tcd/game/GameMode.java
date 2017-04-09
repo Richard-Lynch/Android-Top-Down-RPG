@@ -55,8 +55,19 @@ public class GameMode {
   // Declare mediaplayer for Music (soundpool buffer is too small for larger files)
     private MediaPlayer mediaPlayer;
 
+    // Declare objects for sound effects
+    private SoundPool soundPool;
+    private AudioAttributes audioAttributes;
+    private int SP_ID_MarioCoin;
+    private int SP_ID_DoomGate;
+    private final int MAX_STREAM = 10;
+
+
+    private int levelID = 1;
+
     // Declare AFXObject for sound effects
     private AFXObject AFX = new AFXObject();
+
 
 
 
@@ -80,6 +91,8 @@ public class GameMode {
      */
     GameMode(Context context){
         this.context = context;
+        mediaPlayer = MediaPlayer.create(context, R.raw.doom_gate);
+        mediaPlayer.start();
     }
 
 
@@ -93,7 +106,9 @@ public class GameMode {
         this.context = context;
         this.canvasHeight = canvasHeight;
         this.canvasWidth = canvasWidth;
-        init(0);
+        // Initialise mediaplayer
+
+       // init(1);
     }
 
 
@@ -115,12 +130,22 @@ public class GameMode {
         this.canvasHeight = screenHeight;
         this.EventActivated =false;
 
-        init(0);
+        init(levelID);
     }
 
 
     private void init(double levelID) {
-        worldMap = new WorldMap(context, canvasWidth, canvasHeight);
+
+        // Clearing everything OOM bug
+  /*      SpriteMaps.clear();
+        ObjMap.clear();*/
+        if(!ObjMap.isEmpty()){
+            ObjMap.clear();
+            PosMap.clear();
+        }
+
+
+        worldMap = new WorldMap(context, canvasWidth, canvasHeight, (int)levelID);
         speechbox = BitmapFactory.decodeResource(context.getResources(), R.drawable.speechboxj);
         skull = BitmapFactory.decodeResource(context.getResources(), R.drawable.skull);
         map = worldMap.getMap();
@@ -147,7 +172,6 @@ public class GameMode {
         players[0].setGridPos(3, 2);
         players[0].setSprite(BitmapFactory.decodeResource(context.getResources(), R.drawable.player_default));
         SpriteMaps.put(GameObject.GameObjectTypes.PLAYER.ordinal(), players[0].dividedSpriteMap);
-
         ObjMap.put(players[0].getID(), players[0]);
         PosMap.put(players[0].getCoordinates().hashCode(), players[0].getID());
         Player test = (Player) ObjMap.get(players[0].getID());
@@ -175,12 +199,12 @@ public class GameMode {
             npcs[i].setEventText("Hello I am " + (npcs[i].name) + ".");
         }
 
-        for (int i = 0; i < inanObjs.length; i++) {
+/*        for (int i = 0; i < inanObjs.length; i++) {
             //inanObjs[i].setEventID(numberOfEvents);
             //numberOfEvents++;
             inanObjs[i].hasEvent = true;
             inanObjs[i].setEventText("This is signpost " + (inanObjs[i].getID()) + ".");
-        }
+        }*/
 
         // Add all npcs to hash maps
         for(int i=0;i<npcs.length;i++){
@@ -237,10 +261,7 @@ public class GameMode {
 //        Log.d(TAG,"inan now im at "+ inanObjs[0].gridX + " " + inanObjs[0].gridY);
 //        Log.d(TAG,"inan now im at "+ testi.gridX + " " + testi.gridY);
 
-        // Initialise mediaplayer
-        mediaPlayer = MediaPlayer.create(context, R.raw.doom_gate);
-        mediaPlayer.start();
-        mediaPlayer.setLooping(true);   // Set soundtrack to loop
+
 
         AFX.playAFX(context, AFX_ID.AFX_mario_coin);
 
@@ -430,10 +451,20 @@ public class GameMode {
         }
         if (EventActivated) {
 
-
-            canvas.drawBitmap(speechbox, null, new Rect(0, canvas.getHeight() - 400, canvas.getWidth() - 300, canvas.getHeight()), null);
-           String eventString = ObjMap.get(CurrentID).eventText;
-           canvas.drawText(eventString,100f,canvasHeight - 250,textPaint);
+            int ID = ObjMap.get(players[0].lastInteracted).getEventID();
+            if(ID == 19){
+                if(levelID == 1){
+                    levelID = 2;
+                } else {
+                    levelID = 1;
+                }
+                EventActivated = false;
+                init(levelID);
+            } else {
+                canvas.drawBitmap(speechbox, null, new Rect(0, canvas.getHeight() - 400, canvas.getWidth() - 300, canvas.getHeight()), null);
+                String eventString = ObjMap.get(CurrentID).eventText;
+                canvas.drawText(eventString, 100f, canvasHeight - 250, textPaint);
+            }
 
 
 
